@@ -29,7 +29,7 @@
 
         /* jarak fitur sidebar */
         .sidebar .nav-item {
-            margin-bottom: 20px;
+            margin-bottom: 28px;
         }
 
         .sidebar .nav-item a {
