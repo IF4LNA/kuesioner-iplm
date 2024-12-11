@@ -3,10 +3,31 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Perpustakaan;
 
 class PustakawanController extends Controller
 {
-    // Pastikan hanya pustakawan yang bisa mengakses halaman ini
+    public function showForm()
+{
+    // Mengambil pengguna yang sedang login
+    $user = auth()->user();  // Mendapatkan pengguna yang sedang login
+    
+    // Mengambil data perpustakaan yang terkait dengan pengguna (pustakawan)
+    $perpustakaan = $user->perpustakaan; // Mengambil relasi perpustakaan dari pengguna yang login
+    
+    // Memastikan data ditemukan sebelum mengirimkan ke view
+    if ($perpustakaan) {
+        return view('pustakawan.kuesioner', [
+            'namaPerpustakaan' => $perpustakaan->nama_perpustakaan,
+            'jenisPerpustakaan' => $perpustakaan->jenis,
+        ]);
+    } else {
+        // Jika data perpustakaan tidak ditemukan, bisa mengarahkan ke halaman lain atau menampilkan pesan error
+        return redirect()->route('home')->with('error', 'Perpustakaan tidak ditemukan untuk akun ini');
+    }
+}
+
+
     public function __construct()
     {
         $this->middleware('role:pustakawan');
@@ -19,18 +40,20 @@ class PustakawanController extends Controller
         return view('pustakawan.dashboard');
     }
 
-    //Halaman form data diri sebelum mengisi kuesioner
-    public function kuesioner(){
+    // Halaman form data diri sebelum mengisi kuesioner
+    public function kuesioner()
+    {
         return view('pustakawan.kuesioner');
     }
 
-   // Menangani kirim data dan redirect ke halaman isikuesioner
-   public function kirimData(Request $request)
-   {
-       // Anda bisa menambahkan logika untuk menyimpan data ke database jika diperlukan
+    // Menangani kirim data dan redirect ke halaman isikuesioner
+    public function kirimData(Request $request)
+    {
+        // Menambahkan logika untuk menyimpan data jika diperlukan
 
-       // Setelah data dikirim, redirect ke halaman isikuesioner
-       return redirect()->route('putakawan.isikuesioner');
-   }
+        // Setelah data dikirim, redirect ke halaman isikuesioner
+        return redirect()->route('pustakawan.isikuesioner');
+    }
 }
+
 

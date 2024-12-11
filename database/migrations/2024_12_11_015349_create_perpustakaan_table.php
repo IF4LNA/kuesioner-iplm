@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('perpustakaan', function (Blueprint $table) {
+        Schema::create('perpustakaans', function (Blueprint $table) {
             $table->id('id_perpustakaan');
             $table->string('nama_perpustakaan');
             $table->string('npp')->nullable();
@@ -22,9 +22,9 @@ return new class extends Migration
             $table->string('foto')->nullable();
             $table->unsignedBigInteger('id_akun')->nullable();
             $table->timestamps();
-    
+        
             $table->foreign('id_akun')->references('id')->on('users')->onDelete('cascade');
-        });
+        });  
     }
     
 

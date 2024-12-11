@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Perpustakaan extends Model
 {
     use HasFactory;
+    protected $table = 'perpustakaans';
     protected $fillable = [
         'nama_perpustakaan', 'npp', 'jenis', 'id_kelurahan', 'alamat', 'kontak', 'foto', 'id_akun'
     ];
@@ -15,7 +16,7 @@ class Perpustakaan extends Model
     // Relasi dengan tabel users
     public function users()
     {
-        return $this->hasMany(User::class);
+        return $this->belongsTo(User::class, 'id_akun');
     }
     
 }

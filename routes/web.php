@@ -44,11 +44,15 @@ Route::middleware(['auth'])->group(function () {
 
 // route halaman pustakawan
 Route::middleware(['auth'])->group(function () {
-    Route::get('/form/data', [PustakawanController::class, 'kuesioner'])->name('form.data');
+    Route::get('/form/data', [PustakawanController::class, 'showForm'])->name('form.data');
+
 });
 
 Route::post('/isikuesioner', [PustakawanController::class, 'kirimData'])->name('isikuesioner');
 
 Route::get('/admin/create-account', [AdminController::class, 'createAccountForm'])->name('admin.create-account');
 Route::post('/admin/create-account', [AdminController::class, 'storeAccount'])->name('admin.store-account');
+
+// Route::get('/form/data', [PustakawanController::class, 'showForm']);
+
 

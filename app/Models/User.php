@@ -43,6 +43,6 @@ class User extends Authenticatable
      */
     public function perpustakaan()
     {
-        return $this->hasOne(Perpustakaan::class, 'id_user');
+        return $this->hasOne(Perpustakaan::class, 'id_akun');
     }
 }
