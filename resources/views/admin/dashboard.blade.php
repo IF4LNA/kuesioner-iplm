@@ -18,10 +18,44 @@
             background-color: #f8f9fa;
             padding-top: 20px;
             border-right: 1px solid #ddd;
-            overflow-y: overlay;
-            /* Scrollbar tidak memakan ruang */
-            padding-right: 0;
+            overflow-y: auto;
+            /* Pastikan scroll aktif */
+            scrollbar-width: thin;
+            /* Firefox scrollbar */
+            scrollbar-color: transparent transparent;
+            /* Sembunyikan scrollbar */
         }
+
+        /* Untuk Webkit browser (Chrome, Edge, dll.) */
+        .sidebar::-webkit-scrollbar {
+            width: 0;
+            /* Sembunyikan scrollbar */
+        }
+
+        /* Saat di-hover */
+        .sidebar:hover {
+            scrollbar-color: #888 #f0f0f0;
+            /* Warna scrollbar (Firefox) */
+        }
+
+        .sidebar:hover::-webkit-scrollbar {
+            width: 8px;
+            /* Lebar scrollbar */
+        }
+
+        .sidebar:hover::-webkit-scrollbar-thumb {
+            background-color: #888;
+            /* Warna thumb */
+            border-radius: 4px;
+            /* Radius untuk estetika */
+        }
+
+        .sidebar:hover::-webkit-scrollbar-track {
+            background-color: #f0f0f0;
+            /* Warna track */
+        }
+
+
 
         .sidebar ul {
             padding-left: 15px;
@@ -205,12 +239,12 @@
         @yield('content')
     </div>
 
-    <script>    
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
             const toggleLink = document.querySelector('[href="#uplmSubmenu"]');
             const toggleIcon = toggleLink.querySelector('.toggle-icon');
             const submenu = document.querySelector('#uplmSubmenu');
-            
+
             // Cek status submenu di sessionStorage
             if (sessionStorage.getItem('uplmSubmenu') === 'open') {
                 submenu.classList.add('show'); // Pastikan submenu terbuka jika statusnya 'open'
@@ -221,7 +255,7 @@
                 toggleIcon.classList.remove('fa-chevron-down');
                 toggleIcon.classList.add('fa-chevron-right');
             }
-    
+
             // Menambahkan event listener untuk ketika submenu muncul
             submenu.addEventListener('show.bs.collapse', function() {
                 toggleIcon.classList.remove('fa-chevron-right');
@@ -229,7 +263,7 @@
                 // Simpan status 'open' saat submenu terbuka
                 sessionStorage.setItem('uplmSubmenu', 'open');
             });
-    
+
             // Menambahkan event listener untuk ketika submenu tersembunyi
             submenu.addEventListener('hide.bs.collapse', function() {
                 toggleIcon.classList.remove('fa-chevron-down');
@@ -239,7 +273,7 @@
             });
         });
     </script>
-    
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

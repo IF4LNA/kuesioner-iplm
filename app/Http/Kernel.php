@@ -68,6 +68,7 @@ class Kernel extends HttpKernel
    
     protected $routeMiddleware = [
         // Middleware lainnya...
+        'admin' => \App\Http\Middleware\AdminMiddleware::class,
         'role' => \App\Http\Middleware\RoleMiddleware::class,
         'noCache' => \App\Http\Middleware\NoCache::class,
     ];

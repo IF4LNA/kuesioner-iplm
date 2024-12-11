@@ -18,11 +18,42 @@
             background-color: #f8f9fa;
             padding-top: 20px;
             border-right: 1px solid #ddd;
-            overflow-y: overlay;
-            /* Scrollbar tidak memakan ruang */
-            padding-right: 0;
+            overflow-y: auto;
+            /* Pastikan scroll aktif */
+            scrollbar-width: thin;
+            /* Firefox scrollbar */
+            scrollbar-color: transparent transparent;
+            /* Sembunyikan scrollbar */
         }
 
+        /* Untuk Webkit browser (Chrome, Edge, dll.) */
+        .sidebar::-webkit-scrollbar {
+            width: 0;
+            /* Sembunyikan scrollbar */
+        }
+
+        /* Saat di-hover */
+        .sidebar:hover {
+            scrollbar-color: #888 #f0f0f0;
+            /* Warna scrollbar (Firefox) */
+        }
+
+        .sidebar:hover::-webkit-scrollbar {
+            width: 8px;
+            /* Lebar scrollbar */
+        }
+
+        .sidebar:hover::-webkit-scrollbar-thumb {
+            background-color: #888;
+            /* Warna thumb */
+            border-radius: 4px;
+            /* Radius untuk estetika */
+        }
+
+        .sidebar:hover::-webkit-scrollbar-track {
+            background-color: #f0f0f0;
+            /* Warna track */
+        }
         .sidebar ul {
             padding-left: 15px;
         }
