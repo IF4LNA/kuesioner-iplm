@@ -49,5 +49,6 @@ Route::middleware(['auth'])->group(function () {
 
 Route::post('/isikuesioner', [PustakawanController::class, 'kirimData'])->name('isikuesioner');
 
-
+Route::get('/admin/create-account', [AdminController::class, 'createAccountForm'])->name('admin.create-account');
+Route::post('/admin/create-account', [AdminController::class, 'storeAccount'])->name('admin.store-account');
 

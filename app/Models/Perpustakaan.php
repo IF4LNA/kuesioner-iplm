@@ -9,7 +9,7 @@ class Perpustakaan extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'nama_perpustakaan', 'jenis_perpustakaan', 'kota', 'kecamatan', 'desa_kelurahan', 'npp', 'no_telp', 'foto_pustakawan',
+        'nama_perpustakaan', 'npp', 'jenis', 'id_kelurahan', 'alamat', 'kontak', 'foto', 'id_akun'
     ];
 
     // Relasi dengan tabel users
