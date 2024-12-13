@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         /* Sidebar */
         .sidebar {
@@ -54,6 +54,8 @@
             background-color: #f0f0f0;
             /* Warna track */
         }
+
+
 
         .sidebar ul {
             padding-left: 15px;
@@ -233,16 +235,17 @@
 
     <!-- Content -->
     <div class="content">
-        <h2>Selamat datang dihalaman notifikasi!</h2>
+        <h2>Selamat datang di halaman notifikasi!</h2>
         @yield('content')
     </div>
 
+    {{-- javascript --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const toggleLink = document.querySelector('[href="#uplmSubmenu"]');
             const toggleIcon = toggleLink.querySelector('.toggle-icon');
             const submenu = document.querySelector('#uplmSubmenu');
-            
+
             // Cek status submenu di sessionStorage
             if (sessionStorage.getItem('uplmSubmenu') === 'open') {
                 submenu.classList.add('show'); // Pastikan submenu terbuka jika statusnya 'open'
@@ -253,7 +256,7 @@
                 toggleIcon.classList.remove('fa-chevron-down');
                 toggleIcon.classList.add('fa-chevron-right');
             }
-    
+
             // Menambahkan event listener untuk ketika submenu muncul
             submenu.addEventListener('show.bs.collapse', function() {
                 toggleIcon.classList.remove('fa-chevron-right');
@@ -261,7 +264,7 @@
                 // Simpan status 'open' saat submenu terbuka
                 sessionStorage.setItem('uplmSubmenu', 'open');
             });
-    
+
             // Menambahkan event listener untuk ketika submenu tersembunyi
             submenu.addEventListener('hide.bs.collapse', function() {
                 toggleIcon.classList.remove('fa-chevron-down');
@@ -271,11 +274,11 @@
             });
         });
     </script>
-    
 
+     <!-- Bootstrap JS -->
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>       
+       
 
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

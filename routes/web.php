@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\LokasiController;
 use App\Http\Controllers\PustakawanController;
 
 // Rute login dan logout
@@ -45,14 +46,17 @@ Route::middleware(['auth'])->group(function () {
 // route halaman pustakawan
 Route::middleware(['auth'])->group(function () {
     Route::get('/form/data', [PustakawanController::class, 'showForm'])->name('form.data');
-
+    // Route untuk menyimpan data perpustakaan
+    Route::post('/pustakawan/store', [PustakawanController::class, 'store'])->name('pustakawan.store');
+    // Route untuk kehalaman isi kuesioner
+    Route::get('/pustakawan/iskuesioner', [PustakawanController::class, 'IsiKuesioner'])->name('pustakawan.isikuesioner');
 });
 
-Route::post('/isikuesioner', [PustakawanController::class, 'kirimData'])->name('isikuesioner');
-
+// route buat akun
 Route::get('/admin/create-account', [AdminController::class, 'createAccountForm'])->name('admin.create-account');
 Route::post('/admin/create-account', [AdminController::class, 'storeAccount'])->name('admin.store-account');
 
-// Route::get('/form/data', [PustakawanController::class, 'showForm']);
 
-
+//route lokasi alamat dropdownlist
+Route::get('/kecamatan/{id_kota}', [LokasiController::class, 'getKecamatan']);
+Route::get('/kelurahan/{id_kecamatan}', [LokasiController::class, 'getKelurahan']);

@@ -5,8 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Form Pengisian Data Diri Perpustakaan</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Menambahkan Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         body {
@@ -95,87 +94,91 @@
 
 <body>
     <div class="container mt-5">
-        <form action="" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('pustakawan.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="form-box">
                 <h2>Form Data Responden</h2>
-    
+
                 <!-- Nama Perpustakaan (ditampilkan dari data admin) -->
                 <div class="mb-3">
                     <label for="nama_perpustakaan" class="form-label">Nama Perpustakaan:</label>
-                    <input type="text" id="nama_perpustakaan" name="nama_perpustakaan" class="form-control" value="{{ $namaPerpustakaan }}" readonly>
+                    <input type="text" id="nama_perpustakaan" name="nama_perpustakaan" class="form-control"
+                        value="{{ $namaPerpustakaan }}" readonly>
                 </div>
-    
+
                 <!-- Jenis Perpustakaan (ditampilkan dari data admin) -->
                 <div class="mb-3">
                     <label for="jenis_perpustakaan" class="form-label">Jenis Perpustakaan:</label>
-                    <input type="text" id="jenis_perpustakaan" name="jenis_perpustakaan" class="form-control" value="{{ $jenisPerpustakaan }}" readonly>
+                    <input type="text" id="jenis_perpustakaan" name="jenis_perpustakaan" class="form-control"
+                        value="{{ $jenisPerpustakaan }}" readonly>
                 </div>
-           
-    
-            <!-- Kota -->
-            <div class="mb-3">
-                <label for="kota" class="form-label">Kota:</label>
-                <select id="kota" name="kota" class="form-select" required>
-                    <option value="">Pilih Kota</option>
-                    <option value="Bandung">Bandung</option>
-                </select>
-            </div>
-    
-            <!-- Kecamatan -->
-            <div class="mb-3">
-                <label for="kecamatan" class="form-label">Kecamatan:</label>
-                <select id="kecamatan" name="kecamatan" class="form-select" required>
-                    <option value="">Pilih Kecamatan</option>
-                    <option value="Kecamatan 1">Kecamatan 1</option>
-                    <option value="Kecamatan 2">Kecamatan 2</option>
-                    <option value="Kecamatan 3">Kecamatan 3</option>
-                </select>
-            </div>
-    
-            <!-- Desa/Kelurahan -->
-            <div class="mb-3">
-                <label for="desa_kelurahan" class="form-label">Desa/Kelurahan:</label>
-                <select id="desa_kelurahan" name="desa_kelurahan" class="form-select" required>
-                    <option value="">Pilih Desa/Kelurahan</option>
-                    <option value="Desa 1">Desa 1</option>
-                    <option value="Desa 2">Desa 2</option>
-                    <option value="Desa 3">Desa 3</option>
-                </select>
-            </div>
-    
-            <!-- NPP -->
-            <div class="mb-3">
-                <label for="npp" class="form-label">NPP:</label>
-                <input type="text" id="npp" name="npp" class="form-control" required>
-            </div>
-    
-            <!-- No Telpon -->
-            <div class="mb-3">
-                <label for="no_telpon" class="form-label">No Telepon:</label>
-                <input type="text" id="no_telpon" name="no_telpon" class="form-control" required>
-            </div>
-    
-            <!-- Upload Foto -->
-            <div class="mb-3">
-                <label for="foto" class="form-label">Upload Foto:</label>
-                <div class="custom-file">
-                    <input type="file" id="foto" name="foto" class="custom-file-input" accept="image/*" required>
-                    <label for="foto" class="custom-file-label">
-                        <i class="fas fa-upload"></i> Pilih File
-                    </label>
+
+
+                <!-- Kota -->
+                <div class="mb-3">
+                    <label for="kota" class="form-label">Kota:</label>
+                    <select id="kota" name="kota" class="form-select" required>
+                        <option value="">Pilih Kota</option>
+                        @foreach ($kotas as $kota)
+                            <option value="{{ $kota->id }}">{{ $kota->nama_kota }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Kecamatan -->
+                <div class="mb-3">
+                    <label for="kecamatan" class="form-label">Kecamatan:</label>
+                    <select id="kecamatan" name="kecamatan" class="form-select" required>
+                        <option value="">Pilih Kecamatan</option>
+                    </select>
+                </div>
+
+                <!-- Desa/Kelurahan -->
+                <div class="mb-3">
+                    <label for="desa_kelurahan" class="form-label">Desa/Kelurahan:</label>
+                    <select id="desa_kelurahan" name="desa_kelurahan" class="form-select" required>
+                        <option value="">Pilih Desa/Kelurahan</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="alamat" class="form-label">Detail alamat:</label>
+                    <input type="text" id="alamat" name="alamat" class="form-control" required>
+                </div>
+
+
+                <!-- NPP -->
+                <div class="mb-3">
+                    <label for="npp" class="form-label">NPP:</label>
+                    <input type="text" id="npp" name="npp" class="form-control" required>
+                </div>
+
+                <!-- No Telpon -->
+                <div class="mb-3">
+                    <label for="kontak" class="form-label">No Telepon:</label>
+                    <input type="text" id="kontak" name="kontak" class="form-control" required>
+                </div>
+
+                <!-- Upload Foto -->
+                <div class="mb-3">
+                    <label for="foto" class="form-label">Upload Foto:</label>
+                    <div class="custom-file">
+                        <input type="file" id="foto" name="foto" class="custom-file-input" accept="image/*"
+                            required>
+                        <label for="foto" class="custom-file-label">
+                            <i class="fas fa-upload"></i> Pilih File
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Button Next -->
+                <div class="mb-3 text-center">
+                    <button type="submit" class="btn btn-primary">Next</button>
                 </div>
             </div>
-    
-            <!-- Button Next -->
-            <div class="mb-3 text-center">
-                <button type="submit" class="btn btn-primary">Next</button>
-            </div>
-        </div>
         </form>
     </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Menambahkan event listener agar label berubah ketika memilih file
         document.getElementById('foto').addEventListener('change', function() {
@@ -183,7 +186,42 @@
             var label = this.nextElementSibling;
             label.innerHTML = '<i class="fas fa-upload"></i> ' + fileName;
         });
-    </script>
-</body>
 
+         // Mengambil data kecamatan berdasarkan kota
+    document.getElementById('kota').addEventListener('change', function() {
+        let kotaId = this.value;
+        if(kotaId) {
+            fetch(`/kecamatan/${kotaId}`)
+                .then(response => response.json())
+                .then(data => {
+                    let kecamatanSelect = document.getElementById('kecamatan');
+                    kecamatanSelect.innerHTML = `<option value="">Pilih Kecamatan</option>`; // Reset kecamatan
+                    data.forEach(kecamatan => {
+                        kecamatanSelect.innerHTML += `<option value="${kecamatan.id}">${kecamatan.nama_kecamatan}</option>`;
+                    });
+                });
+        }
+    });
+
+    // Mengambil data kelurahan berdasarkan kecamatan
+    document.getElementById('kecamatan').addEventListener('change', function() {
+        let kecamatanId = this.value;
+        if(kecamatanId) {
+            fetch(`/kelurahan/${kecamatanId}`)
+                .then(response => response.json())
+                .then(data => {
+                    let kelurahanSelect = document.getElementById('desa_kelurahan');
+                    kelurahanSelect.innerHTML = `<option value="">Pilih Desa/Kelurahan</option>`; // Reset kelurahan
+                    data.forEach(kelurahan => {
+                        kelurahanSelect.innerHTML += `<option value="${kelurahan.id}">${kelurahan.nama_kelurahan}</option>`;
+                    });
+                });
+        }
+    });
+    </script>
+
+      <!-- Bootstrap JS -->
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+      
+</body>
 </html>
