@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kota;
+use App\Models\Jawaban;
+use App\Models\Pertanyaan;
 use App\Models\Perpustakaan;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -15,19 +17,33 @@ class PustakawanController extends Controller
         $this->middleware('noCache');
     }
 
-    //menampilkan halaman dashboard pustakawan
+    // Menampilkan halaman dashboard pustakawan
     public function index()
     {
         return view('pustakawan.dashboard');
     }
 
-      //menampilkan halaman isi kuesioner pustakawan
-    public function isikuesioner()
+    // Menampilkan halaman isi kuesioner pustakawan
+    public function isikuesioner(Request $request)
     {
-        return view('pustakawan.isikuesioner');
+        // Mengambil daftar tahun unik dari tabel pertanyaan
+        $tahunList = Pertanyaan::select('tahun')->distinct()->pluck('tahun');
+
+        // Cek apakah ada tahun yang dipilih
+        $tahun = $request->input('tahun');
+        $pertanyaans = collect();  // Menginisialisasi sebagai koleksi kosong
+
+        if ($tahun) {
+            // Ambil pertanyaan berdasarkan tahun yang dipilih
+            $pertanyaans = Pertanyaan::where('tahun', $tahun)->get();
+        }
+
+        // Kirim data ke view
+        return view('pustakawan.isikuesioner', compact('tahunList', 'pertanyaans', 'tahun'));
     }
 
-    //menampilkan data akun login, relasi kota/kec/kel di form
+
+    // Menampilkan data akun login, relasi kota/kec/kel di form
     public function showForm()
     {
         $user = auth()->user();
@@ -45,7 +61,46 @@ class PustakawanController extends Controller
         return redirect()->route('home')->with('error', 'Perpustakaan tidak ditemukan untuk akun ini');
     }
 
-    //mengirim data dari form ke database yang di redirect ke halaman isi kuesioner
+    public function submit(Request $request)
+    {
+        // Validasi input jawaban
+        $request->validate([
+            'jawaban' => 'required|array',  // pastikan jawaban adalah array
+            'jawaban.*' => 'required|string|max:255',  // pastikan setiap jawaban adalah string yang valid
+            'tahun' => 'required|integer',
+        ]);
+
+        // Dapatkan id_perpustakaan dari user yang login
+        $idPerpustakaan = auth()->user()->perpustakaan->id_perpustakaan;  // Asumsi relasi sudah dibuat di User model
+
+        // Loop untuk menyimpan jawaban
+        foreach ($request->jawaban as $idPertanyaan => $jawabanText) {
+            // Simpan jawaban ke dalam database
+            Jawaban::create([
+                'id_pertanyaan' => $idPertanyaan,
+                'jawaban' => $jawabanText,
+                'tahun' => $request->tahun,
+                'user_id' => auth()->user()->id,  // menambahkan ID user untuk identifikasi siapa yang mengirim
+                'id_perpustakaan' => $idPerpustakaan,  // Menambahkan id_perpustakaan yang sesuai
+            ]);
+        }
+
+        // Redirect ke halaman jawaban tersimpan dengan pesan sukses
+        return redirect()->route('pustakawan.jawabanTersimpan')->with('success', 'Jawaban berhasil disimpan!');
+    }
+
+    // PustakawanController.php
+
+    public function jawabanTersimpan()
+    {
+        // Menampilkan halaman jawaban tersimpan setelah proses penyimpanan berhasil
+        return view('pustakawan.jawabanTersimpan');  // Mengarahkan ke view jawaban_tersimpan
+    }
+
+
+
+
+    // Mengirim data dari form ke database yang di redirect ke halaman isi kuesioner
     public function store(Request $request)
     {
         $request->validate([
@@ -77,4 +132,3 @@ class PustakawanController extends Controller
         return redirect()->route('pustakawan.isikuesioner')->with('error', 'Perpustakaan tidak ditemukan');
     }
 }
-

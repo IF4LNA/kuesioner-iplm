@@ -21,17 +21,17 @@ class UserSeeder extends Seeder
         ];
 
         // Data akun pustakawan
-        $pustakawans = [];
-        for ($i = 1; $i <= 10; $i++) {
-            $pustakawans[] = [
-                'username' => 'pustakawan' . $i,
-                'password' => Hash::make('pustakawan123'),
-                'role' => 'pustakawan',
-            ];
-        }
+        // $pustakawans = [];
+        // for ($i = 1; $i <= 10; $i++) {
+        //     $pustakawans[] = [
+        //         'username' => 'pustakawan' . $i,
+        //         'password' => Hash::make('pustakawan123'),
+        //         'role' => 'pustakawan',
+        //     ];
+        // }
 
         // Insert data akun admin dan pustakawan
         User::insert($admins);
-        User::insert($pustakawans);
+        // User::insert($pustakawans);
     }
 }

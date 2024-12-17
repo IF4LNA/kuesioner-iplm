@@ -6,6 +6,9 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LokasiController;
 use App\Http\Controllers\PustakawanController;
+use App\Http\Controllers\KuesionerController;
+
+
 
 // Rute login dan logout
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -60,3 +63,20 @@ Route::post('/admin/create-account', [AdminController::class, 'storeAccount'])->
 //route lokasi alamat dropdownlist
 Route::get('/kecamatan/{id_kota}', [LokasiController::class, 'getKecamatan']);
 Route::get('/kelurahan/{id_kecamatan}', [LokasiController::class, 'getKelurahan']);
+
+
+// Menampilkan form kuesioner berdasarkan tahun
+Route::middleware(['auth', 'role:pustakawan'])->group(function () {
+    // Menampilkan halaman kuesioner
+    Route::get('/kuesioner', [PustakawanController::class, 'isikuesioner'])->name('pustakawan.isikuesioner');
+
+    // Menampilkan form berdasarkan tahun yang dipilih
+    Route::get('/kuesioner/form', [PustakawanController::class, 'showForm'])->name('kuesioner.form');
+
+    // Menyimpan jawaban kuesioner
+    Route::post('/kuesioner/submit', [PustakawanController::class, 'submit'])->name('kuesioner.submit');
+    // Route untuk menampilkan halaman setelah jawaban berhasil disimpan
+    Route::get('pustakawan/jawaban-tersimpan', [PustakawanController::class, 'jawabanTersimpan'])->name('pustakawan.jawabanTersimpan');
+
+
+});
