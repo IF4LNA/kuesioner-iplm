@@ -168,6 +168,13 @@
                         <i class="fas fa-cogs"></i> Pengaturan
                     </a>
                 </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('activity-logs') ? 'active' : '' }}" href="{{ route('admin.activity-logs') }}">
+                        <i class="fas fa-clipboard-list"></i> Activity Logs
+                    </a>
+                </li>
+                
                 <li class="nav-item mt-5">
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf

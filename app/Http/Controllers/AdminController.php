@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\ActivityLog;
 use App\Models\Perpustakaan;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
+
 
 class AdminController extends Controller
 {
@@ -88,8 +92,27 @@ class AdminController extends Controller
             ]);
         }
 
+        // Menyimpan aktivitas log
+        ActivityLog::create([
+            'action' => 'Create Account',
+            'description' => 'Akun baru telah dibuat dengan username: ' . $request->username,
+            'id_akun' => auth()->user()->id, // Menggunakan id admin yang sedang login
+        ]);
+
         return redirect()->back()->with('success', 'Akun berhasil dibuat!');
     }
 
-}
+    public function showActivityLogs()
+    {
+        // Mengambil data activity logs dengan relasi user
+        $activityLogs = ActivityLog::with('user')->get();
 
+        // Mengonversi created_at menjadi format yang lebih mudah dibaca (opsional)
+        foreach ($activityLogs as $log) {
+            // Pastikan created_at adalah objek Carbon
+            // $log->created_at = Carbon::parse($log->created_at)->format('d-m-Y H:i:s');
+        }
+
+        return view('admin.activity-logs', compact('activityLogs'));
+    }
+}
