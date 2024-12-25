@@ -43,6 +43,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/recap', [AdminController::class, 'recap'])->name('recap');
     Route::get('/notifications', [AdminController::class, 'notifications'])->name('notifications');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
+    Route::get('activity-logs', [AdminController::class, 'showActivityLogs'])->name('admin.activity-logs');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
