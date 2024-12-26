@@ -94,9 +94,10 @@ class AdminController extends Controller
 
         // Menyimpan aktivitas log
         ActivityLog::create([
-            'action' => 'Create Account',
+            'action' => 'Buat Akun',
             'description' => 'Akun baru telah dibuat dengan username: ' . $request->username,
             'id_akun' => auth()->user()->id, // Menggunakan id admin yang sedang login
+            'created_at' => now(), // Menyimpan waktu saat log dibuat
         ]);
 
         return redirect()->back()->with('success', 'Akun berhasil dibuat!');
@@ -106,13 +107,6 @@ class AdminController extends Controller
     {
         // Mengambil data activity logs dengan relasi user
         $activityLogs = ActivityLog::with('user')->get();
-
-        // Mengonversi created_at menjadi format yang lebih mudah dibaca (opsional)
-        foreach ($activityLogs as $log) {
-            // Pastikan created_at adalah objek Carbon
-            // $log->created_at = Carbon::parse($log->created_at)->format('d-m-Y H:i:s');
-        }
-
         return view('admin.activity-logs', compact('activityLogs'));
     }
 }

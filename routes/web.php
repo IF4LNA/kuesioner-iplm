@@ -76,8 +76,7 @@ Route::middleware(['auth', 'role:pustakawan'])->group(function () {
 
     // Menyimpan jawaban kuesioner
     Route::post('/kuesioner/submit', [PustakawanController::class, 'submit'])->name('kuesioner.submit');
+
     // Route untuk menampilkan halaman setelah jawaban berhasil disimpan
     Route::get('pustakawan/jawaban-tersimpan', [PustakawanController::class, 'jawabanTersimpan'])->name('pustakawan.jawabanTersimpan');
-
-
 });

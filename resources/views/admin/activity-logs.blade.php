@@ -24,7 +24,7 @@
                 <td>{{ $log->id }}</td>
                 <td>{{ $log->action }}</td>
                 <td>{{ $log->description }}</td>
-                <td>{{ $log->created_at }}</td>
+                <td>{{ $log->created_at}}</td>
                 <td>{{ $log->user->username }}</td>
             </tr>
             @endforeach
