@@ -65,4 +65,19 @@ class UplmController extends Controller
             return abort(404, 'Page not found');
         }
     }
+
+    public function filterUplm1(Request $request)
+    {
+        // Ambil data untuk UPLM 1 dengan filter
+        $query = Perpustakaan::with(['user', 'kelurahan.kecamatan']);
+
+        // Tambahkan filter berdasarkan jenis
+        if ($request->has('jenis') && $request->jenis != '') {
+            $query->where('jenis', $request->jenis);
+        }
+
+        $data = $query->get();
+
+        return view('admin.uplm1', compact('data'));
+    }
 }
