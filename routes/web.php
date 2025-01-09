@@ -38,6 +38,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/manage-users', [AdminController::class, 'manageUsers'])->name('manage.users');
     // Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
     Route::get('/uplm/{id}', [UplmController::class, 'showUplm'])->name('uplm.show');
+    //filter
+    Route::get('/uplm1/filter', [UplmController::class, 'filterUplm1'])->name('uplm1.filter');
+    
     Route::get('/user/create', [AdminController::class, 'createUser'])->name('user.create');
     Route::get('/recap', [AdminController::class, 'recap'])->name('recap');
     Route::get('/notifications', [AdminController::class, 'notifications'])->name('notifications');

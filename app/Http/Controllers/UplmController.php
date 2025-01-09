@@ -11,16 +11,16 @@ class UplmController extends Controller
     public function showUplm($id)
     {
         $viewName = 'admin.uplm' . $id;
-        
+
         // Ambil data untuk UPLM 1
         if ($id == 1) {
             $data = Perpustakaan::with(['user', 'kelurahan.kecamatan'])->get();
         } 
-        // Jika ID adalah 2 hingga 7, tampilkan halaman kosong
+        // Jika ID antara 2 dan 7, kembalikan koleksi kosong
         elseif ($id >= 2 && $id <= 7) {
             $data = collect(); // Mengembalikan koleksi kosong
-        }
-        // Jika ID tidak valid, bisa mengembalikan data kosong atau error
+        } 
+        // Jika ID tidak valid, kembalikan error 404
         else {
             return abort(404, 'Page not found');
         }
@@ -31,5 +31,21 @@ class UplmController extends Controller
         } else {
             return abort(404, 'Page not found');
         }
+    }
+
+    // Method filter
+    public function filterUplm1(Request $request)
+    {
+        // Ambil data untuk UPLM 1 dengan filter
+        $query = Perpustakaan::with(['user', 'kelurahan.kecamatan']);
+
+        // Tambahkan filter berdasarkan jenis
+        if ($request->has('jenis') && $request->jenis != '') {
+            $query->where('jenis', $request->jenis);
+        }
+
+        $data = $query->get();
+
+        return view('admin.uplm1', compact('data'));
     }
 }
