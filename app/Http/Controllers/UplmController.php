@@ -18,6 +18,7 @@ class UplmController extends Controller
         switch ($id) {
             case 1:
                 $data = Perpustakaan::with(['user', 'kelurahan.kecamatan'])->get();
+                $pertanyaan = Pertanyaan::where('kategori', 'UPLM 1')->get();
                 break;
             case 2:
             // Logika untuk UPLM 2
