@@ -27,5 +27,10 @@ class Perpustakaan extends Model
     {
         return $this->belongsTo(Kelurahan::class, 'id_kelurahan');
     }
+
+    public function jawaban()
+{
+    return $this->hasMany(Jawaban::class, 'id_jawaban');
+}
 }
 
