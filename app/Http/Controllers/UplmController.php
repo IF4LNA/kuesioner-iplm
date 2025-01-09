@@ -13,18 +13,49 @@ class UplmController extends Controller
     public function showUplm($id)
     {
         $viewName = 'admin.uplm' . $id;
-        
-        // Ambil data untuk UPLM 1
-        if ($id == 1) {
-            $data = Perpustakaan::with(['user', 'kelurahan.kecamatan'])->get();
-        } 
-        // Jika ID adalah 2 hingga 7, tampilkan halaman kosong
-        elseif ($id >= 2 && $id <= 7) {
-            $data = collect(); // Mengembalikan koleksi kosong
-        }
-        // Jika ID tidak valid, bisa mengembalikan data kosong atau error
-        else {
-            return abort(404, 'Page not found');
+        $data = collect(); // Default data kosong
+
+        switch ($id) {
+            case 1:
+                $data = Perpustakaan::with(['user', 'kelurahan.kecamatan'])->get();
+                $pertanyaan = Pertanyaan::where('kategori', 'UPLM 1')->get();
+                break;
+            case 2:
+            // Logika untuk UPLM 2
+            $data = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan'])->get();
+            $jawaban = Jawaban::with(['pertanyaan']) // Eager load relasi pertanyaan dan perpustakaan
+                // ->whereHas('pertanyaan', function ($query) {
+                //     $query->where('kategori', 'UPLM 2');
+                // })
+                ->get();
+
+            // Mengambil pertanyaan untuk kategori UPLM 2
+            $pertanyaan = Pertanyaan::where('kategori', 'UPLM 2')->get();
+                break;
+            case 3:
+                // Logika untuk UPLM 3
+                $data = Pertanyaan::all();
+                break;
+            case 4:
+                // Logika untuk UPLM 4
+                $data = Perpustakaan::select('id', 'nama')->get();
+                break;
+            case 5:
+                // Logika untuk UPLM 5
+                $data = Jawaban::where('tahun', date('Y'))->get();
+                break;
+            case 6:
+                // Logika untuk UPLM 6
+                $data = Perpustakaan::withCount('jawaban')->get();
+                break;
+            case 7:
+                // Logika untuk UPLM 7
+                $data = Jawaban::whereHas('pertanyaan', function($query) {
+                    $query->where('kategori', 'specific_category');
+                })->get();
+                break;
+            default:
+                return abort(404, 'Page not found');
         }
 
         // Cek apakah view ada
@@ -33,21 +64,5 @@ class UplmController extends Controller
         } else {
             return abort(404, 'Page not found');
         }
-    }
-
-    // Method filter
-    public function filterUplm1(Request $request)
-    {
-        // Ambil data untuk UPLM 1 dengan filter
-        $query = Perpustakaan::with(['user', 'kelurahan.kecamatan']);
-
-        // Tambahkan filter berdasarkan jenis
-        if ($request->has('jenis') && $request->jenis != '') {
-            $query->where('jenis', $request->jenis);
-        }
-
-        $data = $query->get();
-
-        return view('admin.uplm1', compact('data'));
     }
 }
