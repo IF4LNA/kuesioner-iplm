@@ -18,12 +18,12 @@ class Perpustakaan extends Model
     ];
 
     // Relasi dengan tabel users
-    public function users()
+    public function user()
     {
         return $this->belongsTo(User::class, 'id_akun');
     }
 
-    public function kelurahans()
+    public function kelurahan()
     {
         return $this->belongsTo(Kelurahan::class, 'id_kelurahan');
     }

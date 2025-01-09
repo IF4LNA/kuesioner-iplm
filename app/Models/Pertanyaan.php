@@ -13,7 +13,7 @@ class Pertanyaan extends Model
     protected $primaryKey = 'id_pertanyaan'; // Menentukan primary key secara eksplisit
     protected $fillable = ['teks_pertanyaan', 'kategori', 'tahun'];
 
-    public function jawabans()
+    public function jawaban()
     {
         // Relasi one-to-many ke model Jawaban
         return $this->hasMany(Jawaban::class, 'id_pertanyaan', 'id_pertanyaan');

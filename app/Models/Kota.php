@@ -9,7 +9,7 @@ class Kota extends Model
 {
     use HasFactory;
 
-    public function kecamatans()
+    public function kecamatan()
     {
         return $this->hasMany(Kecamatan::class, 'id_kota');
     }

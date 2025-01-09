@@ -8,11 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Kecamatan extends Model
 {
     use HasFactory;
+
     protected $table = 'kecamatans';
+    protected $primaryKey = 'id';
 
-
-    public function kelurahans()
+    public function kelurahan()
     {
         return $this->hasMany(Kelurahan::class, 'id_kecamatan');
     }
 }
+

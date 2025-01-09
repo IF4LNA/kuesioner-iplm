@@ -89,7 +89,7 @@ class PertanyaanSeeder extends Seeder
                 'updated_at' => Carbon::now(),
             ],
             [
-                'teks_pertanyaan' => 'ika belum apakah anda mengetahui mengenai akreditasi perpustakaan?',
+                'teks_pertanyaan' => 'Jika belum apakah anda mengetahui mengenai akreditasi perpustakaan?',
                 'kategori' => 'UPLM 5',
                 'tahun' => 2024,
                 'created_at' => Carbon::now(),

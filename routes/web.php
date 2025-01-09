@@ -7,8 +7,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LokasiController;
 use App\Http\Controllers\PustakawanController;
 use App\Http\Controllers\KuesionerController;
-
-
+use App\Http\Controllers\UplmController;
 
 // Rute login dan logout
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -38,7 +37,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::get('/manage-users', [AdminController::class, 'manageUsers'])->name('manage.users');
     // Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
-    Route::get('/uplm/{id}', [AdminController::class, 'showUplm'])->name('uplm.show');
+    Route::get('/uplm/{id}', [UplmController::class, 'showUplm'])->name('uplm.show');
     Route::get('/user/create', [AdminController::class, 'createUser'])->name('user.create');
     Route::get('/recap', [AdminController::class, 'recap'])->name('recap');
     Route::get('/notifications', [AdminController::class, 'notifications'])->name('notifications');
