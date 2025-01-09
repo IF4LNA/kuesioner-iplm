@@ -80,4 +80,22 @@ class UplmController extends Controller
 
         return view('admin.uplm1', compact('data'));
     }
+
+    public function filterUplm2(Request $request)
+    {
+        $viewName = 'admin.uplm2';
+        // Ambil data untuk UPLM 1 dengan filter
+        $query = Perpustakaan::with(['user', 'kelurahan.kecamatan']);
+        $pertanyaan = Pertanyaan::where('kategori', 'UPLM 2')->get();
+
+        // Tambahkan filter berdasarkan jenis
+        if ($request->has('jenis') && $request->jenis != '') {
+            $query->where('jenis', $request->jenis);
+        }
+
+        $data = $query->get();
+
+        return view($viewName, compact('data', 'pertanyaan'));
+    }
+    
 }

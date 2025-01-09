@@ -4,6 +4,30 @@
 <div class="container mt-4">
     <h3>UPLM 2</h3>
 
+        <!-- Form Filter -->
+        <div class="mb-3">
+            <form action="{{ route('uplm2.filter') }}" method="GET">
+                <div class="row">
+                    <div class="col-md-4">
+                        <select name="jenis" id="jenis" class="form-select">
+                            <option value="">Pilih Jenis Perpustakaan</option>
+                            <option value="umum" {{ request()->jenis == 'umum' ? 'selected' : '' }}>Umum</option>
+                            <option value="sd" {{ request()->jenis == 'sd' ? 'selected' : '' }}>SD</option>
+                            <option value="smp" {{ request()->jenis == 'smp' ? 'selected' : '' }}>SMP</option>
+                            <option value="mts" {{ request()->jenis == 'mts' ? 'selected' : '' }}>MTS</option>
+                            <option value="sma" {{ request()->jenis == 'sma' ? 'selected' : '' }}>SMA</option>
+                            <option value="smk" {{ request()->jenis == 'smk' ? 'selected' : '' }}>SMK</option>
+                            <option value="ma" {{ request()->jenis == 'ma' ? 'selected' : '' }}>MA</option>
+                            <option value="khusus" {{ request()->jenis == 'khusus' ? 'selected' : '' }}>Khusus</option>
+                            <option value="perguruan_tinggi" {{ request()->jenis == 'perguruan_tinggi' ? 'selected' : '' }}>Perguruan Tinggi</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                    </div>
+                </div>
+            </form>
+        </div>
     <!-- Tombol untuk Export ke Excel dan PDF -->
     <div class="mb-3">
         <a href="" class="btn btn-success">Export Excel</a>

@@ -40,7 +40,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/uplm/{id}', [UplmController::class, 'showUplm'])->name('uplm.show');
     //filter
     Route::get('/uplm1/filter', [UplmController::class, 'filterUplm1'])->name('uplm1.filter');
-    
+    Route::get('/uplm2/filter', [UplmController::class, 'filterUplm2'])->name('uplm2.filter');
+
     Route::get('/user/create', [AdminController::class, 'createUser'])->name('user.create');
     Route::get('/recap', [AdminController::class, 'recap'])->name('recap');
     Route::get('/notifications', [AdminController::class, 'notifications'])->name('notifications');
