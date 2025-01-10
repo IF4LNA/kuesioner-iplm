@@ -30,7 +30,9 @@ class Perpustakaan extends Model
 
     public function jawaban()
 {
-    return $this->hasMany(Jawaban::class, 'id_jawaban');
+    return $this->hasMany(Jawaban::class, 'id_perpustakaan','id_perpustakaan');
 }
+
+
 }
 

@@ -48,12 +48,11 @@
                         <td>{{ $item->kelurahan->kecamatan->nama_kecamatan ?? '-' }}</td>
                         @foreach ($pertanyaan as $pertanyaanItem)
                             <td>
-                                <!-- Tampilkan jawaban untuk pertanyaan ini jika ada -->
                                 @php
-                                    $jawaban = $item->jawaban->where('id_pertanyaan', $pertanyaanItem->id)->first();
+                                    // Ambil jawaban yang sesuai dengan id_pertanyaan dan id_perpustakaan saat ini
+                                    $jawaban = $item->jawaban->firstWhere('id_pertanyaan', $pertanyaanItem->id_pertanyaan);
                                 @endphp
-                                <!-- Tampilkan jawaban jika ada -->
-                                {{ $jawaban->jawaban ?? '-' }} 
+                                {{ $jawaban ? $jawaban->jawaban : '-' }}
                             </td>
                         @endforeach
                         <td>

@@ -64,15 +64,18 @@
                         <td>{{ $item->kelurahan->nama_kelurahan ?? '-' }}</td>
                         <td>{{ $item->kelurahan->kecamatan->nama_kecamatan ?? '-' }}</td>
                         @foreach ($pertanyaan as $pertanyaanItem)
-                            <td>
-                                <!-- Tampilkan jawaban untuk pertanyaan ini jika ada -->
-                                @php
-                                    $jawaban = $item->jawaban->where('id_pertanyaan', $pertanyaanItem->id)->first();
-                                @endphp
-                                <!-- Tampilkan jawaban jika ada -->
-                                {{ $jawaban->jawaban ?? '-' }} 
-                            </td>
-                        @endforeach
+                        <td>
+                            <!-- Tampilkan jawaban untuk pertanyaan ini jika ada -->
+                            @foreach ($data as $item)
+                                @foreach ($item->jawaban as $jawaban)
+                                    @if ($jawaban->id_pertanyaan == $pertanyaanItem->id_pertanyaan)
+                                        <p>{{ $jawaban->jawaban }}</p>
+                                    @endif
+                                @endforeach
+                            @endforeach
+                        </td>
+                    @endforeach
+                    
                         <td>
                             <!-- Tombol untuk Edit, Delete -->
                             <a href="" class="btn btn-warning btn-sm">Edit</a>

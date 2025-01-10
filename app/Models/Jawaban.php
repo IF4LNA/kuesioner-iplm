@@ -25,5 +25,14 @@ class Jawaban extends Model
         // Relasi many-to-one ke model User
         return $this->belongsTo(User::class, 'id_akun', 'id');
     }
+
+    public function perpustakaan()
+    {
+        return $this->belongsTo(Perpustakaan::class, 'id_perpustakaan', 'id_perpustakaan');
+    }
+    
+
+
+
 }
 
