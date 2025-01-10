@@ -23,7 +23,7 @@ class UplmController extends Controller
             case 2:
             // Logika untuk UPLM 2
             $data = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan'])->get();
-            $jawaban = Jawaban::with(['pertanyaan','perpustakaan']) // Eager load relasi pertanyaan dan perpustakaan
+            $jawaban = Jawaban::with(['pertanyaan']) // Eager load relasi pertanyaan dan perpustakaan
                 ->get();
 
             // Mengambil pertanyaan untuk kategori UPLM 2
@@ -33,9 +33,6 @@ class UplmController extends Controller
                 // Logika untuk UPLM 3
                 $data = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan'])->get();
                 $jawaban = Jawaban::with(['pertanyaan']) // Eager load relasi pertanyaan dan perpustakaan
-                    // ->whereHas('pertanyaan', function ($query) {
-                    //     $query->where('kategori', 'UPLM 2');
-                    // })
                     ->get();
     
                 // Mengambil pertanyaan untuk kategori UPLM 2
@@ -45,9 +42,6 @@ class UplmController extends Controller
                 // Logika untuk UPLM 4
                 $data = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan'])->get();
                 $jawaban = Jawaban::with(['pertanyaan']) // Eager load relasi pertanyaan dan perpustakaan
-                    // ->whereHas('pertanyaan', function ($query) {
-                    //     $query->where('kategori', 'UPLM 2');
-                    // })
                     ->get();
     
                 // Mengambil pertanyaan untuk kategori UPLM 2
@@ -57,9 +51,6 @@ class UplmController extends Controller
                 // Logika untuk UPLM 5
                 $data = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan'])->get();
                 $jawaban = Jawaban::with(['pertanyaan']) // Eager load relasi pertanyaan dan perpustakaan
-                    // ->whereHas('pertanyaan', function ($query) {
-                    //     $query->where('kategori', 'UPLM 2');
-                    // })
                     ->get();
     
                 // Mengambil pertanyaan untuk kategori UPLM 2
@@ -69,9 +60,6 @@ class UplmController extends Controller
                 // Logika untuk UPLM 6
                 $data = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan'])->get();
                 $jawaban = Jawaban::with(['pertanyaan']) // Eager load relasi pertanyaan dan perpustakaan
-                    // ->whereHas('pertanyaan', function ($query) {
-                    //     $query->where('kategori', 'UPLM 2');
-                    // })
                     ->get();
     
                 // Mengambil pertanyaan untuk kategori UPLM 2
@@ -81,9 +69,6 @@ class UplmController extends Controller
                 // Logika untuk UPLM 7
                 $data = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan'])->get();
                 $jawaban = Jawaban::with(['pertanyaan']) // Eager load relasi pertanyaan dan perpustakaan
-                    // ->whereHas('pertanyaan', function ($query) {
-                    //     $query->where('kategori', 'UPLM 2');
-                    // })
                     ->get();
     
                 // Mengambil pertanyaan untuk kategori UPLM 2
