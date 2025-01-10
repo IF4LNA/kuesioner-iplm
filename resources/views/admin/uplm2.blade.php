@@ -16,9 +16,8 @@
         </div>
     </div>
 
-    <div class="mt-4">
-        <!-- Tambahkan class table-bordered -->
-        <table class="table table-striped table-bordered" style="width: 150%;">
+    <div class="table-responsive mt-3">
+        <table class="table table-striped table-bordered" style="width: 150%">
             <thead>
                 <tr>
                     <th>#</th>
