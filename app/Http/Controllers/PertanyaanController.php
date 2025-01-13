@@ -17,13 +17,13 @@ class PertanyaanController extends Controller
     {
         $request->validate([
             'teks_pertanyaan' => 'required|string|max:255',
-            'kategori' => 'required|string|max:100',
-            'tahun' => 'required|integer',
+            'kategori' => 'required|string|in:UPLM 1,UPLM 2,UPLM 3,UPLM 4,UPLM 5,UPLM 6,UPLM 7',
+            'tahun' => 'required|integer|min:1900|max:' . date('Y'),
         ]);
 
         Pertanyaan::create($request->all());
 
-        return redirect()->route('questions.create')->with('success', 'Pertanyaan berhasil dibuat!');
+        return redirect()->back()->with('success', 'Pertanyaan berhasil dibuat!');
     }
 
     public function destroy($id)
@@ -31,6 +31,6 @@ class PertanyaanController extends Controller
         $question = Pertanyaan::findOrFail($id);
         $question->delete();
 
-        return redirect()->route('questions.create')->with('success', 'Pertanyaan berhasil dihapus!');
+        return redirect()->back()->with('success', 'Pertanyaan berhasil dihapus!');
     }
 }
