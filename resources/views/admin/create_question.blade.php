@@ -19,7 +19,16 @@
             </div>
             <div class="mb-3">
                 <label for="kategori" class="form-label">Kategori</label>
-                <input type="text" name="kategori" id="kategori" class="form-control" required>
+                <select name="kategori" id="kategori" class="form-control" required>
+                    <option value="" disabled selected>Pilih Kategori</option>
+                    <option value="UPLM 1">UPLM 1</option>
+                    <option value="UPLM 2">UPLM 2</option>
+                    <option value="UPLM 3">UPLM 3</option>
+                    <option value="UPLM 4">UPLM 4</option>
+                    <option value="UPLM 5">UPLM 5</option>
+                    <option value="UPLM 6">UPLM 6</option>
+                    <option value="UPLM 7">UPLM 7</option>
+                </select>
             </div>
             <div class="mb-3">
                 <label for="tahun" class="form-label">Tahun</label>
