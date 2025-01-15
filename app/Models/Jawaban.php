@@ -31,8 +31,9 @@ class Jawaban extends Model
         return $this->belongsTo(Perpustakaan::class, 'id_perpustakaan', 'id_perpustakaan');
     }
     
-
-
-
+    public function laporans()
+    {
+        return $this->hasMany(Laporan::class, 'id_jawaban');
+    }
 }
 

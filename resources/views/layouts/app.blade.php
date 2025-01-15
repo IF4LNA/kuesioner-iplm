@@ -200,13 +200,13 @@
                     <ul class="collapse list-unstyled" id="uplmSubmenu">
                         @for ($i = 1; $i <= 7; $i++)
                             <li class="nav-item">
-                                <a class="nav-link ms-3 {{ request()->is('uplm/' . $i) ? 'active' : '' }}"
-                                    href="{{ route('uplm.show', $i) }}">
+                                <a class="nav-link ms-3 {{ request()->is('uplm/' . $i) || request()->is('uplm/' . $i . '/filter') ? 'active' : '' }}"
+                                   href="{{ route('uplm', $i) }}">
                                     UPLM {{ $i }}
                                 </a>
                             </li>
                         @endfor
-                    </ul>
+                    </ul>                                        
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('user.create') ? 'active' : '' }}"
@@ -233,8 +233,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('activity-logs') ? 'active' : '' }}"
-                        href="{{ route('admin.activity-logs') }}">
+                    <a class="nav-link {{ request()->url() == route('admin.activity-logs') ? 'active' : '' }}" href="{{ route('admin.activity-logs') }}">
                         <i class="fas fa-clipboard-list"></i> Activity Logs
                     </a>
                 </li>

@@ -9,12 +9,19 @@ use Illuminate\Database\Eloquent\Model;
 class Perpustakaan extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'perpustakaans';
     protected $primaryKey = 'id_perpustakaan'; // Menentukan primary key yang benar
 
     protected $fillable = [
-        'nama_perpustakaan', 'npp', 'jenis', 'id_kelurahan', 'alamat', 'kontak', 'foto', 'id_akun'
+        'nama_perpustakaan',
+        'npp',
+        'jenis',
+        'id_kelurahan',
+        'alamat',
+        'kontak',
+        'foto',
+        'id_akun'
     ];
 
     // Relasi dengan tabel users
@@ -29,10 +36,12 @@ class Perpustakaan extends Model
     }
 
     public function jawaban()
-{
-    return $this->hasMany(Jawaban::class, 'id_perpustakaan','id_perpustakaan');
+    {
+        return $this->hasMany(Jawaban::class, 'id_perpustakaan', 'id_perpustakaan');
+    }
+
+    public function laporan()
+    {
+        return $this->hasMany(Laporan::class, 'id_perpustakaan');
+    }
 }
-
-
-}
-

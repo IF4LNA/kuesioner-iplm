@@ -18,6 +18,11 @@ class Pertanyaan extends Model
         // Relasi one-to-many ke model Jawaban
         return $this->hasMany(Jawaban::class, 'id_pertanyaan', 'id_pertanyaan');
     }
+
+    public function laporans()
+    {
+        return $this->hasMany(Laporan::class, 'id_pertanyaan');
+    }
 }
 
 
