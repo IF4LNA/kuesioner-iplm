@@ -215,6 +215,11 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('questions.create') ? 'active' : '' }}" href="{{ route('questions.create') }}">
+                        <i class="fas fa-question-circle"></i> Buat Pertanyaan
+                    </a>
+                </li>                
+                <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('recap') ? 'active' : '' }}" href="{{ route('recap') }}">
                         <i class="fas fa-clipboard-list"></i> Rekapitulasi
                     </a>

@@ -7,32 +7,36 @@
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
-
-    <!-- Form Filter -->
-    <div class="mb-4">
-        <form action="{{ route('uplm', $id) }}" method="GET">
-            <div class="row">
-                <div class="col-md-4">
-                    <select name="jenis" id="jenis" class="form-select form-select-md" aria-label="Pilih Jenis Perpustakaan">
-                        <option value="">Pilih Jenis Perpustakaan</option>
-                        <option value="umum" {{ request()->jenis == 'umum' ? 'selected' : '' }}>Umum</option>
-                        <option value="sd" {{ request()->jenis == 'sd' ? 'selected' : '' }}>SD</option>
-                        <option value="smp" {{ request()->jenis == 'smp' ? 'selected' : '' }}>SMP</option>
-                        <option value="mts" {{ request()->jenis == 'mts' ? 'selected' : '' }}>MTS</option>
-                        <option value="sma" {{ request()->jenis == 'sma' ? 'selected' : '' }}>SMA</option>
-                        <option value="smk" {{ request()->jenis == 'smk' ? 'selected' : '' }}>SMK</option>
-                        <option value="ma" {{ request()->jenis == 'ma' ? 'selected' : '' }}>MA</option>
-                        <option value="khusus" {{ request()->jenis == 'khusus' ? 'selected' : '' }}>Khusus</option>
-                        <option value="perguruan_tinggi" {{ request()->jenis == 'perguruan_tinggi' ? 'selected' : '' }}>Perguruan Tinggi</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-outline-primary btn-md ms-2">
-                        <i class="fas fa-filter"></i> Filter
-                    </button>
-                </div>
+ <!-- Form Filter -->
+ <div class="mb-3">
+    <form action="{{ route('uplm1.filter') }}" method="GET">
+        <div class="row">
+            <div class="col-md-4">
+                <select name="jenis" id="jenis" class="form-select">
+                    <option value="">Pilih Jenis Perpustakaan</option>
+                    <option value="umum" {{ request()->jenis == 'umum' ? 'selected' : '' }}>Umum</option>
+                    <option value="sd" {{ request()->jenis == 'sd' ? 'selected' : '' }}>SD</option>
+                    <option value="smp" {{ request()->jenis == 'smp' ? 'selected' : '' }}>SMP</option>
+                    <option value="mts" {{ request()->jenis == 'mts' ? 'selected' : '' }}>MTS</option>
+                    <option value="sma" {{ request()->jenis == 'sma' ? 'selected' : '' }}>SMA</option>
+                    <option value="smk" {{ request()->jenis == 'smk' ? 'selected' : '' }}>SMK</option>
+                    <option value="ma" {{ request()->jenis == 'ma' ? 'selected' : '' }}>MA</option>
+                    <option value="khusus" {{ request()->jenis == 'khusus' ? 'selected' : '' }}>Khusus</option>
+                    <option value="perguruan_tinggi" {{ request()->jenis == 'perguruan_tinggi' ? 'selected' : '' }}>Perguruan Tinggi</option>
+                </select>
             </div>
-        </form>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+        </div>
+    </form>
+</div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <!-- Tombol Export -->
+        <div>
+            <a href="#" class="btn btn-success me-2">Export Excel</a>
+            <a href="#" class="btn btn-danger">Export PDF</a>
+        </div>
     </div>
 
     <div class="table-responsive mt-3">
