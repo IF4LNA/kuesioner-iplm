@@ -55,8 +55,11 @@ class PustakawanController extends Controller
                 'namaPerpustakaan' => $perpustakaan->nama_perpustakaan,
                 'jenisPerpustakaan' => $perpustakaan->jenis,
                 'kotas' => $kotas,
+                'alamatPustakawan' => $perpustakaan->alamat,
+                'nppPustakawan' => $perpustakaan->npp,
+                'kontakPustakawan' => $perpustakaan->kontak,
             ]);
-        }
+        }   
 
         return redirect()->route('home')->with('error', 'Perpustakaan tidak ditemukan untuk akun ini');
     }

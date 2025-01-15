@@ -143,20 +143,20 @@
 
                 <div class="mb-3">
                     <label for="alamat" class="form-label">Detail alamat:</label>
-                    <input type="text" id="alamat" name="alamat" class="form-control" required>
+                    <input type="text" id="alamat" name="alamat" class="form-control" value="{{ $alamatPustakawan }}" required>
                 </div>
 
 
                 <!-- NPP -->
                 <div class="mb-3">
                     <label for="npp" class="form-label">NPP:</label>
-                    <input type="text" id="npp" name="npp" class="form-control" required>
+                    <input type="text" id="npp" name="npp" class="form-control" value="{{ $nppPustakawan }}" required>
                 </div>
 
                 <!-- No Telpon -->
                 <div class="mb-3">
                     <label for="kontak" class="form-label">No Telepon:</label>
-                    <input type="text" id="kontak" name="kontak" class="form-control" required>
+                    <input type="text" id="kontak" name="kontak" class="form-control" value="{{ $kontakPustakawan }}" required>
                 </div>
 
                 <!-- Upload Foto -->
