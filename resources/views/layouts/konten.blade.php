@@ -26,9 +26,10 @@
     
         <!-- Gambar utama -->
         <img src="{{ asset('images/img1.png') }}" 
-             class="img-fluid img-front" 
-             alt="gambar utama" 
-             style="position: relative; z-index: 2; width: 500px;">
+     class="img-fluid img-front" 
+     alt="gambar utama" 
+     style="position: relative; z-index: 2; width: 500px; height: auto;">
+
     </div>
 </div>
 

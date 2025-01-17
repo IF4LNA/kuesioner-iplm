@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>@yield('title', 'Halaman awal')</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            margin-top: 130px;
+            margin-top: 100px;
         }
 
         .navbar {
@@ -20,9 +20,9 @@
         .navbar-brand img {
             height: 70px;
             width: auto;
+            padding-left: 50px;
         }
 
-        /* Menghilangkan garis bawah default dan menambahkan efek hover dengan animasi */
         .navbar-nav .nav-link {
             color: black;
             text-decoration: none;
@@ -65,7 +65,6 @@
             color: blue !important;
         }
 
-
         .navbar-nav .nav-link.active {
             color: blue !important;
         }
@@ -88,7 +87,7 @@
             margin-top: 30px;
             padding: 15px 30px;
             font-size: 18px;
-            width: 30%;
+            width: 50%;
             border-radius: 10px;
         }
 
@@ -105,6 +104,88 @@
         .btn-utama:hover {
             background-color: blue;
             color: white;
+        }
+
+        /* Responsif untuk tampilan mobile */
+        @media (max-width: 992px) {
+            .navbar-collapse {
+                display: flex;
+                flex-direction: column;
+                /* Menyusun item secara vertikal */
+                align-items: flex-start;
+                /* Menyusun item ke kiri dengan sedikit jarak */
+                width: 100%;
+                /* Memastikan navbar mengisi lebar penuh */
+            }
+
+            .navbar-brand img {
+                height: 70px;
+                width: auto;
+                padding-left: 10px;
+                /* Atur padding-left hanya di layar besar */
+            }
+
+            .navbar-nav {
+                margin-top: 10px;
+                padding-left: 0;
+                padding-right: 0;
+                width: 100%;
+            }
+
+            .navbar-nav .nav-item {
+                text-align: left;
+                /* Menyelaraskan teks ke kiri */
+                width: 100%;
+                /* Membuat setiap item menu mengisi lebar penuh */
+                margin-left: 20px;
+                /* Memberikan sedikit jarak kiri */
+            }
+
+            .navbar-nav .nav-link {
+                text-align: left;
+                padding-left: 0;
+                padding-right: 0;
+                width: 50%;
+            }
+
+            .btn-size {
+                width: 70%;
+                margin-bottom: 100px;
+            }
+
+            .btn-utama {
+                width: 100%;
+                /* Tombol login mengisi lebar penuh */
+                font-size: 14px;
+                margin-top: 10px;
+            }
+            .navbar-toggler {
+                border: none;
+                /* Menghilangkan border jika ada */
+            }
+        }
+
+        /* Responsif untuk tampilan mobile kecil */
+        @media (max-width: 576px) {
+            .navbar-brand img {
+                height: 60px;
+                /* Menyesuaikan ukuran logo agar pas di tampilan mobile */
+                width: auto;
+                /* Menjaga proporsi logo agar tidak pecah */
+            }
+
+            .btn-utama {
+                width: 50%;
+                font-size: 14px;
+            }
+
+            .judul-konten {
+                padding-top: 40px;
+            }
+
+            .paragraf {
+                padding-top: 20px;
+            }
         }
     </style>
 </head>
@@ -164,7 +245,7 @@
     </footer>
 
     <!-- Script untuk mengatur kelas active pada Home saat scroll -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Fungsi untuk menambahkan kelas aktif pada elemen navbar
         function setActiveNav() {

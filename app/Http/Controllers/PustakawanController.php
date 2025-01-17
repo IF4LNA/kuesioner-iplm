@@ -110,7 +110,7 @@ class PustakawanController extends Controller
             'alamat' => 'required|string|max:50',
             'npp' => 'required|string|max:50',
             'kontak' => 'nullable|string|max:50|regex:/^[0-9+\-\s]+$/',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:6144',
             'desa_kelurahan' => 'required|integer|exists:kelurahans,id',
         ]);
 

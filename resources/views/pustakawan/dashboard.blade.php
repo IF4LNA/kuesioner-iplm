@@ -11,62 +11,94 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <!-- Custom CSS for Navbar -->
     <style>
-
         body {
             background-color: #F6EEE1;
         }
+
         /* Navbar custom styles */
         .navbar-custom {
-            background-color: #003366; /* Warna biru tua */
+            background-color: #003366;
+            /* Warna biru tua */
         }
 
         .navbar-custom .navbar-brand,
         .navbar-custom .navbar-nav .nav-link {
-            color: #ffffff; /* Warna teks putih */
+            color: #ffffff;
+            /* Warna teks putih */
+            padding-left: 30px;
         }
 
         /* Warna teks navbar saat hover menjadi kuning */
         .navbar-custom .navbar-nav .nav-link:hover {
-            color: #FFD700; /* Warna kuning saat hover */
+            color: #FFD700;
+            /* Warna kuning saat hover */
         }
 
         /* Mengubah warna ikon hamburger menjadi putih */
         .navbar-toggler-icon {
-            filter: invert(1); /* Membalikkan warna ikon menjadi putih */
+            filter: invert(1);
+            /* Membalikkan warna ikon menjadi putih */
         }
 
         /* Mengubah posisi tombol navbar-toggler */
         .navbar-toggler {
-            margin-left: auto; /* Pindahkan tombol ke kanan */
+            margin-left: auto;
+            /* Pindahkan tombol ke kanan */
         }
 
         /* Geser navlist sedikit ke kanan */
         .navbar-nav {
-            margin-left: 45px; /* Geser ke kanan dengan margin */
+            margin-left: 10;
+            /* Hilangkan margin kiri */
+        }
+
+        /* Menempatkan elemen Profil dan Isi Kuesioner ke kiri */
+        .navbar-nav .nav-item {
+            margin-left: 10;
+            /* Atur margin kiri menjadi 0 */
         }
 
         /* Sesuaikan margin pada ukuran layar kecil */
-        @media (max-width: 991px) {
+        @media (max-width: 992px) {
             .navbar-nav {
-                margin-left: 10px; /* Hilangkan margin pada layar lebih kecil */
+                margin-left: 0;
+                /* Hilangkan margin pada layar lebih kecil */
             }
         }
 
         /* Custom style untuk dropdown */
         .navbar-nav .dropdown-menu {
-            background-color: #174166; /* Warna latar belakang dropdown */
-            border: none; /* Hilangkan border default */
-            box-shadow: none; /* Hilangkan bayangan default */
-            transition: opacity 0.3s ease-in-out; /* Animasi transisi */
+            background-color: #174166;
+            /* Warna latar belakang dropdown */
+            border: none;
+            /* Hilangkan border default */
+            box-shadow: none;
+            /* Hilangkan bayangan default */
+            transition: opacity 0.3s ease-in-out;
+            /* Animasi transisi */
         }
 
+        .navbar-custom .navbar-brand {
+            margin-left: 0;
+            /* Pastikan logo berada di kiri */
+            padding-left: 0;
+        }
+
+        /* Mengubah ukuran logo jika diperlukan pada layar kecil */
+        .navbar-custom .navbar-brand img {
+            width: 70px;
+            /* Sesuaikan ukuran logo pada layar kecil */
+        }
         .navbar-nav .dropdown-item {
-            color: #ffffff; /* Warna teks item dropdown */
+            color: #ffffff;
+            /* Warna teks item dropdown */
         }
 
         .navbar-nav .dropdown-item:hover {
-            background-color: #002244; /* Warna latar belakang item dropdown saat hover */
-            color: #ffffff; /* Warna teks tetap putih saat hover */
+            background-color: #002244;
+            /* Warna latar belakang item dropdown saat hover */
+            color: #ffffff;
+            /* Warna teks tetap putih saat hover */
         }
 
         /* Mengubah posisi dropdown agar lebih halus saat terbuka */
@@ -75,21 +107,29 @@
         }
 
         /* Custom style untuk konten */
+        /* Custom style untuk konten */
         .welcome-box {
-            background-color: #858380; /* Warna abu-abu */
+            background-color: #858380;
+            /* Warna abu-abu */
             color: rgb(255, 255, 255);
             padding: 20px;
-            border-radius: 8px; /* Membuat sudut kotak lebih melengkung */
+            padding-left: 30px;
+            /* Menambahkan padding kiri untuk memberi ruang */
+            border-radius: 8px;
+            /* Membuat sudut kotak lebih melengkung */
             display: flex;
             align-items: center;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Bayangan untuk kesan 3D */
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            /* Bayangan untuk kesan 3D */
         }
 
-        /* Style untuk ikon pustakawan */
         .welcome-box .icon {
-            font-size: 2rem; /* Ukuran ikon */
-            margin-right: 15px; /* Jarak antara ikon dan teks */
-            color: #FFEE1B; /* Warna ikon biru */
+            font-size: 2rem;
+            /* Ukuran ikon */
+            margin-right: 20px;
+            /* Jarak antara ikon dan teks */
+            color: #FFEE1B;
+            /* Warna ikon biru */
         }
     </style>
 </head>
