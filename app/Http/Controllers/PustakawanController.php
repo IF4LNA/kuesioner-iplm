@@ -65,28 +65,33 @@ class PustakawanController extends Controller
     }
 
     public function submit(Request $request)
-    {
-        // Validasi input jawaban
-        $request->validate([
-            'jawaban' => 'required|array',  // pastikan jawaban adalah array
-            'jawaban.*' => 'required|string|max:255',  // pastikan setiap jawaban adalah string yang valid
-            'tahun' => 'required|integer',
-        ]);
+{
+    // Validasi input jawaban
+    $request->validate([
+        'jawaban' => 'required|array',  // pastikan jawaban adalah array
+        'jawaban.*' => 'required|string|max:255',  // pastikan setiap jawaban adalah string yang valid
+        'tahun' => 'required|integer',
+    ]);
 
-        // Dapatkan id_perpustakaan dari user yang login
-        $idPerpustakaan = auth()->user()->perpustakaan->id_perpustakaan;  // Asumsi relasi sudah dibuat di User model
+    // Dapatkan id_perpustakaan dari user yang login
+    $idPerpustakaan = auth()->user()->perpustakaan->id_perpustakaan;  // Asumsi relasi sudah dibuat di User model
 
-        // Loop untuk menyimpan jawaban
-        foreach ($request->jawaban as $idPertanyaan => $jawabanText) {
-            // Simpan jawaban ke dalam database
-            Jawaban::create([
+    // Loop untuk menyimpan atau memperbarui jawaban
+    foreach ($request->jawaban as $idPertanyaan => $jawabanText) {
+        // Simpan atau perbarui jawaban ke dalam database
+        Jawaban::updateOrCreate(
+            [
                 'id_pertanyaan' => $idPertanyaan,
-                'jawaban' => $jawabanText,
+                'id_perpustakaan' => $idPerpustakaan,
                 'tahun' => $request->tahun,
+            ],
+            [
+                'jawaban' => $jawabanText,
                 'user_id' => auth()->user()->id,  // menambahkan ID user untuk identifikasi siapa yang mengirim
-                'id_perpustakaan' => $idPerpustakaan,  // Menambahkan id_perpustakaan yang sesuai
-            ]);
-        }
+            ]
+        );
+    }
+
 
         // Redirect ke halaman jawaban tersimpan dengan pesan sukses
         return redirect()->route('pustakawan.jawabanTersimpan')->with('success', 'Jawaban berhasil disimpan!');
