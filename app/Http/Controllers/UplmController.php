@@ -14,6 +14,7 @@ class UplmController extends Controller
     {
         $viewName = 'admin.uplm' . $id;
         $data = collect(); // Default data kosong
+        $data = Perpustakaan::with('jenis')->get();
 
         switch ($id) {
             case 1:

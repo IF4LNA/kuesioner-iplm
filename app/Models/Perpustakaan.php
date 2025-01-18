@@ -14,20 +14,18 @@ class Perpustakaan extends Model
     protected $primaryKey = 'id_perpustakaan'; // Menentukan primary key yang benar
 
     protected $fillable = [
-        'nama_perpustakaan',
-        'npp',
-        'jenis',
-        'id_kelurahan',
-        'alamat',
-        'kontak',
-        'foto',
-        'id_akun'
+        'nama_perpustakaan', 'npp', 'id_jenis', 'id_kelurahan', 'alamat', 'kontak', 'foto', 'id_akun'
     ];
 
     // Relasi dengan tabel users
     public function user()
     {
         return $this->belongsTo(User::class, 'id_akun');
+    }
+
+    public function jenis()
+    {
+        return $this->belongsTo(JenisPerpustakaan::class, 'id_jenis');
     }
 
     public function kelurahan()

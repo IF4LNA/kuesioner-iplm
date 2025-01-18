@@ -113,7 +113,6 @@
                         value="{{ $jenisPerpustakaan }}" readonly>
                 </div>
 
-
                 <!-- Kota -->
                 <div class="mb-3">
                     <label for="kota" class="form-label">Kota:</label>

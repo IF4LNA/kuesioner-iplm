@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('id_perpustakaan'); // Primary key
             $table->string('nama_perpustakaan');
             $table->string('npp')->nullable();
-            $table->enum('jenis', ['umum', 'sd', 'smp', 'mts', 'sma', 'smk', 'ma', 'khusus', 'perguruan_tinggi']);
+            $table->unsignedBigInteger('id_jenis');
             $table->unsignedBigInteger('id_kelurahan')->nullable()->default(null); // Foreign key ke kelurahans
             $table->string('alamat')->nullable();
             $table->string('kontak')->nullable();
@@ -23,7 +23,8 @@ return new class extends Migration
             $table->unsignedBigInteger('id_akun'); // Foreign key ke users
             $table->timestamps();
 
-            // Foreign key constraints
+            // Foreign key constraint
+            $table->foreign('id_jenis')->references('id_jenis')->on('jenis_perpustakaans')->onDelete('cascade');
             $table->foreign('id_kelurahan')->references('id')->on('kelurahans')->onDelete('cascade');
             $table->foreign('id_akun')->references('id')->on('users')->onDelete('cascade');
         });

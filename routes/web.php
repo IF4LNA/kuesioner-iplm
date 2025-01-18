@@ -51,6 +51,9 @@ Route::middleware(['auth'])->group(function () {
     // route buat akun
     Route::get('/admin/create-account', [AdminController::class, 'createAccountForm'])->name('admin.create-account');
     Route::post('/admin/create-account', [AdminController::class, 'storeAccount'])->name('admin.store-account');
+    // web.php (routes)
+    
+    Route::get('/getSubjenis/{jenis}', [AdminController::class, 'getSubjenis']);
 
     //route rekap
     Route::get('/recap', [AdminController::class, 'recap'])->name('recap');
@@ -60,7 +63,7 @@ Route::middleware(['auth'])->group(function () {
     //route aktivitas admin
     Route::get('activity-logs', [AdminController::class, 'showActivityLogs'])->name('admin.activity-logs');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    
+
     //route edit pertanyaan
     Route::get('/questions/{id}/edit', [PertanyaanController::class, 'edit'])->name('questions.edit');
     Route::put('/questions/{id}', [PertanyaanController::class, 'update'])->name('questions.update');

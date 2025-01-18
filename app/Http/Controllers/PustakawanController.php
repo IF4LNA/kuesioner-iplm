@@ -51,9 +51,12 @@ class PustakawanController extends Controller
         $kotas = Kota::all();
 
         if ($perpustakaan) {
+            // Ambil data jenis perpustakaan menggunakan relasi
+            $jenisPerpustakaan = $perpustakaan->jenis; // Mengakses relasi 'jenis' yang sudah didefinisikan
+    
             return view('pustakawan.kuesioner', [
                 'namaPerpustakaan' => $perpustakaan->nama_perpustakaan,
-                'jenisPerpustakaan' => $perpustakaan->jenis,
+                'jenisPerpustakaan' => $jenisPerpustakaan ? $jenisPerpustakaan->jenis : 'memanggil data jenis',
                 'kotas' => $kotas,
                 'alamatPustakawan' => $perpustakaan->alamat,
                 'nppPustakawan' => $perpustakaan->npp,
@@ -91,6 +94,7 @@ class PustakawanController extends Controller
                 ]
             );
         }
+
         // Redirect ke halaman jawaban tersimpan dengan pesan sukses
         return redirect()->route('pustakawan.jawabanTersimpan')->with('success', 'Jawaban berhasil disimpan!');
     }
