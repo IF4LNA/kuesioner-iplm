@@ -38,7 +38,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::get('/manage-users', [AdminController::class, 'manageUsers'])->name('manage.users');
     // Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
-    
+
     //route uplm 1-7
     Route::get('/uplm/{id}', [UplmController::class, 'showUplm'])->name('uplm.show');
 
@@ -60,6 +60,10 @@ Route::middleware(['auth'])->group(function () {
     //route aktivitas admin
     Route::get('activity-logs', [AdminController::class, 'showActivityLogs'])->name('admin.activity-logs');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    
+    //route edit pertanyaan
+    Route::get('/questions/{id}/edit', [PertanyaanController::class, 'edit'])->name('questions.edit');
+    Route::put('/questions/{id}', [PertanyaanController::class, 'update'])->name('questions.update');
 
     //route membuat dan menghapus pertanyaan
     Route::get('/questions/create', [PertanyaanController::class, 'create'])->name('questions.create');

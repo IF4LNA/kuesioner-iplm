@@ -78,7 +78,8 @@
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                         </form>
-                    </td>
+                        <a href="{{ route('questions.edit', $question->id_pertanyaan) }}" class="btn btn-warning btn-sm">Edit</a>
+                    </td>                    
                 </tr>
             @endforeach
         </tbody>

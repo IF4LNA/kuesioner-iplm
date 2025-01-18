@@ -59,40 +59,38 @@ class PustakawanController extends Controller
                 'nppPustakawan' => $perpustakaan->npp,
                 'kontakPustakawan' => $perpustakaan->kontak,
             ]);
-        }   
+        }
 
         return redirect()->route('home')->with('error', 'Perpustakaan tidak ditemukan untuk akun ini');
     }
 
     public function submit(Request $request)
-{
-    // Validasi input jawaban
-    $request->validate([
-        'jawaban' => 'required|array',  // pastikan jawaban adalah array
-        'jawaban.*' => 'required|string|max:255',  // pastikan setiap jawaban adalah string yang valid
-        'tahun' => 'required|integer',
-    ]);
+    {
+        // Validasi input jawaban
+        $request->validate([
+            'jawaban' => 'required|array',  // pastikan jawaban adalah array
+            'jawaban.*' => 'required|string|max:255',  // pastikan setiap jawaban adalah string yang valid
+            'tahun' => 'required|integer',
+        ]);
 
-    // Dapatkan id_perpustakaan dari user yang login
-    $idPerpustakaan = auth()->user()->perpustakaan->id_perpustakaan;  // Asumsi relasi sudah dibuat di User model
+        // Dapatkan id_perpustakaan dari user yang login
+        $idPerpustakaan = auth()->user()->perpustakaan->id_perpustakaan;  // Asumsi relasi sudah dibuat di User model
 
-    // Loop untuk menyimpan atau memperbarui jawaban
-    foreach ($request->jawaban as $idPertanyaan => $jawabanText) {
-        // Simpan atau perbarui jawaban ke dalam database
-        Jawaban::updateOrCreate(
-            [
-                'id_pertanyaan' => $idPertanyaan,
-                'id_perpustakaan' => $idPerpustakaan,
-                'tahun' => $request->tahun,
-            ],
-            [
-                'jawaban' => $jawabanText,
-                'user_id' => auth()->user()->id,  // menambahkan ID user untuk identifikasi siapa yang mengirim
-            ]
-        );
-    }
-
-
+        // Loop untuk menyimpan atau memperbarui jawaban
+        foreach ($request->jawaban as $idPertanyaan => $jawabanText) {
+            // Simpan atau perbarui jawaban ke dalam database
+            Jawaban::updateOrCreate(
+                [
+                    'id_pertanyaan' => $idPertanyaan,
+                    'id_perpustakaan' => $idPerpustakaan,
+                    'tahun' => $request->tahun,
+                ],
+                [
+                    'jawaban' => $jawabanText,
+                    'user_id' => auth()->user()->id,  // menambahkan ID user untuk identifikasi siapa yang mengirim
+                ]
+            );
+        }
         // Redirect ke halaman jawaban tersimpan dengan pesan sukses
         return redirect()->route('pustakawan.jawabanTersimpan')->with('success', 'Jawaban berhasil disimpan!');
     }
@@ -104,9 +102,6 @@ class PustakawanController extends Controller
         // Menampilkan halaman jawaban tersimpan setelah proses penyimpanan berhasil
         return view('pustakawan.jawabanTersimpan');  // Mengarahkan ke view jawaban_tersimpan
     }
-
-
-
 
     // Mengirim data dari form ke database yang di redirect ke halaman isi kuesioner
     public function store(Request $request)

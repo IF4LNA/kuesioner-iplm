@@ -206,11 +206,12 @@
             }
 
             /* Menambahkan efek hover pada dropdown */
-.form-select option:hover {
-    background-color: #f0f0f0; /* Ubah warna latar belakang saat hover */
-    color: #333; /* Ubah warna teks saat hover */
-}
-
+            .form-select option:hover {
+                background-color: #f0f0f0;
+                /* Ubah warna latar belakang saat hover */
+                color: #333;
+                /* Ubah warna teks saat hover */
+            }
         }
     </style>
 </head>
@@ -254,8 +255,9 @@
                 <!-- Dropdown Tahun -->
                 <div class="col-md-8 mb-3 mb-md-0">
                     <div class="form-floating">
-                        <select name="tahun" class="form-select selectpicker" id="tahunSelect" required data-live-search="true">
-                            <option value="" disabled sele  cted>Pilih Tahun</option>
+                        <select name="tahun" class="form-select selectpicker" id="tahunSelect" required
+                            data-live-search="true">
+                            <option value="" disabled sele cted>Pilih Tahun</option>
                             @foreach ($tahunList as $tahunOption)
                                 <option
                                     value="{{ $tahunOption }}"{{ isset($tahun) && $tahun == $tahunOption ? 'selected' : '' }}>
@@ -313,7 +315,7 @@
                 $('.selectpicker').selectpicker();
             });
         </script>
-        
+
 </body>
 
 </html>
