@@ -44,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
 
     //filter
     Route::get('/uplm/{id}', [UplmController::class, 'filterUplm'])->name('uplm');
+    Route::get('/uplm/{id}/filterByYear', [UplmController::class, 'filterByYear'])->name('uplm.filterByYear');
 
     //buat akun
     Route::get('/user/create', [AdminController::class, 'createUser'])->name('user.create');

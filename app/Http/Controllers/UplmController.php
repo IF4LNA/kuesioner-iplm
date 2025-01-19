@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Perpustakaan;
+use App\Models\JenisPerpustakaan;
 use App\Models\Jawaban;
 use App\Models\Pertanyaan;
+use Illuminate\Support\Facades\DB;
 
 class UplmController extends Controller
 {
@@ -51,41 +53,42 @@ class UplmController extends Controller
     }
 }
 
-    public function filterUplm(Request $request, $id)
-    {
-        // Tentukan nama view berdasarkan ID UPLM
-        $viewName = 'admin.uplm' . $id; // 'admin.uplm1', 'admin.uplm2', ..., 'admin.uplm7'
+public function filterUplm(Request $request, $id)
+{
+    $viewName = 'admin.uplm' . $id;
 
-        // Ambil data perpustakaan yang terkait dengan UPLM ini
-        $query = Perpustakaan::with(['user', 'kelurahan.kecamatan']);
+    // Query untuk data Perpustakaan
+    $query = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan']);
 
-        // Tambahkan filter berdasarkan jenis
-        if ($request->has('jenis') && $request->jenis != '') {
-            $query->where('jenis', $request->jenis);
-        }
-
-        // Ambil data sesuai filter
-        $data = $query->get();
-
-        // Pertanyaan spesifik jika diperlukan (misalnya, hanya untuk UPLM 2)
-        $pertanyaan = null;
-        if ($id == 1) {  // Misalnya, jika ID adalah 2, maka ambil data pertanyaan untuk UPLM 2
-            $pertanyaan = Pertanyaan::where('kategori', 'UPLM 1')->get();
-        } elseif ($id == 2) {
-            $pertanyaan = Pertanyaan::where('kategori', 'UPLM 2')->get();
-        } elseif ($id == 3) {
-            $pertanyaan = Pertanyaan::where('kategori', 'UPLM 3')->get();
-        } elseif ($id == 4) {
-            $pertanyaan = Pertanyaan::where('kategori', 'UPLM 4')->get();
-        } elseif ($id == 5) {
-            $pertanyaan = Pertanyaan::where('kategori', 'UPLM 5')->get();
-        } elseif ($id == 6) {
-            $pertanyaan = Pertanyaan::where('kategori', 'UPLM 6')->get();
-        } elseif ($id == 7) {
-            $pertanyaan = Pertanyaan::where('kategori', 'UPLM 7')->get();
-        }
-
-        // Tampilkan data ke view
-        return view($viewName, compact('data', 'pertanyaan', 'id'));
+    if ($request->has('jenis') && $request->jenis != '') {
+        $query->whereHas('jenis', function ($q) use ($request) {
+            $q->where('jenis', $request->jenis);
+        });
     }
+
+    if ($request->has('subjenis') && $request->subjenis != '') {
+        $query->whereHas('jenis', function ($q) use ($request) {
+            $q->where('subjenis', $request->subjenis);
+        });
+    }
+
+    $data = $query->get();
+
+    // Filter pertanyaan berdasarkan tahun
+    $pertanyaanQuery = Pertanyaan::where('kategori', 'UPLM ' . $id);
+    if ($request->has('tahun') && $request->tahun != '') {
+        $pertanyaanQuery->where('tahun', $request->tahun);
+    }
+    $pertanyaan = $pertanyaanQuery->get();
+
+    // Ambil daftar tahun unik dari kolom 'tahun' di tabel 'pertanyaan'
+    $years = Pertanyaan::select('tahun')->distinct()->pluck('tahun');
+
+    // Ambil daftar jenis dan subjenis dari tabel jenis_perpustakaans
+    $jenisList = JenisPerpustakaan::select('jenis')->distinct()->pluck('jenis');
+    $subjenisList = JenisPerpustakaan::select('subjenis')->distinct()->pluck('subjenis');
+
+    return view($viewName, compact('data', 'pertanyaan', 'id', 'years', 'jenisList', 'subjenisList'));
+}
+
 }
