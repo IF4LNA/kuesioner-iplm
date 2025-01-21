@@ -91,4 +91,30 @@ public function filterUplm(Request $request, $id)
     return view($viewName, compact('data', 'pertanyaan', 'id', 'years', 'jenisList', 'subjenisList'));
 }
 
+public function editJawaban($id, Jawaban $jawaban)
+{
+    return view('admin.jawaban_edit', compact('id', 'jawaban'));
+}
+
+public function updateJawaban(Request $request, $id, Jawaban $jawaban)
+{
+    $request->validate([
+        'jawaban' => 'required|string|max:255',
+    ]);
+
+    $jawaban->update([
+        'jawaban' => $request->jawaban,
+    ]);
+
+    return redirect()->route('uplm', $id)->with('success', 'Jawaban berhasil diperbarui.');
+}
+
+public function deleteJawaban($id, Jawaban $jawaban)
+{
+    $jawaban->delete();
+    return redirect()->route('uplm', $id)->with('success', 'Jawaban berhasil dihapus.');
+}
+
+
+
 }

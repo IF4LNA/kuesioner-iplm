@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container mt-4">
-        <h3 class="p-1">UPLM 1 Pemerataan Layanan Perpustakaan</h3>
+<div class="container mt-4">
+    <h3 class="p-1">UPLM 1 Pemerataan Layanan Perpustakaan</h3>
 
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
@@ -71,67 +71,64 @@
             </div>
         </div>
 
-        <!-- Tabel Data -->
-        <div class="table-responsive mt-3">
-            <table class="table table-striped table-bordered" style="width: 150%" id="dataTable">
-                <thead>
+    <!-- Tabel Data -->
+    <div class="table-responsive mt-3">
+        <table class="table table-striped table-bordered" style="width: 150%">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Tahun</th>
+                    <th>Nama Perpustakaan</th>
+                    <th>NPP</th>
+                    <th>Jenis Perpustakaan</th>
+                    <th>Sub Jenis Perpustakaan</th>
+                    <th>Alamat</th>
+                    <th>Kelurahan</th>
+                    <th>Kecamatan</th>
+                    @foreach ($pertanyaan as $pertanyaanItem)
+                        <th>{{ $pertanyaanItem->teks_pertanyaan }}</th>
+                    @endforeach
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($data as $index => $item)
                     <tr>
-                        <th>#</th>
-                        <th data-sortable="true">Tahun <i class="fas fa-sort"></i></th>
-                        <th data-sortable="true">Nama Perpustakaan <i class="fas fa-sort"></i></th>
-                        <th>NPP</th>
-                        <th data-sortable="true">Jenis Perpustakaan <i class="fas fa-sort"></i></th>
-                        <th>Sub Jenis Perpustakaan</th>
-                        <th>Alamat</th>
-                        <th>Kelurahan</th>
-                        <th>Kecamatan</th>
+                        <td>{{ $index + 1 }}</td>
+                        <td>{{ $item->created_at->format('Y') }}</td>
+                        <td>{{ $item->nama_perpustakaan ?? '-' }}</td>
+                        <td>{{ $item->npp ?? '-' }}</td>
+                        <td>{{ $item->jenis->jenis ?? '-' }}</td>
+                        <td>{{ $item->jenis->subjenis ?? '-' }}</td>
+                        <td>{{ $item->alamat ?? '-' }}</td>
+                        <td>{{ $item->kelurahan->nama_kelurahan ?? '-' }}</td>
+                        <td>{{ $item->kelurahan->kecamatan->nama_kecamatan ?? '-' }}</td>
                         @foreach ($pertanyaan as $pertanyaanItem)
-                            <th>{{ $pertanyaanItem->teks_pertanyaan }}</th>
-                        @endforeach
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($data as $index => $item)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>{{ $item->created_at->format('Y') }}</td>
-                            <td>{{ $item->nama_perpustakaan ?? '-' }}</td>
-                            <td>{{ $item->npp ?? '-' }}</td>
-                            <td>{{ $item->jenis->jenis ?? '-' }}</td>
-                            <td>{{ $item->jenis->subjenis ?? '-' }}</td>
-                            <td>{{ $item->alamat ?? '-' }}</td>
-                            <td>{{ $item->kelurahan->nama_kelurahan ?? '-' }}</td>
-                            <td>{{ $item->kelurahan->kecamatan->nama_kecamatan ?? '-' }}</td>
-                            @foreach ($pertanyaan as $pertanyaanItem)
-                                <td>
-                                    @php
-                                        $jawaban = $item->jawaban->firstWhere(
-                                            'id_pertanyaan',
-                                            $pertanyaanItem->id_pertanyaan,
-                                        );
-                                    @endphp
-                                    {{ $jawaban ? $jawaban->jawaban : '-' }}
-                                </td>
-                            @endforeach
                             <td>
-                                <a href="" class="btn btn-warning btn-sm">Edit</a>
-                                <form action="" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                </form>
+                                @php
+                                    $jawaban = $item->jawaban->firstWhere('id_pertanyaan', $pertanyaanItem->id_pertanyaan);
+                                @endphp
+                                {{ $jawaban ? $jawaban->jawaban : '-' }}
                             </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="11" class="text-center">Tidak ada data.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                        @endforeach
+                        <td>
+                            <a href="" class="btn btn-warning btn-sm">Edit</a>
+                            <form action="" method="POST" style="display:inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="11" class="text-center">Tidak ada data.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
+</div>
 
     <script>
         document.getElementById('toggleFilterButton').addEventListener('click', function() {
