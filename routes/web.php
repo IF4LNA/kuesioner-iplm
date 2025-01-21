@@ -42,6 +42,11 @@ Route::middleware(['auth'])->group(function () {
     //route uplm 1-7
     Route::get('/uplm/{id}', [UplmController::class, 'showUplm'])->name('uplm.show');
 
+    //edit uplm
+    Route::get('/uplm/{id}/edit/{perpustakaan}', [UplmController::class, 'editUplm'])->name('uplm.edit');
+Route::post('/uplm/{id}/update/{perpustakaan}', [UplmController::class, 'updateUplm'])->name('uplm.update');
+Route::delete('/uplm/{id}/delete/{perpustakaan}', [UplmController::class, 'deleteUplm'])->name('uplm.delete');
+
     //filter
     Route::get('/uplm/{id}', [UplmController::class, 'filterUplm'])->name('uplm');
     Route::get('/uplm/{id}/filterByYear', [UplmController::class, 'filterByYear'])->name('uplm.filterByYear');

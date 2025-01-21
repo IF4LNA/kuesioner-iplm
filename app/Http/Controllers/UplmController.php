@@ -91,4 +91,41 @@ public function filterUplm(Request $request, $id)
     return view($viewName, compact('data', 'pertanyaan', 'id', 'years', 'jenisList', 'subjenisList'));
 }
 
+public function editUplm($id, Perpustakaan $perpustakaan)
+{
+    $viewName = 'admin.uplm_edit' . $id;
+    $jenisList = JenisPerpustakaan::select('jenis')->distinct()->pluck('jenis');
+    $subjenisList = JenisPerpustakaan::select('subjenis')->distinct()->pluck('subjenis');
+
+    return view($viewName, compact('id', 'perpustakaan', 'jenisList', 'subjenisList'));
+}
+
+public function updateUplm(Request $request, $id, Perpustakaan $perpustakaan)
+{
+    $request->validate([
+        'nama_perpustakaan' => 'required|string|max:255',
+        'npp' => 'nullable|string|max:255',
+        'alamat' => 'required|string|max:255',
+        'jenis' => 'required|string|max:255',
+        'subjenis' => 'nullable|string|max:255',
+    ]);
+
+    $perpustakaan->update([
+        'nama_perpustakaan' => $request->nama_perpustakaan,
+        'npp' => $request->npp,
+        'alamat' => $request->alamat,
+        'jenis_id' => JenisPerpustakaan::where('jenis', $request->jenis)->first()->id ?? null,
+        'subjenis' => $request->subjenis,
+    ]);
+
+    return redirect()->route('uplm', $id)->with('success', 'Data berhasil diperbarui.');
+}
+
+public function deleteUplm($id, Perpustakaan $perpustakaan)
+{
+    $perpustakaan->delete();
+    return redirect()->route('uplm', $id)->with('success', 'Data berhasil dihapus.');
+}
+
+
 }

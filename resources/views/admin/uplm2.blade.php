@@ -111,12 +111,13 @@
                             </td>
                         @endforeach
                         <td>
-                            <a href="" class="btn btn-warning btn-sm">Edit</a>
-                            <form action="" method="POST" style="display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                            </form>
+                        <a href="{{ route('uplm.edit', ['id' => $id, 'perpustakaan' => $item->id_perpustakaan]) }}" class="btn btn-warning btn-sm">Edit</a>
+<form action="{{ route('uplm.delete', ['id' => $id, 'perpustakaan' => $item->id_perpustakaan]) }}" method="POST" style="display:inline;">
+    @csrf
+    @method('DELETE')
+    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
+</form>
+
                         </td>
                     </tr>
                 @empty
