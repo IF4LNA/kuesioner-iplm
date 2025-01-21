@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <h3 class="p-1">UPLM 2 Ketercukupan Koleksi Perpustakaan</h3>
+    <h3 class="p-1">UPLM 5 Perpustakaan ber SNP</h3>
 
     @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -76,8 +76,28 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Tahun</th>
-                    <th>Nama Perpustakaan</th>
+                    <th style="width: 5%;">
+                        <a href="{{ route('uplm', ['id' => $id, 'sortField' => 'created_at', 'sortOrder' => request('sortOrder') === 'asc' ? 'desc' : 'asc']) }}" style="color: black; text-decoration: none;">
+                            Tahun
+                            @if (request('sortField') === 'created_at')
+                                <i class="fas fa-sort-{{ request('sortOrder') === 'asc' ? 'up' : 'down' }}"></i>
+                            @else
+                                <i class="fas fa-sort"></i>
+                            @endif
+                        </a>
+                    </th>
+                    <th>
+                        <a href="{{ route('uplm', ['id' => $id, 'sortField' => 'nama_perpustakaan', 'sortOrder' => request('sortOrder') === 'asc' ? 'desc' : 'asc']) }}" style="color: black; text-decoration: none;">
+                            Nama Perpustakaan
+                            @if (request('sortField') === 'nama_perpustakaan')
+                                <i class="fas fa-sort-{{ request('sortOrder') === 'asc' ? 'up' : 'down' }}"></i>
+                            @else
+                                <i class="fas fa-sort"></i>
+                            @endif
+                        </a>
+                    </th>
+                    
+                    
                     <th>NPP</th>
                     <th>Jenis Perpustakaan</th>
                     <th>Sub Jenis Perpustakaan</th>
@@ -90,6 +110,7 @@
                     <th>Aksi</th>
                 </tr>
             </thead>
+            
             <tbody>
                 @forelse ($data as $index => $item)
                     <tr>
