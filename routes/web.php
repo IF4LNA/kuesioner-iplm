@@ -43,9 +43,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/uplm/{id}', [UplmController::class, 'showUplm'])->name('uplm.show');
 
     //edit uplm
-    Route::get('/uplm/{id}/edit/{perpustakaan}', [UplmController::class, 'editUplm'])->name('uplm.edit');
-Route::post('/uplm/{id}/update/{perpustakaan}', [UplmController::class, 'updateUplm'])->name('uplm.update');
-Route::delete('/uplm/{id}/delete/{perpustakaan}', [UplmController::class, 'deleteUplm'])->name('uplm.delete');
+    Route::get('/uplm/{id}/jawaban/{jawaban}/edit', [UplmController::class, 'editJawaban'])->name('uplm.jawaban.edit');
+Route::put('/uplm/{id}/jawaban/{jawaban}', [UplmController::class, 'updateJawaban'])->name('uplm.jawaban.update');
+Route::delete('/uplm/{id}/jawaban/{jawaban}', [UplmController::class, 'deleteJawaban'])->name('uplm.jawaban.delete');
 
     //filter
     Route::get('/uplm/{id}', [UplmController::class, 'filterUplm'])->name('uplm');

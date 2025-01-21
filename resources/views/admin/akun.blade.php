@@ -34,7 +34,7 @@
                         <option value="umum">Umum</option>
                         <option value="sekolah">Sekolah</option>
                         <option value="khusus">Khusus</option>
-                        <option value="perguruan_tinggi">Perguruan Tinggi</option>
+                        <option value="perguruan tinggi">Perguruan Tinggi</option>
                     </select>
                 </div>
 
@@ -74,7 +74,7 @@
     subjenisFields.style.display = 'none';
 
     // Only show subjenis if 'Umum' or 'Sekolah' is selected
-    if (selectedJenis === 'umum' || selectedJenis === 'sekolah') {
+    if (selectedJenis === 'umum' || selectedJenis === 'sekolah' || selectedJenis === 'perguruan tinggi' || selectedJenis === 'khusus') {
         subjenisFields.style.display = 'block';
 
         // Fetch subjenis data via AJAX based on jenis selected

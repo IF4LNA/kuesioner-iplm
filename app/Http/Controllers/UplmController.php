@@ -91,41 +91,30 @@ public function filterUplm(Request $request, $id)
     return view($viewName, compact('data', 'pertanyaan', 'id', 'years', 'jenisList', 'subjenisList'));
 }
 
-public function editUplm($id, Perpustakaan $perpustakaan)
+public function editJawaban($id, Jawaban $jawaban)
 {
-    $viewName = 'admin.uplm_edit' . $id;
-    $jenisList = JenisPerpustakaan::select('jenis')->distinct()->pluck('jenis');
-    $subjenisList = JenisPerpustakaan::select('subjenis')->distinct()->pluck('subjenis');
-
-    return view($viewName, compact('id', 'perpustakaan', 'jenisList', 'subjenisList'));
+    return view('admin.jawaban_edit', compact('id', 'jawaban'));
 }
 
-public function updateUplm(Request $request, $id, Perpustakaan $perpustakaan)
+public function updateJawaban(Request $request, $id, Jawaban $jawaban)
 {
     $request->validate([
-        'nama_perpustakaan' => 'required|string|max:255',
-        'npp' => 'nullable|string|max:255',
-        'alamat' => 'required|string|max:255',
-        'jenis' => 'required|string|max:255',
-        'subjenis' => 'nullable|string|max:255',
+        'jawaban' => 'required|string|max:255',
     ]);
 
-    $perpustakaan->update([
-        'nama_perpustakaan' => $request->nama_perpustakaan,
-        'npp' => $request->npp,
-        'alamat' => $request->alamat,
-        'jenis_id' => JenisPerpustakaan::where('jenis', $request->jenis)->first()->id ?? null,
-        'subjenis' => $request->subjenis,
+    $jawaban->update([
+        'jawaban' => $request->jawaban,
     ]);
 
-    return redirect()->route('uplm', $id)->with('success', 'Data berhasil diperbarui.');
+    return redirect()->route('uplm', $id)->with('success', 'Jawaban berhasil diperbarui.');
 }
 
-public function deleteUplm($id, Perpustakaan $perpustakaan)
+public function deleteJawaban($id, Jawaban $jawaban)
 {
-    $perpustakaan->delete();
-    return redirect()->route('uplm', $id)->with('success', 'Data berhasil dihapus.');
+    $jawaban->delete();
+    return redirect()->route('uplm', $id)->with('success', 'Jawaban berhasil dihapus.');
 }
+
 
 
 }

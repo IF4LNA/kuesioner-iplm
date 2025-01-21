@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <h3 class="p-1">UPLM 3 Ketercukupan Tenaga Perpustakaan</h3>
+    <h3 class="p-1">UPLM 2 Ketercukupan Koleksi Perpustakaan</h3>
 
     @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -102,20 +102,37 @@
                         <td>{{ $item->alamat ?? '-' }}</td>
                         <td>{{ $item->kelurahan->nama_kelurahan ?? '-' }}</td>
                         <td>{{ $item->kelurahan->kecamatan->nama_kecamatan ?? '-' }}</td>
+                        
                         @foreach ($pertanyaan as $pertanyaanItem)
                             <td>
                                 @php
                                     $jawaban = $item->jawaban->firstWhere('id_pertanyaan', $pertanyaanItem->id_pertanyaan);
                                 @endphp
                                 {{ $jawaban ? $jawaban->jawaban : '-' }}
+                                @if ($jawaban)
+                                    <a href="{{ route('uplm.jawaban.edit', ['id' => $id, 'jawaban' => $jawaban->id_jawaban]) }}" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ route('uplm.jawaban.delete', ['id' => $id, 'jawaban' => $jawaban->id_jawaban]) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus jawaban ini?')">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                @endif
                             </td>
                         @endforeach
                         <td>
-                            <a href="" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
                             <form action="" method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
                             </form>
                         </td>
                     </tr>
