@@ -186,8 +186,8 @@
             <!-- Navigation Menu -->
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-                        href="{{ route('dashboard') }}">
+                    <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
+                        href="{{ route('admin.dashboard') }}">
                         <i class="fas fa-home-alt"></i> Dashboard
                     </a>
                 </li>

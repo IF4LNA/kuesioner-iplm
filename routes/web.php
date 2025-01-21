@@ -35,7 +35,7 @@ Route::middleware('auth')->group(function () {
 
 // route side-bar
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+
     Route::get('/manage-users', [AdminController::class, 'manageUsers'])->name('manage.users');
     // Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
 
@@ -52,8 +52,8 @@ Route::middleware(['auth'])->group(function () {
     // route buat akun
     Route::get('/admin/create-account', [AdminController::class, 'createAccountForm'])->name('admin.create-account');
     Route::post('/admin/create-account', [AdminController::class, 'storeAccount'])->name('admin.store-account');
-    // web.php (routes)
-    
+
+    // route menampilkan data subjenis di form input
     Route::get('/getSubjenis/{jenis}', [AdminController::class, 'getSubjenis']);
 
     //route rekap
