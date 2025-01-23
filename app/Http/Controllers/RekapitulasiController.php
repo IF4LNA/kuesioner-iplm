@@ -4,43 +4,35 @@ namespace App\Http\Controllers;
 
 use App\Models\Jawaban;
 use App\Models\Pertanyaan;
-use Illuminate\Http\Request;
 use App\Models\JenisPerpustakaan;
-use Illuminate\Routing\Controller;
+use Illuminate\Http\Request;
 
 class RekapitulasiController extends Controller
 {
     public function showRekap()
 {
-    // Ambil data subjenis di tabel jenis_perpustakaans
+    // Ambil semua subjenis
     $subjenisList = JenisPerpustakaan::select('subjenis')->distinct()->pluck('subjenis');
 
-    // Ambil data pertanyaan dari database
-    $pertanyaan = Pertanyaan::all();
+    // Ambil semua pertanyaan, dikelompokkan berdasarkan kategori
+    $pertanyaanByKategori = Pertanyaan::all()->groupBy('kategori');
 
-    // Kelompokkan pertanyaan berdasarkan kategori
-    $pertanyaanByKategori = $pertanyaan->groupBy('kategori');
+    // Rekapitulasi jumlah jawaban
+    $rekapData = Jawaban::join('perpustakaans', 'jawabans.id_perpustakaan', '=', 'perpustakaans.id_perpustakaan')
+        ->join('jenis_perpustakaans', 'perpustakaans.id_jenis', '=', 'jenis_perpustakaans.id_jenis')
+        ->selectRaw('jenis_perpustakaans.subjenis, jawabans.id_pertanyaan, SUM(jawabans.jawaban) as total')
+        ->groupBy('jenis_perpustakaans.subjenis', 'jawabans.id_pertanyaan')
+        ->get();
 
-    // Hitung jawaban berdasarkan pertanyaan dan kelompokkan sesuai subjenis
-    $rekapData = [];
-    foreach ($subjenisList as $subjenis) {
-        $rekapData[$subjenis] = [];
-
-        foreach ($pertanyaanByKategori as $kategori => $pertanyaanList) {
-            foreach ($pertanyaanList as $pertanyaan) {
-                // Hitung jumlah jawaban untuk subjenis tertentu
-                $jumlahJawaban = Jawaban::where('id_pertanyaan', $pertanyaan->id_pertanyaan)
-    ->whereHas('perpustakaan.jenis', function ($query) use ($subjenis) {
-        $query->where('subjenis', $subjenis);
-    })
-    ->count();
-
-                // Simpan hasil hitungan ke array
-                $rekapData[$subjenis][$kategori][$pertanyaan->teks_pertanyaan] = $jumlahJawaban;
-            }
-        }
+    // Susun data menjadi array terstruktur
+    $rekapArray = [];
+    foreach ($rekapData as $data) {
+        $rekapArray[$data->subjenis][$data->id_pertanyaan] = $data->total;
     }
 
-    return view('admin.rekapitulasi', compact('subjenisList', 'pertanyaanByKategori', 'rekapData'));
+    // Data untuk Blade
+    return view('admin.rekapitulasi', compact('subjenisList', 'pertanyaanByKategori', 'rekapArray'));
 }
+
 }
+

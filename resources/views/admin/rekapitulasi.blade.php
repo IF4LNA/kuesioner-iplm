@@ -29,14 +29,13 @@
                             <td>{{ $pertanyaan->teks_pertanyaan }}</td>
                             @foreach ($subjenisList as $subjenis)
                                 <td class="text-center">
-                                    {{ $rekapData[$subjenis][$kategori][$pertanyaan->teks_pertanyaan] ?? 0 }}
+                                    {{ $rekapArray[$subjenis][$pertanyaan->id_pertanyaan] ?? 0 }}
                                 </td>
                             @endforeach
                         </tr>
-                        @endforeach
-                    </tr>
+                    @endforeach
                 @endforeach
-            </tbody>                       
+            </tbody>         
         </table>
     </div>
 @endsection
