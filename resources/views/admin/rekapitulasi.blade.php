@@ -23,44 +23,20 @@
             </thead>
             <tbody>
                 @foreach ($pertanyaanByKategori as $kategori => $pertanyaanList)
-                    <!-- Menampilkan kategori hanya sekali -->
                     <tr>
-                        <td rowspan="{{ $pertanyaanList->count() }}">{{ $kategori }}</td> <!-- Menampilkan kategori dan membuatnya rowspan sesuai jumlah pertanyaan -->
-                        <td>{{ $pertanyaanList->first()->teks_pertanyaan }}</td> <!-- Pertanyaan pertama dari kategori ini -->
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <!-- Menampilkan pertanyaan selanjutnya dalam kategori yang sama -->
-                    @foreach ($pertanyaanList->skip(1) as $item) <!-- Skip pertama untuk kategori pertama -->
-                        <tr>
-                            <td>{{ $item->teks_pertanyaan }}</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                        <td rowspan="{{ $pertanyaanList->count() }}">{{ $kategori }}</td>
+                        @foreach ($pertanyaanList as $pertanyaan)
+                            <td>{{ $pertanyaan->teks_pertanyaan }}</td>
+                            @foreach ($subjenisList as $subjenis)
+                                <td class="text-center">
+                                    {{ $rekapData[$subjenis][$kategori][$pertanyaan->teks_pertanyaan] ?? 0 }}
+                                </td>
+                            @endforeach
                         </tr>
-                    @endforeach
+                        @endforeach
+                    </tr>
                 @endforeach
-            </tbody>                        
+            </tbody>                       
         </table>
     </div>
 @endsection
