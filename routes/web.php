@@ -3,12 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\UplmController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LokasiController;
-use App\Http\Controllers\PustakawanController;
 use App\Http\Controllers\KuesionerController;
-use App\Http\Controllers\UplmController;
 use App\Http\Controllers\PertanyaanController;
+use App\Http\Controllers\PustakawanController;
+use App\Http\Controllers\RekapitulasiController;
 
 // Rute login dan logout
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -62,7 +63,8 @@ Route::delete('/uplm/{id}/jawaban/{jawaban}', [UplmController::class, 'deleteJaw
     Route::get('/getSubjenis/{jenis}', [AdminController::class, 'getSubjenis']);
 
     //route rekap
-    Route::get('/recap', [AdminController::class, 'recap'])->name('recap');
+    Route::get('/recap', [RekapitulasiController::class, 'showRekap'])->name('recap');
+
     Route::get('/notifications', [AdminController::class, 'notifications'])->name('notifications');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
 

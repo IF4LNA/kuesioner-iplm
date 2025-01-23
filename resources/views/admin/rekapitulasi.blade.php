@@ -1,4 +1,4 @@
-@extends('layouts.app') <!-- Menyesuaikan dengan layout yang kamu miliki -->
+@extends('layouts.app')
 
 @section('content')
     <div class="container mt-4">
@@ -9,79 +9,58 @@
                     <th colspan="2" class="text-center">Uplm</th>
                     <th colspan="3" class="text-center">Perpustakaan Umum</th>
                     <th colspan="7" class="text-center">Perpustakaan Sekolah</th>
-                    <th rowspan="2" class="text-center">Perguruan Tinggi</th>
-                    <th rowspan="2" class="text-center">Khusus</th>
+                    <th colspan="3" class="text-center">Perguruan Tinggi</th>
+                    <th colspan="2" class="text-center">Khusus</th>
                 </tr>
                 <tr>
                     <th>Uplm</th>
                     <th>Pertanyaan</th>
-                    <th>Kab/Kota</th>
-                    <th>Kecamatan</th>
-                    <th>Desa/Kel</th>
-                    <th>SD</th>
-                    <th>MI</th>
-                    <th>SMP</th>
-                    <th>MTs</th>
-                    <th>SMA</th>
-                    <th>SMK</th>
-                    <th>MA</th>
-                </tr>
+                    <!-- Menggunakan data subjenis untuk menggantikan header kolom -->
+                    @foreach ($subjenisList as $subjenis)
+                        <th>{{ $subjenis }}</th>
+                    @endforeach
+                </tr>                
             </thead>
             <tbody>
-                <!-- Data Dummy 1 -->
-                <tr>
-                    <td>Uplm 1</td>
-                    <td>Jumlah koleksi buku diperpustakaan?</td>
-                    <td>100</td>
-                    <td>50</td>
-                    <td>30</td>
-                    <td>200</td>
-                    <td>150</td>
-                    <td>100</td>
-                    <td>50</td>
-                    <td>250</td>
-                    <td>150</td>
-                    <td>200</td>
-                    <td>100</td>
-                    <td>300</td>
-                </tr>
-                
-                <!-- Data Dummy 2 -->
-                <tr>
-                    <td>Uplm 2</td>
-                    <td>Jumlah koleksi digital?</td>
-                    <td>80</td>
-                    <td>60</td>
-                    <td>180</td>
-                    <td>140</td>
-                    <td>90</td>
-                    <td>70</td>
-                    <td>230</td>
-                    <td>170</td>
-                    <td>210</td>
-                    <td>110</td>
-                    <td>320</td>
-                    <td>40</td>
-                </tr>
-
-                <!-- Data Dummy 3 -->
-                <tr>
-                    <td>Uplm 3</td>
-                    <td>Jumlah tenaga kerja?</td>
-                    <td>90</td>
-                    <td>60</td>
-                    <td>40</td>
-                    <td>210</td>
-                    <td>130</td>
-                    <td>110</td>
-                    <td>60</td>
-                    <td>240</td>
-                    <td>160</td>
-                    <td>190</td>
-                    <td>120</td>
-                    <td>310</td>
-                </tr>
-            </tbody>
+                @foreach ($pertanyaanByKategori as $kategori => $pertanyaanList)
+                    <!-- Menampilkan kategori hanya sekali -->
+                    <tr>
+                        <td rowspan="{{ $pertanyaanList->count() }}">{{ $kategori }}</td> <!-- Menampilkan kategori dan membuatnya rowspan sesuai jumlah pertanyaan -->
+                        <td>{{ $pertanyaanList->first()->teks_pertanyaan }}</td> <!-- Pertanyaan pertama dari kategori ini -->
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <!-- Menampilkan pertanyaan selanjutnya dalam kategori yang sama -->
+                    @foreach ($pertanyaanList->skip(1) as $item) <!-- Skip pertama untuk kategori pertama -->
+                        <tr>
+                            <td>{{ $item->teks_pertanyaan }}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    @endforeach
+                @endforeach
+            </tbody>                        
         </table>
     </div>
 @endsection
