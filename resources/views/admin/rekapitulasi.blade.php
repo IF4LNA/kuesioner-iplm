@@ -3,23 +3,37 @@
 @section('content')
     <div class="container mt-4">
         <h2>Rekapitulasi Laporan</h2>
-        <table class="table table-bordered" style="width: 120%">
+
+        <!-- Form untuk memilih tahun -->
+        <form action="{{ route('rekapitulasi') }}" method="GET" class="mb-3">
+            <label for="tahun">Pilih Tahun:</label>
+            <select name="tahun" id="tahun" class="form-control w-25 d-inline">
+                @foreach ($tahunList as $tahun)
+                    <option value="{{ $tahun }}" {{ $tahun == $tahunTerpilih ? 'selected' : '' }}>{{ $tahun }}</option>
+                @endforeach
+            </select>
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </form>
+
+        <table class="table table-bordered">
             <thead>
+                <!-- Header Jenis Perpustakaan -->
                 <tr>
-                    <th colspan="2" class="text-center">Uplm</th>
-                    <th colspan="3" class="text-center">Perpustakaan Umum</th>
-                    <th colspan="7" class="text-center">Perpustakaan Sekolah</th>
-                    <th colspan="3" class="text-center">Perguruan Tinggi</th>
-                    <th colspan="2" class="text-center">Khusus</th>
-                </tr>
-                <tr>
-                    <th>Uplm</th>
-                    <th>Pertanyaan</th>
-                    <!-- Menggunakan data subjenis untuk menggantikan header kolom -->
-                    @foreach ($subjenisList as $subjenis)
-                        <th>{{ $subjenis }}</th>
+                    <th rowspan="2">Uplm</th>
+                    <th rowspan="2">Pertanyaan</th>
+                    @foreach ($jenisList as $jenis => $subjenisCollection)
+                        <th colspan="{{ $subjenisCollection->count() }}" class="text-center">{{ $jenis }}</th>
                     @endforeach
-                </tr>                
+                </tr>
+
+                <!-- Header Subjenis Perpustakaan -->
+                <tr>
+                    @foreach ($jenisList as $subjenisCollection)
+                        @foreach ($subjenisCollection as $subjenis)
+                            <th>{{ $subjenis->subjenis }}</th>
+                        @endforeach
+                    @endforeach
+                </tr>
             </thead>
             <tbody>
                 @foreach ($pertanyaanByKategori as $kategori => $pertanyaanList)
@@ -27,15 +41,20 @@
                         <td rowspan="{{ $pertanyaanList->count() }}">{{ $kategori }}</td>
                         @foreach ($pertanyaanList as $pertanyaan)
                             <td>{{ $pertanyaan->teks_pertanyaan }}</td>
-                            @foreach ($subjenisList as $subjenis)
-                                <td class="text-center">
-                                    {{ $rekapArray[$subjenis][$pertanyaan->id_pertanyaan] ?? 0 }}
-                                </td>
+                            @foreach ($jenisList as $jenis => $subjenisCollection)
+                                @foreach ($subjenisCollection as $subjenis)
+                                    <td class="text-center">
+                                        @php
+                                            $rekap = $rekapArray[$jenis][$subjenis->subjenis][$pertanyaan->id_pertanyaan] ?? ['total_angka' => 0, 'total_responden' => 0];
+                                            echo $rekap['total_angka'] > 0 ? $rekap['total_angka'] : $rekap['total_responden'];
+                                        @endphp
+                                    </td>
+                                @endforeach
                             @endforeach
                         </tr>
                     @endforeach
                 @endforeach
-            </tbody>         
+            </tbody>
         </table>
     </div>
 @endsection

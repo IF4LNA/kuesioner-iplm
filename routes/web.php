@@ -64,6 +64,7 @@ Route::delete('/uplm/{id}/jawaban/{jawaban}', [UplmController::class, 'deleteJaw
 
     //route rekap
     Route::get('/recap', [RekapitulasiController::class, 'showRekap'])->name('recap');
+    Route::get('/rekapitulasi', [RekapitulasiController::class, 'showRekap'])->name('rekapitulasi');
 
     Route::get('/notifications', [AdminController::class, 'notifications'])->name('notifications');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
