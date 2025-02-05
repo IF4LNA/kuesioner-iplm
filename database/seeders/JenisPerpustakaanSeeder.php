@@ -19,7 +19,7 @@
                 ['jenis' => 'Umum', 'subjenis' => 'Kab/Kota'],
                 ['jenis' => 'Umum', 'subjenis' => 'Kecamatan'],
                 ['jenis' => 'Umum', 'subjenis' => 'Desa/Kel'],
-
+            
                 // Jenis Sekolah
                 ['jenis' => 'Sekolah', 'subjenis' => 'SD'],
                 ['jenis' => 'Sekolah', 'subjenis' => 'MI'],
@@ -28,15 +28,13 @@
                 ['jenis' => 'Sekolah', 'subjenis' => 'SMA'],
                 ['jenis' => 'Sekolah', 'subjenis' => 'SMK'],
                 ['jenis' => 'Sekolah', 'subjenis' => 'MA'],
-
-                // Jenis Perguruan Tinggi
-                ['jenis' => 'Perguruan Tinggi', 'subjenis' => 'Universitas'],
-                ['jenis' => 'Perguruan Tinggi', 'subjenis' => 'Politeknik'],
-                ['jenis' => 'Perguruan Tinggi', 'subjenis' => 'Sekolah Tinggi'],
-
-                // Jenis Khusus
-                ['jenis' => 'Khusus', 'subjenis' => 'Lembaga'],
-            ];
+            
+                // Jenis Perguruan Tinggi tanpa subjenis
+                ['jenis' => 'Perguruan Tinggi', 'subjenis' => null], // atau 'subjenis' => ''
+            
+                // Jenis Khusus tanpa subjenis
+                ['jenis' => 'Khusus', 'subjenis' => null], // atau 'subjenis' => ''
+            ];            
 
             // Menyisipkan data ke tabel jenis_perpustakaans
             DB::table('jenis_perpustakaans')->insert($data);
