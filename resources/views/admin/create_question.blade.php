@@ -63,25 +63,31 @@
                 <th>Kategori</th>
                 <th>Tahun</th>
                 <th>Aksi</th>
-            </tr>
+            </tr>   
         </thead>
         <tbody>
-            @foreach ($questions as $question)
-                <tr>
-                    <td>{{ $question->id_pertanyaan }}</td>
-                    <td>{{ $question->teks_pertanyaan }}</td>
-                    <td>{{ $question->kategori }}</td>
-                    <td>{{ $question->tahun }}</td>
-                    <td>
-                        <form action="{{ route('questions.destroy', $question->id_pertanyaan) }}" method="POST" class="d-inline">
+            @foreach ($questions as $index => $question)
+            <tr>
+                <td>{{ $index + 1 }}</td> <!-- Menampilkan nomor urut, bukan ID asli -->
+                <td>{{ $question->teks_pertanyaan }}</td>
+                <td>{{ $question->kategori }}</td>
+                <td>{{ $question->tahun }}</td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <a href="{{ route('questions.edit', $question->id_pertanyaan) }}" class="btn btn-warning btn-sm me-1"> 
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form action="{{ route('questions.destroy', $question->id_pertanyaan) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus?')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
                         </form>
-                        <a href="{{ route('questions.edit', $question->id_pertanyaan) }}" class="btn btn-warning btn-sm">Edit</a>
-                    </td>                    
-                </tr>
-            @endforeach
+                    </div>
+                </td>                
+            </tr>
+        @endforeach        
         </tbody>
     </table>
 </div>

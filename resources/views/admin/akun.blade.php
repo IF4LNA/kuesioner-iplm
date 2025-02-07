@@ -31,6 +31,7 @@
                 <div class="mb-3">
                     <label for="jenis" class="form-label">Jenis Perpustakaan</label>
                     <select name="jenis" id="jenis" class="form-select" required>
+                        <option value="">-- Pilih Jenis --</option>
                         <option value="umum">Umum</option>
                         <option value="sekolah">Sekolah</option>
                         <option value="perguruan tinggi">Perguruan Tinggi</option>
@@ -38,10 +39,10 @@
                     </select>
                 </div>
 
-                <!-- Subjenis input fields -->
+                <!-- Field subjenis hanya muncul untuk jenis tertentu -->
                 <div class="mb-3" id="subjenis-fields" style="display: none;">
                     <label for="subjenis" class="form-label">Subjenis Perpustakaan</label>
-                    <select name="subjenis" id="subjenis" class="form-select" required>
+                    <select name="subjenis" id="subjenis" class="form-select">
                         <!-- Opsi akan diisi secara dinamis oleh JavaScript -->
                     </select>
                 </div>
@@ -51,6 +52,7 @@
     </div>
 
     <script>
+        // Tampilkan/matikan field pustakawan berdasarkan pilihan role
         document.getElementById('role').addEventListener('change', function() {
             const fields = document.getElementById('pustakawan-fields');
             const subjenisFields = document.getElementById('subjenis-fields');
@@ -58,49 +60,48 @@
                 fields.style.display = 'block';
             } else {
                 fields.style.display = 'none';
-                subjenisFields.style.display = 'none'; // Hide subjenis if not pustakawan
+                subjenisFields.style.display = 'none'; // Sembunyikan subjenis jika bukan pustakawan
             }
         });
 
+        // Menampilkan field subjenis hanya untuk jenis 'umum' atau 'sekolah'
         document.getElementById('jenis').addEventListener('change', function() {
-    const selectedJenis = this.value;
-    console.log('Selected Jenis:', selectedJenis); // Cek apakah nilainya benar
+            const selectedJenis = this.value;
+            console.log('Selected Jenis:', selectedJenis);
 
-    const subjenisFields = document.getElementById('subjenis-fields');
-    const subjenisSelect = document.getElementById('subjenis');
+            const subjenisFields = document.getElementById('subjenis-fields');
+            const subjenisSelect = document.getElementById('subjenis');
 
-    subjenisSelect.innerHTML = ''; // Clear existing options
+            subjenisSelect.innerHTML = ''; // Hapus opsi yang sudah ada
+            subjenisFields.style.display = 'none';
 
-    subjenisFields.style.display = 'none';
+            // Tampilkan subjenis hanya jika jenis adalah 'umum' atau 'sekolah'
+            if (selectedJenis === 'umum' || selectedJenis === 'sekolah') {
+                subjenisFields.style.display = 'block';
 
-    // Only show subjenis if 'Umum' or 'Sekolah' is selected
-    if (selectedJenis === 'umum' || selectedJenis === 'sekolah' || selectedJenis === 'khusus' || selectedJenis === 'perguruan tinggi') {
-        subjenisFields.style.display = 'block';
+                // Fetch data subjenis via AJAX berdasarkan jenis yang dipilih
+                fetch(`/getSubjenis/${selectedJenis}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Subjenis Data:', data);
+                        subjenisSelect.innerHTML = '';
 
-        // Fetch subjenis data via AJAX based on jenis selected
-        fetch(`/getSubjenis/${selectedJenis}`)
-            .then(response => response.json())
-            .then(data => {
-                console.log('Subjenis Data:', data); // Periksa data yang diterima
-                const subjenisSelect = document.getElementById('subjenis');
-                subjenisSelect.innerHTML = ''; // Clear existing options
-
-                if (data.subjenis && data.subjenis.length > 0) {
-                    data.subjenis.forEach(subjenis => {
-                        const option = document.createElement('option');
-                        option.value = subjenis;
-                        option.textContent = subjenis;
-                        subjenisSelect.appendChild(option);
-                    });
-                } else {
-                    const option = document.createElement('option');
-                    option.value = '';
-                    option.textContent = 'Tidak ada subjenis';
-                    subjenisSelect.appendChild(option);
-                }
-            })
-            .catch(error => console.error('Error fetching subjenis:', error));
-    }
-});
+                        if (data.subjenis && data.subjenis.length > 0) {
+                            data.subjenis.forEach(sub => {
+                                const option = document.createElement('option');
+                                option.value = sub;
+                                option.textContent = sub;
+                                subjenisSelect.appendChild(option);
+                            });
+                        } else {
+                            const option = document.createElement('option');
+                            option.value = '';
+                            option.textContent = 'Tidak ada subjenis';
+                            subjenisSelect.appendChild(option);
+                        }
+                    })
+                    .catch(error => console.error('Error fetching subjenis:', error));
+            }
+        });
     </script>
 @endsection

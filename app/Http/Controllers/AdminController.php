@@ -52,57 +52,70 @@ class AdminController extends Controller
     public function storeAccount(Request $request)
     {
         // Validasi input
-        $request->validate([
-            'username' => 'required|string|max:255',
-            'password' => 'required|string|min:8',
-            'role' => 'required',
-            'nama_perpustakaan' => 'required_if:role,pustakawan',
-            'jenis' => 'required_if:role,pustakawan',
-            'subjenis' => 'required_if:role,pustakawan', // Tambahkan validasi untuk subjenis
-        ]);
-        
+        $rules = [
+            'username'           => 'required|string|max:255',
+            'password'           => 'required|string|min:8',
+            'role'               => 'required',
+            'nama_perpustakaan'  => 'required_if:role,pustakawan',
+            'jenis'              => 'required_if:role,pustakawan',
+        ];
+
+        // Jika role adalah pustakawan dan jenis yang dipilih adalah 'umum' atau 'sekolah',
+        // maka validasi subjenis diperlukan.
+        if ($request->role === 'pustakawan' && in_array($request->jenis, ['umum', 'sekolah'])) {
+            $rules['subjenis'] = 'required';
+        }
+
+        $request->validate($rules);
+
         // Buat akun baru
         $user = new User();
         $user->username = $request->username;
-        $user->password = bcrypt($request->password); // Jangan lupa untuk enkripsi password
+        $user->password = bcrypt($request->password);
         $user->role = $request->role;
         $user->save();
 
         // Jika role adalah pustakawan, simpan data perpustakaan
         if ($request->role == 'pustakawan') {
-            // Cari id_jenis berdasarkan kombinasi jenis dan subjenis
-            $jenis = DB::table('jenis_perpustakaans')
-                ->where('jenis', $request->jenis)
-                ->where('subjenis', $request->subjenis)
-                ->first();
-        
-            if (!$jenis) {
-                // Jika kombinasi jenis dan subjenis tidak ditemukan, beri pesan error
+            // Cari data jenis perpustakaan berdasarkan pilihan.
+            // Untuk jenis 'umum' dan 'sekolah', gunakan kombinasi jenis dan subjenis,
+            // sedangkan untuk 'perguruan tinggi' dan 'khusus', cari yang subjenis-nya NULL.
+            if (in_array($request->jenis, ['umum', 'sekolah'])) {
+                $jenisData = DB::table('jenis_perpustakaans')
+                    ->where('jenis', $request->jenis)
+                    ->where('subjenis', $request->subjenis)
+                    ->first();
+            } else {
+                $jenisData = DB::table('jenis_perpustakaans')
+                    ->where('jenis', $request->jenis)
+                    ->whereNull('subjenis')
+                    ->first();
+            }
+
+            if (!$jenisData) {
                 return redirect()->back()->withErrors(['message' => 'Jenis dan subjenis tidak ditemukan.']);
             }
-        
+
             // Simpan data ke tabel perpustakaans
             DB::table('perpustakaans')->insert([
                 'nama_perpustakaan' => $request->nama_perpustakaan,
-                'id_jenis' => $jenis->id_jenis, // Gunakan id_jenis dari tabel jenis_perpustakaans
-                'id_akun' => $user->id,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'id_jenis'          => $jenisData->id_jenis,
+                'id_akun'           => $user->id,
+                'created_at'        => now(),
+                'updated_at'        => now(),
             ]);
         }
-        
 
         // Menyimpan aktivitas log
         ActivityLog::create([
-            'action' => 'Buat Akun',
+            'action'      => 'Buat Akun',
             'description' => 'Akun baru telah dibuat dengan username: ' . $request->username,
-            'id_akun' => auth()->user()->id, // Menggunakan id admin yang sedang login
-            'created_at' => now(), // Menyimpan waktu saat log dibuat
+            'id_akun'     => auth()->user()->id,
+            'created_at'  => now(),
         ]);
 
         return redirect()->back()->with('success', 'Akun berhasil dibuat!');
     }
-
 
     public function showActivityLogs()
     {
@@ -111,10 +124,9 @@ class AdminController extends Controller
         return view('admin.activity-logs', compact('activityLogs'));
     }
 
-    // Fungsi untuk mendapatkan subjenis berdasarkan jenis yang dipilih
     public function getSubjenis($jenis)
     {
-        // Ambil data subjenis yang sesuai berdasarkan jenis
+        // Ambil data subjenis yang sesuai, hanya untuk jenis yang memiliki subjenis
         $subjenis = JenisPerpustakaan::where('jenis', $jenis)
             ->whereNotNull('subjenis')
             ->pluck('subjenis');
