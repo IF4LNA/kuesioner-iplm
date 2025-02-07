@@ -6,6 +6,8 @@ use App\Models\Jawaban;
 use App\Models\Pertanyaan;
 use App\Models\JenisPerpustakaan;
 use Illuminate\Http\Request;
+use App\Exports\RekapitulasiExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RekapitulasiController extends Controller
 {
@@ -69,7 +71,10 @@ foreach ($perpustakaanData as $data) {
 return view('admin.rekapitulasi', compact('tahunList', 'tahunTerpilih', 'jenisList', 'pertanyaanByKategori', 'rekapArray', 'jumlahPerpustakaan'));
 }
     
-    
+public function exportRekap($tahun)
+{
+    return Excel::download(new RekapitulasiExport($tahun), "Rekapitulasi_UPLM_Kota_Bandung_$tahun.xlsx");
+}  
 
 }
 

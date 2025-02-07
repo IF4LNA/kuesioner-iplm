@@ -15,6 +15,11 @@
             <button type="submit" class="btn btn-primary">Filter</button>
         </form>
 
+        <a href="{{ route('export.rekapitulasi', ['tahun' => $tahunTerpilih]) }}" class="btn btn-success">
+            <i class="fas fa-file-excel"></i> Export Excel
+        </a>
+        
+
         <table class="table table-bordered">
             <thead>
                 <!-- Header Jenis Perpustakaan -->

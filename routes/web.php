@@ -10,6 +10,9 @@ use App\Http\Controllers\KuesionerController;
 use App\Http\Controllers\PertanyaanController;
 use App\Http\Controllers\PustakawanController;
 use App\Http\Controllers\RekapitulasiController;
+use App\Exports\RekapitulasiExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 // Rute login dan logout
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -68,6 +71,11 @@ Route::delete('/uplm/{id}/jawaban/{jawaban}', [UplmController::class, 'deleteJaw
 
     Route::get('/notifications', [AdminController::class, 'notifications'])->name('notifications');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
+
+    //export rekap
+    Route::get('/export-rekapitulasi/{tahun}', function ($tahun) {
+        return Excel::download(new RekapitulasiExport($tahun), "Rekapitulasi_UPLM_Kota_Bandung_$tahun.xlsx");
+    })->name('export.rekapitulasi');
 
     //route aktivitas admin
     Route::get('activity-logs', [AdminController::class, 'showActivityLogs'])->name('admin.activity-logs');
