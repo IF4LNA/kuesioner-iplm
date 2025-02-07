@@ -43,18 +43,31 @@ class RekapitulasiController extends Controller
     
     
     
-        // Susun data menjadi array terstruktur
-        $rekapArray = [];
-        foreach ($rekapData as $data) {
-            $rekapArray[$data->jenis][$data->subjenis][$data->id_pertanyaan] = [
-                'total_angka' => $data->total_angka,
-                'total_responden' => $data->total_responden
-            ];
-        }
-    
-        return view('admin.rekapitulasi', compact('tahunList', 'tahunTerpilih', 'jenisList', 'pertanyaanByKategori', 'rekapArray'));
-    }
-    
+        $perpustakaanData = \App\Models\Perpustakaan::join('jawabans', 'perpustakaans.id_perpustakaan', '=', 'jawabans.id_perpustakaan')
+        ->join('jenis_perpustakaans', 'perpustakaans.id_jenis', '=', 'jenis_perpustakaans.id_jenis')
+        ->selectRaw('jenis_perpustakaans.jenis, jenis_perpustakaans.subjenis, COUNT(DISTINCT perpustakaans.id_perpustakaan) as total_perpustakaan')
+        ->whereNotNull('perpustakaans.alamat') // Hanya yang memiliki alamat
+        ->where('jawabans.tahun', $tahunTerpilih) // Menggunakan kolom tahun dari tabel jawaban
+        ->groupBy('jenis_perpustakaans.jenis', 'jenis_perpustakaans.subjenis')
+        ->get();
+
+// Susun data menjadi array terstruktur
+$rekapArray = [];
+foreach ($rekapData as $data) {
+  $rekapArray[$data->jenis][$data->subjenis][$data->id_pertanyaan] = [
+      'total_angka' => $data->total_angka,
+      'total_responden' => $data->total_responden
+  ];
+}
+
+// Tambahkan data jumlah perpustakaan ke array
+$jumlahPerpustakaan = [];
+foreach ($perpustakaanData as $data) {
+  $jumlahPerpustakaan[$data->jenis][$data->subjenis] = $data->total_perpustakaan;
+}
+
+return view('admin.rekapitulasi', compact('tahunList', 'tahunTerpilih', 'jenisList', 'pertanyaanByKategori', 'rekapArray', 'jumlahPerpustakaan'));
+}
     
     
 

@@ -36,6 +36,19 @@
                 </tr>
             </thead>
             <tbody>
+                    <!-- Baris Baru: "UPLM 1 | Jumlah Kelembagaan Perpustakaan" -->
+    <tr>
+        <td>UPLM 1</td>
+        <td>Jumlah Kelembagaan Perpustakaan</td>
+        @foreach ($jenisList as $jenis => $subjenisCollection)
+            @foreach ($subjenisCollection as $subjenis)
+                <td class="text-center">
+                    {{ $jumlahPerpustakaan[$jenis][$subjenis->subjenis] ?? 0 }}
+                </td>
+            @endforeach
+        @endforeach
+    </tr>
+
                 @foreach ($pertanyaanByKategori as $kategori => $pertanyaanList)
                     <tr>
                         <td rowspan="{{ $pertanyaanList->count() }}">{{ $kategori }}</td>
