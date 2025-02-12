@@ -30,11 +30,12 @@ class RekapitulasiController extends Controller
         ->join('jenis_perpustakaans', 'perpustakaans.id_jenis', '=', 'jenis_perpustakaans.id_jenis')
         ->selectRaw('jenis_perpustakaans.jenis, jenis_perpustakaans.subjenis, jawabans.id_pertanyaan, 
                      SUM(CASE 
-                         WHEN jawabans.jawaban REGEXP \'^[0-9]+$\' THEN jawabans.jawaban 
+                         WHEN jawabans.jawaban REGEXP \'^[1-9][0-9]*$\' THEN jawabans.jawaban 
                          ELSE 0 
                      END) as total_angka,
                      COUNT(CASE 
                          WHEN jawabans.jawaban REGEXP \'^[^0-9]+$\' THEN 1  -- Hanya huruf
+                         WHEN jawabans.jawaban REGEXP \'^[0-9]+$\' AND jawabans.jawaban REGEXP \'^0\' THEN 1 -- Diawali angka 0
                          WHEN jawabans.jawaban REGEXP \'[A-Za-z]+\' THEN 1 -- Mengandung huruf
                          WHEN jawabans.jawaban REGEXP \'[0-9]+\' AND jawabans.jawaban REGEXP \'[^\d]\' THEN 1 -- Mengandung angka dan simbol
                          ELSE NULL 
@@ -45,10 +46,11 @@ class RekapitulasiController extends Controller
     
     
     
+    
         $perpustakaanData = \App\Models\Perpustakaan::join('jawabans', 'perpustakaans.id_perpustakaan', '=', 'jawabans.id_perpustakaan')
         ->join('jenis_perpustakaans', 'perpustakaans.id_jenis', '=', 'jenis_perpustakaans.id_jenis')
         ->selectRaw('jenis_perpustakaans.jenis, jenis_perpustakaans.subjenis, COUNT(DISTINCT perpustakaans.id_perpustakaan) as total_perpustakaan')
-        ->whereNotNull('perpustakaans.alamat') // Hanya yang memiliki alamat
+        ->whereNotNull('perpustakaans.nama_perpustakaan') // Hanya yang memiliki alamat
         ->where('jawabans.tahun', $tahunTerpilih) // Menggunakan kolom tahun dari tabel jawaban
         ->groupBy('jenis_perpustakaans.jenis', 'jenis_perpustakaans.subjenis')
         ->get();
