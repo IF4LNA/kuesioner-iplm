@@ -12,6 +12,7 @@ use App\Http\Controllers\PustakawanController;
 use App\Http\Controllers\RekapitulasiController;
 use App\Exports\RekapitulasiExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Controllers\RekapPerpusController;
 
 
 // Rute login dan logout
@@ -76,6 +77,18 @@ Route::delete('/uplm/{id}/jawaban/{jawaban}', [UplmController::class, 'deleteJaw
     Route::get('/export-rekapitulasi/{tahun}', function ($tahun) {
         return Excel::download(new RekapitulasiExport($tahun), "Rekapitulasi_UPLM_Kota_Bandung_$tahun.xlsx");
     })->name('export.rekapitulasi');
+
+    
+
+Route::get('/admin/rekapitulasi-perpustakaan', [RekapPerpusController::class, 'index'])
+    ->name('admin.rekaperpus');
+    
+
+// Route::get('/admin/rekaperpus', [RekapPerpusController::class, 'index'])->name('admin.rekaperpus');
+Route::get('/admin/rekaperpus/export/excel', [RekapPerpusController::class, 'exportExcel'])->name('admin.rekaperpus.export.excel');
+Route::get('/admin/rekaperpus/export/pdf', [RekapPerpusController::class, 'exportPdf'])->name('admin.rekaperpus.export.pdf');
+
+
 
     //route aktivitas admin
     Route::get('activity-logs', [AdminController::class, 'showActivityLogs'])->name('admin.activity-logs');

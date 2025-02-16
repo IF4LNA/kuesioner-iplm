@@ -166,6 +166,7 @@ return [
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
+        Barryvdh\DomPDF\ServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
@@ -173,6 +174,8 @@ return [
 
     'aliases' => [
     'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+    'PDF' => Barryvdh\DomPDF\Facade\Pdf::class,
+
 ],
 
     /*
