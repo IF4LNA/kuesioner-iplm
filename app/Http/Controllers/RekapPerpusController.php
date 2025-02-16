@@ -18,19 +18,27 @@ class RekapPerpusController extends Controller
         $perpustakaans = Perpustakaan::with('jenis')->get();
         $tahunList = Pertanyaan::select('tahun')->distinct()->pluck('tahun');
 
-        $selectedPerpustakaan = $request->input('perpustakaan_id');
+        $selectedPerpustakaan = (int) $request->input('perpustakaan_id');
         $selectedTahun = $request->input('tahun');
 
         $monografi = collect();
 
         if ($selectedPerpustakaan && $selectedTahun) {
+            $perpustakaan = Perpustakaan::with(['jenis', 'kelurahan.kecamatan.kota'])
+                ->where('id_perpustakaan', $selectedPerpustakaan)
+                ->first();
+        
             $monografi = Pertanyaan::where('tahun', $selectedTahun)
                 ->with(['jawaban' => function ($query) use ($selectedPerpustakaan) {
                     $query->where('id_perpustakaan', $selectedPerpustakaan);
                 }])->get();
+        } else {
+            $perpustakaan = null;
         }
+        
 
-        return view('admin.rekaperpus', compact('perpustakaans', 'tahunList', 'monografi', 'selectedPerpustakaan', 'selectedTahun'));
+        return view('admin.rekaperpus', compact('perpustakaans', 'tahunList', 'monografi', 'selectedPerpustakaan', 'selectedTahun', 'perpustakaan'));
+
     }
 
     public function exportExcel(Request $request)

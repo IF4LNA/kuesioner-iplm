@@ -13,4 +13,10 @@ class Kota extends Model
     {
         return $this->hasMany(Kecamatan::class, 'id_kota');
     }
+
+    public function kecamatans()
+{
+    return $this->hasMany(Kecamatan::class, 'id_kota');
+}
+
 }
