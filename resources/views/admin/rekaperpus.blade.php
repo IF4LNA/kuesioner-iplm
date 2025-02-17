@@ -66,7 +66,7 @@
                     <td>{{ $perpustakaan->kontak ?? '-' }}</td>
                     <td>
                         @if($perpustakaan->foto)
-                            <img src="{{ asset('storage/fotos/' . $perpustakaan->foto) }}" class="img-thumbnail" width="100" height="100">
+                        <img src="{{ Storage::url($perpustakaan->foto) }}" class="img-thumbnail" width="100" height="100">
                         @else
                             <img src="{{ asset('storage/fotos/default.png') }}" class="img-thumbnail" width="100" height="100">
                         @endif

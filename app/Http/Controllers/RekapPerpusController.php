@@ -48,18 +48,33 @@ class RekapPerpusController extends Controller
         return Excel::download(new RekapPerpusExport($selectedPerpustakaan, $selectedTahun), 'monografi_perpustakaan.xlsx');
     }
 
-    public function exportPdf(Request $request)
+    public function exportPDF(Request $request)
     {
         $selectedPerpustakaan = $request->input('perpustakaan_id');
         $selectedTahun = $request->input('tahun');
-
+    
+        // Ambil data perpustakaan beserta relasi lengkap
+        $perpustakaan = Perpustakaan::with([
+            'jenis', // Relasi untuk jenis & subjenis
+            'kelurahan.kecamatan.kota' // Relasi untuk wilayah
+        ])->where('id_perpustakaan', $selectedPerpustakaan)->first();
+    
+        // Ambil data monografi berdasarkan tahun dan perpustakaan
         $monografi = Pertanyaan::where('tahun', $selectedTahun)
             ->with(['jawaban' => function ($query) use ($selectedPerpustakaan) {
                 $query->where('id_perpustakaan', $selectedPerpustakaan);
             }])->get();
-
-            $pdf = PDF::loadView('admin.rekaperpus_pdf', compact('monografi', 'selectedPerpustakaan', 'selectedTahun'));
-
-        return $pdf->download('monografi_perpustakaan.pdf');
+    
+        // Pastikan tidak ada error saat membuat nama file
+        $fileName = 'Monografi_Perpus_' . str_replace(' ', '_', $perpustakaan->nama_perpustakaan ?? 'Unknown') . "_$selectedTahun.pdf";
+    
+        // Buat PDF dengan layout yang rapi
+        $pdf = Pdf::loadView('admin.rekaperpus_pdf', compact('perpustakaan', 'monografi', 'selectedTahun'))
+            ->setPaper('a4', 'portrait');
+    
+        return $pdf->download($fileName);
     }
+    
+    
+    
 }
