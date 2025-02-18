@@ -9,7 +9,10 @@ class PertanyaanController extends Controller
 {
     public function create()
     {
-        $questions = Pertanyaan::all(); // Mengambil semua pertanyaan
+        $questions = Pertanyaan::orderBy('tahun', 'desc')
+            ->orderBy('kategori', 'asc')
+            ->get(); // Mengambil semua pertanyaan dengan sorting
+        
         return view('admin.create_question', compact('questions'));
     }
 
@@ -56,4 +59,44 @@ class PertanyaanController extends Controller
 
         return redirect()->back()->with('success', 'Pertanyaan berhasil dihapus!');
     }
+
+    public function getByYear($tahun)
+{
+    $questions = Pertanyaan::where('tahun', $tahun)->get();
+    return response()->json($questions);
+}
+public function copy(Request $request)
+{
+    $request->validate([
+        'tahun_sumber' => 'required|integer',
+        'tahun_tujuan' => 'required|integer|different:tahun_sumber',
+        'selected_questions' => 'required|array',
+    ]);
+
+    $tahunSumber = $request->tahun_sumber;
+    $tahunTujuan = $request->tahun_tujuan;
+    $selectedQuestions = $request->selected_questions;
+
+    // Cek apakah pertanyaan sudah ada di tahun tujuan
+    $existingQuestions = Pertanyaan::where('tahun', $tahunTujuan)
+        ->whereIn('teks_pertanyaan', Pertanyaan::whereIn('id_pertanyaan', $selectedQuestions)->pluck('teks_pertanyaan'))
+        ->exists();
+
+    if ($existingQuestions) {
+        return redirect()->back()->with('error', 'Beberapa pertanyaan sudah ada di tahun tujuan.');
+    }
+
+    // Copy pertanyaan yang dipilih
+    foreach ($selectedQuestions as $id) {
+        $question = Pertanyaan::findOrFail($id);
+        Pertanyaan::create([
+            'teks_pertanyaan' => $question->teks_pertanyaan,
+            'kategori' => $question->kategori,
+            'tahun' => $tahunTujuan,
+        ]);
+    }
+
+    return redirect()->back()->with('success', 'Pertanyaan berhasil disalin.');
+}
+
 }

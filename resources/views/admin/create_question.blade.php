@@ -14,6 +14,14 @@
         </div>
     @endif
 
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+
     <!-- Tombol untuk menyembunyikan/menampilkan form -->
     <button id="toggleFormButton" class="btn btn-secondary mb-3">Sembunyikan Form</button>
 
@@ -48,6 +56,9 @@
                 @enderror
             </div>
             <button type="submit" class="btn btn-primary">Simpan</button>
+            <button type="button" class="btn btn-info ms-2" data-bs-toggle="modal" data-bs-target="#copyQuestionModal">
+                Copy Pertanyaan
+            </button>            
         </form>
     </div>
 
@@ -92,6 +103,47 @@
     </table>
 </div>
 
+<!-- Modal Copy Pertanyaan -->
+<div class="modal fade" id="copyQuestionModal" tabindex="-1" aria-labelledby="copyQuestionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="copyQuestionModalLabel">Copy Pertanyaan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="copyQuestionForm" action="{{ route('questions.copy') }}" method="POST">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="tahun_sumber" class="form-label">Pilih Tahun Sumber</label>
+                        <select id="tahun_sumber" name="tahun_sumber" class="form-control" required>
+                            <option value="" disabled selected>Pilih Tahun</option>
+                            @foreach ($questions->pluck('tahun')->unique() as $tahun)
+                                <option value="{{ $tahun }}">{{ $tahun }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Pilih Pertanyaan</label>
+                        <div id="questionList">
+                            <p class="text-muted">Pilih tahun sumber terlebih dahulu.</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="tahun_tujuan" class="form-label">Pilih Tahun Tujuan</label>
+                        <input type="number" id="tahun_tujuan" name="tahun_tujuan" class="form-control" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Copy</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const toggleFormButton = document.getElementById('toggleFormButton');
@@ -108,4 +160,55 @@
         });
     });
 </script>
+<script>
+    document.getElementById('tahun_sumber').addEventListener('change', function() {
+        const tahun = this.value;
+        fetch(`/questions/get-by-year/${tahun}`)
+            .then(response => response.json())
+            .then(data => {
+                const questionList = document.getElementById('questionList');
+                questionList.innerHTML = '';
+    
+                if (data.length === 0) {
+                    questionList.innerHTML = '<p class="text-danger">Tidak ada pertanyaan untuk tahun ini.</p>';
+                    return;
+                }
+    
+                // Checkbox "Pilih Semua"
+                const selectAll = document.createElement('input');
+                selectAll.type = 'checkbox';
+                selectAll.id = 'selectAllQuestions';
+                selectAll.addEventListener('change', function() {
+                    document.querySelectorAll('.question-checkbox').forEach(checkbox => {
+                        checkbox.checked = selectAll.checked;
+                    });
+                });
+    
+                const labelSelectAll = document.createElement('label');
+                labelSelectAll.innerText = ' Pilih Semua';
+                labelSelectAll.setAttribute('for', 'selectAllQuestions');
+    
+                questionList.appendChild(selectAll);
+                questionList.appendChild(labelSelectAll);
+                questionList.appendChild(document.createElement('br'));
+    
+                // Checkbox untuk tiap pertanyaan
+                data.forEach(question => {
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.name = 'selected_questions[]';
+                    checkbox.value = question.id_pertanyaan;
+                    checkbox.classList.add('question-checkbox');
+    
+                    const label = document.createElement('label');
+                    label.innerText = ` ${question.teks_pertanyaan}`;
+                    label.setAttribute('for', `question-${question.id_pertanyaan}`);
+    
+                    questionList.appendChild(checkbox);
+                    questionList.appendChild(label);
+                    questionList.appendChild(document.createElement('br'));
+                });
+            });
+    });
+    </script>    
 @endsection

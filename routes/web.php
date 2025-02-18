@@ -102,6 +102,10 @@ Route::get('/admin/rekaperpus/export/pdf', [RekapPerpusController::class, 'expor
     Route::get('/questions/create', [PertanyaanController::class, 'create'])->name('questions.create');
     Route::post('/questions', [PertanyaanController::class, 'store'])->name('questions.store');
     Route::delete('/questions/{id}', [PertanyaanController::class, 'destroy'])->name('questions.destroy');
+
+    Route::get('/questions/get-by-year/{tahun}', [PertanyaanController::class, 'getByYear']);
+    Route::post('/questions/copy', [PertanyaanController::class, 'copy'])->name('questions.copy');
+
 });
 
 // route halaman pustakawan
