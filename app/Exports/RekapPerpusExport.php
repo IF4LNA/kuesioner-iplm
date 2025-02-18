@@ -2,33 +2,53 @@
 
 namespace App\Exports;
 
-use App\Models\Jawaban;
-use App\Models\Pertanyaan;
-use App\Models\Perpustakaan;
-use Maatwebsite\Excel\Concerns\FromArray;
+use Illuminate\Contracts\View\View;
+use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class RekapPerpusExport implements FromArray
+class RekapPerpusExport implements FromView, WithStyles
 {
-    protected $id_perpustakaan;
-    protected $tahun;
+    protected $perpustakaan;
+    protected $selectedTahun;
 
-    public function __construct($id_perpustakaan, $tahun)
+    public function __construct($perpustakaan, $selectedTahun)
     {
-        $this->id_perpustakaan = $id_perpustakaan;
-        $this->tahun = $tahun;
+        $this->perpustakaan = $perpustakaan;
+        $this->selectedTahun = $selectedTahun;
     }
 
-    public function array(): array
+    public function view(): View
     {
-        $perpustakaan = Perpustakaan::find($this->id_perpustakaan);
-        $pertanyaan = Pertanyaan::where('tahun', $this->tahun)->get();
-        $jawaban = Jawaban::where('id_perpustakaan', $this->id_perpustakaan)->where('tahun', $this->tahun)->get()->keyBy('id_pertanyaan');
+        $monografi = \App\Models\Pertanyaan::where('tahun', $this->selectedTahun)
+            ->with(['jawaban' => function ($query) {
+                $query->where('id_perpustakaan', $this->perpustakaan->id_perpustakaan);
+            }])->get();
 
-        $data = [];
-        foreach ($pertanyaan as $p) {
-            $data[] = [$p->teks_pertanyaan, $jawaban[$p->id_pertanyaan]->jawaban ?? '-'];
-        }
+        return view('admin.export_excel', [
+            'perpustakaan' => $this->perpustakaan,
+            'monografi' => $monografi,
+            'selectedTahun' => $this->selectedTahun
+        ]);
+    }
 
-        return $data;
+    public function styles(Worksheet $sheet)
+    {
+        // Set the header bold
+        $sheet->getStyle('A1:D1')->getFont()->setBold(true);
+
+        // Adjust column widths based on content
+        $sheet->getColumnDimension('A')->setWidth(20); // Kategori
+        $sheet->getColumnDimension('B')->setWidth(30); // Pertanyaan
+        $sheet->getColumnDimension('C')->setWidth(50); // Jawaban
+
+        // Set text alignment to left for all columns
+        $sheet->getStyle('A:C')->getAlignment()->setHorizontal('left');
+
+        return [
+            1 => ['font' => ['bold' => true]], // Header bold
+        ];
     }
 }
+
+

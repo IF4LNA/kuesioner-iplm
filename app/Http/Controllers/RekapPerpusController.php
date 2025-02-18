@@ -45,7 +45,21 @@ class RekapPerpusController extends Controller
     {
         $selectedPerpustakaan = $request->input('perpustakaan_id');
         $selectedTahun = $request->input('tahun');
-        return Excel::download(new RekapPerpusExport($selectedPerpustakaan, $selectedTahun), 'monografi_perpustakaan.xlsx');
+
+        // Ambil data perpustakaan beserta relasi lengkap
+        $perpustakaan = Perpustakaan::with([
+            'jenis',
+            'kelurahan.kecamatan.kota'
+        ])->where('id_perpustakaan', $selectedPerpustakaan)->first();
+
+        // Pastikan perpustakaan ditemukan
+        if (!$perpustakaan) {
+            return redirect()->back()->with('error', 'Perpustakaan tidak ditemukan.');
+        }
+
+        $fileName = 'Monografi_Perpus_' . str_replace(' ', '_', $perpustakaan->nama_perpustakaan ?? 'Unknown') . "_$selectedTahun.xlsx";
+
+        return Excel::download(new RekapPerpusExport($perpustakaan, $selectedTahun), $fileName);
     }
 
     public function exportPDF(Request $request)
