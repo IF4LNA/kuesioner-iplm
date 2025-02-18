@@ -7,6 +7,14 @@ use App\Models\Perpustakaan;
 use App\Models\JenisPerpustakaan;
 use App\Models\Jawaban;
 use App\Models\Pertanyaan;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\UplmExport;
+use App\Exports\Uplm2Export;
+use App\Exports\Uplm3Export;
+use App\Exports\Uplm4Export;
+use App\Exports\Uplm5Export;
+use App\Exports\Uplm6Export;
+use App\Exports\Uplm7Export;
 use Illuminate\Support\Facades\DB;
 
 class UplmController extends Controller
@@ -118,5 +126,34 @@ class UplmController extends Controller
     {
         $jawaban->delete();
         return redirect()->route('uplm', $id)->with('success', 'Jawaban berhasil dihapus.');
+    }
+
+    public function exportExcel($id)
+    {
+        // Mendapatkan parameter filter dari request
+        $jenis = request()->get('jenis');
+        $subjenis = request()->get('subjenis');
+        $tahun = request()->get('tahun');
+
+        // Mengirim parameter filter ke UplmExport berdasarkan ID
+        switch ($id) {
+            case 1:
+                // Mengirim parameter filter ke UplmExport
+                return Excel::download(new UplmExport($jenis, $subjenis, $tahun), 'uplm1_data.xlsx');
+            case 2:
+                return Excel::download(new Uplm2Export($jenis, $subjenis, $tahun), 'uplm2_data.xlsx');
+            case 3:
+                return Excel::download(new Uplm3Export($jenis, $subjenis, $tahun), 'uplm3_data.xlsx');
+            case 4:
+                return Excel::download(new Uplm4Export($jenis, $subjenis, $tahun), 'uplm4_data.xlsx');
+            case 5:
+                return Excel::download(new Uplm5Export($jenis, $subjenis, $tahun), 'uplm5_data.xlsx');
+            case 6:
+                return Excel::download(new Uplm6Export($jenis, $subjenis, $tahun), 'uplm6_data.xlsx');
+            case 7:
+                return Excel::download(new Uplm7Export($jenis, $subjenis, $tahun), 'uplm7_data.xlsx');
+            default:
+                return abort(404, 'Export not found');
+        }
     }
 }

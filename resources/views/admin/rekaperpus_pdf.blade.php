@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Monografi Perpustakaan</title>
     <style>
-         body {
+        body {
             font-family: "Times New Roman", serif;
             font-size: 12px;
         }
+
         .kop-surat {
             text-align: center;
             position: relative;
             padding-top: 10px;
         }
+
         .kop-surat img {
             position: absolute;
             left: 10px;
@@ -19,56 +22,71 @@
             width: 80px;
             height: 80px;
         }
+
         .kop-text {
             display: inline-block;
         }
+
         .kop-text h2 {
             font-size: 18px;
             font-weight: bold;
             margin: 0;
         }
+
         .kop-text p {
             font-size: 12px;
             margin: 0;
         }
+
         .garis {
             border-bottom: 2px solid black;
             margin-top: 25px;
             width: 100%;
             display: block;
         }
+
         .header {
             text-align: center;
             margin-bottom: 20px;
         }
+
         .table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-        .table, .table th, .table td {
+
+        .table,
+        .table th,
+        .table td {
             border: 1px solid black;
         }
+
         .table th {
             background-color: #f2f2f2;
             text-align: center;
             font-weight: bold;
         }
+
         .table td {
             padding: 5px;
         }
+
         .info-table {
             width: 100%;
             border-collapse: collapse;
         }
+
         .info-table td {
             padding: 5px;
         }
+
         .info-title {
             font-weight: bold;
         }
     </style>
 </head>
+
 <body>
 
     <!-- Kop Surat -->
@@ -105,9 +123,9 @@
         <tr>
             <td class="info-title">Alamat:</td>
             <td>
-                {{ $perpustakaan->alamat ?? '-' }}, 
-                {{ $perpustakaan->kelurahan->nama_kelurahan ?? '-' }}, 
-                {{ $perpustakaan->kelurahan->kecamatan->nama_kecamatan ?? '-' }}, 
+                {{ $perpustakaan->alamat ?? '-' }},
+                {{ $perpustakaan->kelurahan->nama_kelurahan ?? '-' }},
+                {{ $perpustakaan->kelurahan->kecamatan->nama_kecamatan ?? '-' }},
                 {{ $perpustakaan->kelurahan->kecamatan->kota->nama_kota ?? '-' }}
             </td>
         </tr>
@@ -115,11 +133,12 @@
             <td class="info-title">Kontak:</td>
             <td>{{ $perpustakaan->kontak ?? '-' }}</td>
         </tr>
-        @if($perpustakaan->foto)
-        <tr>
-            <td class="info-title">Foto Perpustakaan:</td>
-            <td><img src="{{ public_path('storage/' . $perpustakaan->foto) }}" alt="Foto Perpustakaan" width="100"></td>
-        </tr>
+        @if ($perpustakaan->foto)
+            <tr>
+                <td class="info-title">Foto Perpustakaan:</td>
+                <td><img src="{{ public_path('storage/' . $perpustakaan->foto) }}" alt="Foto Perpustakaan"
+                        width="100"></td>
+            </tr>
         @endif
     </table>
 
@@ -145,4 +164,5 @@
     </table>
 
 </body>
+
 </html>

@@ -49,8 +49,8 @@ Route::middleware(['auth'])->group(function () {
 
     //edit uplm
     Route::get('/uplm/{id}/jawaban/{jawaban}/edit', [UplmController::class, 'editJawaban'])->name('uplm.jawaban.edit');
-Route::put('/uplm/{id}/jawaban/{jawaban}', [UplmController::class, 'updateJawaban'])->name('uplm.jawaban.update');
-Route::delete('/uplm/{id}/jawaban/{jawaban}', [UplmController::class, 'deleteJawaban'])->name('uplm.jawaban.delete');
+    Route::put('/uplm/{id}/jawaban/{jawaban}', [UplmController::class, 'updateJawaban'])->name('uplm.jawaban.update');
+    Route::delete('/uplm/{id}/jawaban/{jawaban}', [UplmController::class, 'deleteJawaban'])->name('uplm.jawaban.delete');
 
     //filter
     Route::get('/uplm/{id}', [UplmController::class, 'filterUplm'])->name('uplm');
@@ -73,20 +73,23 @@ Route::delete('/uplm/{id}/jawaban/{jawaban}', [UplmController::class, 'deleteJaw
     Route::get('/notifications', [AdminController::class, 'notifications'])->name('notifications');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
 
+    //export uplm 1-7
+    Route::get('/uplm/export/{id}', [UplmController::class, 'exportExcel'])->name('uplm.exportExcel');
+
     //export rekap
     Route::get('/export-rekapitulasi/{tahun}', function ($tahun) {
         return Excel::download(new RekapitulasiExport($tahun), "Rekapitulasi_UPLM_Kota_Bandung_$tahun.xlsx");
     })->name('export.rekapitulasi');
 
-    
 
-Route::get('/admin/rekapitulasi-perpustakaan', [RekapPerpusController::class, 'index'])
-    ->name('admin.rekaperpus');
-    
 
-// Route::get('/admin/rekaperpus', [RekapPerpusController::class, 'index'])->name('admin.rekaperpus');
-Route::get('/admin/rekaperpus/export/excel', [RekapPerpusController::class, 'exportExcel'])->name('admin.rekaperpus.export.excel');
-Route::get('/admin/rekaperpus/export/pdf', [RekapPerpusController::class, 'exportPdf'])->name('admin.rekaperpus.export.pdf');
+    Route::get('/admin/rekapitulasi-perpustakaan', [RekapPerpusController::class, 'index'])
+        ->name('admin.rekaperpus');
+
+
+    // Route::get('/admin/rekaperpus', [RekapPerpusController::class, 'index'])->name('admin.rekaperpus');
+    Route::get('/admin/rekaperpus/export/excel', [RekapPerpusController::class, 'exportExcel'])->name('admin.rekaperpus.export.excel');
+    Route::get('/admin/rekaperpus/export/pdf', [RekapPerpusController::class, 'exportPdf'])->name('admin.rekaperpus.export.pdf');
 
 
 
