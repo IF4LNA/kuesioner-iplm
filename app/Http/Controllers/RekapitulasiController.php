@@ -8,6 +8,7 @@ use App\Models\JenisPerpustakaan;
 use Illuminate\Http\Request;
 use App\Exports\RekapitulasiExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class RekapitulasiController extends Controller
 {
@@ -77,6 +78,68 @@ public function exportRekap($tahun)
 {
     return Excel::download(new RekapitulasiExport($tahun), "Rekapitulasi_UPLM_Kota_Bandung_$tahun.xlsx");
 }  
+
+public function exportPDF($tahun)
+{
+    // Ambil data tahun dan pertanyaan
+    $tahunList = Pertanyaan::select('tahun')->distinct()->pluck('tahun');
+    $tahunTerpilih = $tahun;
+    $jenisList = JenisPerpustakaan::select('jenis', 'subjenis')->get()->groupBy('jenis');
+    $pertanyaanByKategori = Pertanyaan::where('tahun', $tahunTerpilih)->get()->groupBy('kategori');
+
+    // Ambil rekap jawaban
+    $rekapData = Jawaban::join('perpustakaans', 'jawabans.id_perpustakaan', '=', 'perpustakaans.id_perpustakaan')
+        ->join('jenis_perpustakaans', 'perpustakaans.id_jenis', '=', 'jenis_perpustakaans.id_jenis')
+        ->selectRaw('jenis_perpustakaans.jenis, jenis_perpustakaans.subjenis, jawabans.id_pertanyaan, 
+                     COALESCE(SUM(CASE 
+                         WHEN jawabans.jawaban REGEXP \'^[1-9][0-9]*$\' THEN jawabans.jawaban 
+                         ELSE 0 
+                     END), 0) as total_angka,
+                     COALESCE(COUNT(CASE 
+                         WHEN jawabans.jawaban REGEXP \'^[^0-9]+$\' THEN 1  
+                         WHEN jawabans.jawaban REGEXP \'^[0-9]+$\' AND jawabans.jawaban REGEXP \'^0\' THEN 1 
+                         WHEN jawabans.jawaban REGEXP \'[A-Za-z]+\' THEN 1 
+                         WHEN jawabans.jawaban REGEXP \'[0-9]+\' AND jawabans.jawaban REGEXP \'[^\d]\' THEN 1 
+                         ELSE NULL 
+                     END), 0) as total_responden')
+        ->whereIn('jawabans.id_pertanyaan', $pertanyaanByKategori->flatten()->pluck('id_pertanyaan'))
+        ->groupBy('jenis_perpustakaans.jenis', 'jenis_perpustakaans.subjenis', 'jawabans.id_pertanyaan')
+        ->get();
+
+    // Ambil data jumlah perpustakaan
+    $perpustakaanData = \App\Models\Perpustakaan::join('jawabans', 'perpustakaans.id_perpustakaan', '=', 'jawabans.id_perpustakaan')
+        ->join('jenis_perpustakaans', 'perpustakaans.id_jenis', '=', 'jenis_perpustakaans.id_jenis')
+        ->selectRaw('jenis_perpustakaans.jenis, jenis_perpustakaans.subjenis, COUNT(DISTINCT perpustakaans.id_perpustakaan) as total_perpustakaan')
+        ->whereNotNull('perpustakaans.nama_perpustakaan')
+        ->where('jawabans.tahun', $tahunTerpilih)
+        ->groupBy('jenis_perpustakaans.jenis', 'jenis_perpustakaans.subjenis')
+        ->get();
+
+    // Konversi data ke array untuk tampilan di Blade
+    $rekapArray = [];
+    foreach ($rekapData as $data) {
+        $rekapArray[$data->jenis][$data->subjenis][$data->id_pertanyaan] = [
+            'total_angka' => intval($data->total_angka),  // Konversi ke angka pasti
+            'total_responden' => intval($data->total_responden)
+        ];
+    }
+
+    $jumlahPerpustakaan = [];
+    foreach ($perpustakaanData as $data) {
+        $jumlahPerpustakaan[$data->jenis][$data->subjenis] = intval($data->total_perpustakaan);
+    }
+
+    // Debugging sementara jika masih error
+    // dd($rekapArray, $jumlahPerpustakaan);
+
+    // Render tampilan PDF
+    $pdf = Pdf::loadView('admin.rekapitulasi_pdf', compact(
+        'tahunList', 'tahunTerpilih', 'jenisList', 'pertanyaanByKategori', 'rekapArray', 'jumlahPerpustakaan'
+    ))->setPaper('a4', 'landscape');
+
+    return $pdf->download("Rekapitulasi_UPLM_Kota_Bandung_{$tahun}.pdf");
+}
+
 
 }
 

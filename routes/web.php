@@ -86,6 +86,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/rekapitulasi-perpustakaan', [RekapPerpusController::class, 'index'])
         ->name('admin.rekaperpus');
 
+    Route::get('/export/rekapitulasi/pdf/{tahun}', [RekapitulasiController::class, 'exportPDF'])->name('export.rekapitulasi.pdf');
 
     // Route::get('/admin/rekaperpus', [RekapPerpusController::class, 'index'])->name('admin.rekaperpus');
     Route::get('/admin/rekaperpus/export/excel', [RekapPerpusController::class, 'exportExcel'])->name('admin.rekaperpus.export.excel');

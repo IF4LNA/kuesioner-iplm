@@ -20,6 +20,10 @@
             <i class="fas fa-file-excel"></i> Export Excel
         </a>
 
+        <a href="{{ route('export.rekapitulasi.pdf', ['tahun' => $tahunTerpilih]) }}" class="btn btn-danger mb-3">
+            <i class="fas fa-file-pdf"></i> Export PDF
+        </a>        
+
         <a href="{{ route('admin.rekaperpus') }}" class="btn btn-primary mb-3">
             Rekapitulasi Perpustakaan <i class="fas fa-arrow-right"></i>
         </a>
