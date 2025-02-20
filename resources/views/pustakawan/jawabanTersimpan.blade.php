@@ -15,7 +15,7 @@
         </svg>
         <h1 class="h4 fw-bold text-success">Jawaban Berhasil Disimpan</h1>
         <p class="text-muted">Terima kasih telah mengisi kuesioner. Jawaban Anda sangat berarti bagi kami.</p>
-        <a href="/" class="btn btn-primary mt-3">Kembali</a>
+        <a href="/pustakawan/dashboard" class="btn btn-primary mt-3">Kembali</a>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

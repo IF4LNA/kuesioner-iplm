@@ -4,64 +4,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Kuesioner</title>
+    <title>Dashboard</title>
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-        /* Tampilan navbar */
-        .navbar {
-            background-color: #1F3C63;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            /* Pastikan navbar tetap di atas konten lainnya */
-            width: 100%;
-            /* Agar navbar memenuhi lebar layar */
-        }
-
-        .navbar-brand {
-            color: #fff !important;
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        .nav-link {
-            color: #f8f9fa !important;
-        }
-
-        .logout-btn {
-            font-size: 1.2rem;
-            color: #f8f9fa;
-            background: none;
-            border: none;
-        }
-
-        .logout-btn:hover {
-            color: #ffc107;
-        }
-
-        /* Tampilan utama */
         body {
-            background-color: #f9fafb;
-            font-family: 'Arial', sans-serif;
+            background-color: #F6EEE1;
+            font-family: 'Poppins', sans-serif;
         }
 
-        h3 {
-            font-weight: bold;
-            color: #333;
+        /* Navbar Styling */
+        .navbar-custom {
+            background-color: #1F2A44;
+            padding: 10px 20px;
         }
 
-        .logout-btn {
+        .navbar-custom .navbar-brand img {
+            width: 45px;
+        }
+
+        .navbar-custom .navbar-nav .nav-link {
+            color: white;
+            font-size: 15px;
+            padding: 10px 15px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .navbar-custom .navbar-nav .nav-link:hover {
+            color: #FFC107;
+            text-shadow: 0px 0px 5px rgba(255, 193, 7, 0.6);
+        }
+
+        .navbar-toggler {
             border: none;
-            background: none;
-            font-size: 1.5rem;
-            color: #dc3545;
         }
 
-        .logout-btn:hover {
-            color: #bb2d3b;
-            cursor: pointer;
+        .navbar-toggler-icon {
+            filter: invert(1);
+        }
+
+        /* Dropdown Styling */
+        .navbar-nav .dropdown-menu {
+            background-color: #1A2335;
+            border: none;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .navbar-nav .dropdown-item {
+            color: white;
+            font-size: 14px;
+            padding: 10px;
+        }
+
+        .navbar-nav .dropdown-item:hover {
+            background-color: #FFC107;
+            color: black;
+        }
+
+        /* Button Styling */
+        .btn-custom {
+            background-color: #FFC107;
+            color: black;
+            border-radius: 20px;
+            font-size: 14px;
+            padding: 8px 15px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .btn-custom:hover {
+            background-color: #E0A800;
+            color: black;
         }
 
         body {
@@ -218,9 +232,11 @@
 
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Kuesioner</a>
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container">
+            <a class="navbar-brand" href="{{ route('pustakawan.dashboard') }}">
+                <img src="{{ asset('images/disarpus.png') }}" alt="logo Disarpus">
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -228,15 +244,34 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <span class="nav-link">Selamat datang, {{ Auth::user()->username }}!</span>
+                        <a class="nav-link" href="{{ route('pustakawan.dashboard') }}">
+                            <i class="fas fa-home"></i> Dashboard
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <form action="{{ route('logout') }}" method="POST" class="d-inline">
-                            @csrf
-                            <button type="submit" class="logout-btn" title="Logout">
-                                <i class="fas fa-sign-out-alt"></i>
-                            </button>
-                        </form>
+                        <a class="nav-link" href="{{ route('monografi.index') }}">
+                            <i class="fas fa-book"></i> Monografi
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-custom nav-link px-3" href="{{ route('form.data') }}">
+                            <i class="fas fa-edit"></i> Isi Kuesioner
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown ms-2">
+                        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle"></i> {{ Auth::user()->username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user"></i> Profil Saya</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-danger" href="{{ route('home') }}">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a></li>
+                        </ul>
                     </li>
                 </ul>
             </div>
@@ -307,8 +342,7 @@
             <p class="text-danger">Tidak ada pertanyaan untuk tahun {{ $tahun }}.</p>
         @endif
 
-        <!-- Bootstrap JS -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+
 
         <script>
             $(document).ready(function() {
@@ -316,6 +350,9 @@
             });
         </script>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
 </body>
 
 </html>

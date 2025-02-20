@@ -13,6 +13,7 @@ use App\Http\Controllers\RekapitulasiController;
 use App\Exports\RekapitulasiExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\RekapPerpusController;
+use App\Http\Controllers\MonografiController;
 
 
 // Rute login dan logout
@@ -37,6 +38,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/pustakawan/dashboard', [PustakawanController::class, 'index'])->name('pustakawan.dashboard');
     });
 });
+
 
 // route side-bar
 Route::middleware(['auth'])->group(function () {
@@ -120,6 +122,11 @@ Route::middleware(['auth'])->group(function () {
 // route halaman pustakawan
 Route::middleware(['auth'])->group(function () {
     Route::get('/form/data', [PustakawanController::class, 'showForm'])->name('form.data');
+
+    
+
+Route::get('/monografi', [MonografiController::class, 'index'])->name('monografi.index');
+
 
     // Route untuk menyimpan data perpustakaan
     Route::post('/pustakawan/store', [PustakawanController::class, 'store'])->name('pustakawan.store');
