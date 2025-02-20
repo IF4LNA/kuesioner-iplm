@@ -78,6 +78,12 @@
             <i class="fas fa-file-excel"></i> Export Excel
         </a>
 
+        <!-- Export PDF -->
+        <a href="{{ route('uplm.exportPdf', ['id' => 2, 'jenis' => request()->jenis, 'subjenis' => request()->subjenis, 'tahun' => request()->tahun]) }}"
+            class="btn btn-danger">
+            <i class="fas fa-file-pdf"></i> Export PDF
+        </a>
+        
         <!-- Tabel Data -->
         <div class="table-responsive mt-3">
             <table class="table table-striped table-bordered" style="width: 150%">

@@ -73,9 +73,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notifications', [AdminController::class, 'notifications'])->name('notifications');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
 
-    //export uplm 1-7
+    //export excel uplm 1
     Route::get('/uplm/export/{id}', [UplmController::class, 'exportExcel'])->name('uplm.exportExcel');
+    
+    //export pdf uplm 2
+    Route::get('/uplm/{id}/exportPdf', [UplmController::class, 'exportPdf'])->name('uplm.exportPdf');
 
+    Route::get('/uplm/{id}/exportPdf', [UplmController::class, 'exportUplm2Pdf'])->name('uplm.exportPdf');
+    
     //export rekap
     Route::get('/export-rekapitulasi/{tahun}', function ($tahun) {
         return Excel::download(new RekapitulasiExport($tahun), "Rekapitulasi_UPLM_Kota_Bandung_$tahun.xlsx");

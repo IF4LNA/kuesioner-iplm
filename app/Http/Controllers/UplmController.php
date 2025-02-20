@@ -15,6 +15,9 @@ use App\Exports\Uplm4Export;
 use App\Exports\Uplm5Export;
 use App\Exports\Uplm6Export;
 use App\Exports\Uplm7Export;
+use App\Exports\UplmPdfExport;
+use App\Exports\Uplm2PdfExport;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 
 class UplmController extends Controller
@@ -155,5 +158,32 @@ class UplmController extends Controller
             default:
                 return abort(404, 'Export not found');
         }
+    }
+
+    // Export PDF UPLM 1
+    public function exportPdf($id)
+    {
+        $jenis = request()->get('jenis');
+        $subjenis = request()->get('subjenis');
+        $tahun = request()->get('tahun');
+
+        $data = new UplmPdfExport($jenis, $subjenis, $tahun);
+        $pdf = Pdf::loadView('admin.uplm_pdf', [
+            'data' => $data->view()->getData()['data'],
+            'headings' => $data->view()->getData()['headings']
+        ]);
+
+        return $pdf->download('uplm_data.pdf');
+    }
+
+    // Export PDF UPLM 2
+    public function exportUplm2Pdf($id, Request $request)
+    {
+        $jenis = $request->get('jenis');
+        $subjenis = $request->get('subjenis');
+        $tahun = $request->get('tahun');
+
+        $export = new Uplm2PdfExport($jenis, $subjenis, $tahun);
+        return $export->downloadPdf();
     }
 }
