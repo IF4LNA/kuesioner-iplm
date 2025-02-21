@@ -79,10 +79,10 @@
         </a>
 
          <!-- Export PDF -->
-         <a href="{{ route('uplm.exportPdf', ['id' => 3, 'jenis' => request()->jenis, 'subjenis' => request()->subjenis, 'tahun' => request()->tahun]) }}"
+         <a href="{{ route('uplm.exportPdf', ['id' => 3, 'kategori' => 3, 'jenis' => request()->jenis, 'subjenis' => request()->subjenis, 'tahun' => request()->tahun]) }}"
             class="btn btn-danger">
             <i class="fas fa-file-pdf"></i> Export PDF
-        </a>
+        </a>     
 
         <!-- Tabel Data -->
         <div class="table-responsive mt-3">

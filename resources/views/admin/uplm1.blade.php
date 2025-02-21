@@ -72,16 +72,18 @@
             </div>
         </div>
 
-        <!-- Export excel -->
+        <!-- Export Excel -->
         <a href="{{ route('uplm.exportExcel', ['id' => $id, 'jenis' => request()->jenis, 'subjenis' => request()->subjenis, 'tahun' => request()->tahun]) }}"
             class="btn btn-success mb-3"><i class="fas fa-file-excel"></i> Export Excel
         </a>
         </a>
 
-        <a href="{{ route('uplm.exportPdf', ['id' => $id, 'jenis' => request()->jenis, 'subjenis' => request()->subjenis, 'tahun' => request()->tahun]) }}" class="btn btn-danger mb-3">
-    <i class="fas fa-file-pdf"></i> Export PDF
-</a>
-        
+        <!-- Export PDF -->
+        <a href="{{ route('uplm.exportPdf1', ['id' => $id, 'jenis' => request()->jenis, 'subjenis' => request()->subjenis, 'tahun' => request()->tahun]) }}"
+            class="btn btn-danger mb-3">
+            <i class="fas fa-file-pdf"></i> Export PDF
+        </a>
+
         <!-- Tabel Data -->
         <div class="table-responsive mt-3">
             <table class="table table-striped table-bordered" style="width: 150%">

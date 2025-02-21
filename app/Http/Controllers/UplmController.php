@@ -16,7 +16,6 @@ use App\Exports\Uplm5Export;
 use App\Exports\Uplm6Export;
 use App\Exports\Uplm7Export;
 use App\Exports\UplmPdfExport;
-use App\Exports\Uplm2PdfExport;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 
@@ -173,17 +172,24 @@ class UplmController extends Controller
             'headings' => $data->view()->getData()['headings']
         ]);
 
-        return $pdf->download('uplm_data.pdf');
+        return $pdf->download('uplm1-report.pdf');
     }
 
-    // Export PDF UPLM 2
-    public function exportUplm2Pdf($id, Request $request)
+    // Export PDF UPLM 2-7
+    public function exportUplmPdf($id, Request $request, $kategori)
     {
         $jenis = $request->get('jenis');
         $subjenis = $request->get('subjenis');
         $tahun = $request->get('tahun');
 
-        $export = new Uplm2PdfExport($jenis, $subjenis, $tahun);
+        // Menentukan kelas export berdasarkan kategori
+        $exportClass = 'App\\Exports\\Uplm' . $kategori . 'PdfExport';
+
+        if (!class_exists($exportClass)) {
+            return response()->json(['error' => 'Kategori tidak valid'], 404);
+        }
+
+        $export = new $exportClass($jenis, $subjenis, $tahun);
         return $export->downloadPdf();
     }
 }

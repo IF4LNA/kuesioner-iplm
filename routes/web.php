@@ -78,10 +78,12 @@ Route::middleware(['auth'])->group(function () {
     //export excel uplm 1
     Route::get('/uplm/export/{id}', [UplmController::class, 'exportExcel'])->name('uplm.exportExcel');
     
-    //export pdf uplm 2
-    Route::get('/uplm/{id}/exportPdf', [UplmController::class, 'exportPdf'])->name('uplm.exportPdf');
+    //export pdf uplm 1
+    Route::get('/uplm/{id}/exportPdf', [UplmController::class, 'exportPdf'])
+    ->name('uplm.exportPdf1');
 
-    Route::get('/uplm/{id}/exportPdf', [UplmController::class, 'exportUplm2Pdf'])->name('uplm.exportPdf');
+    //export pdf uplm 2-7
+    Route::get('/uplm/{id}/exportPdf/{kategori}', [UplmController::class, 'exportUplmPdf'])->name('uplm.exportPdf');
     
     //export rekap
     Route::get('/export-rekapitulasi/{tahun}', function ($tahun) {
