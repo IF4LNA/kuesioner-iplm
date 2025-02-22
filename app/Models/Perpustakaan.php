@@ -48,6 +48,7 @@ public function kota()
     {
         return $this->hasMany(Jawaban::class, 'id_perpustakaan', 'id_perpustakaan');
     }
+    
 
     public function laporan()
     {

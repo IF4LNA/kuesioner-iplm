@@ -14,6 +14,7 @@ use App\Exports\RekapitulasiExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\RekapPerpusController;
 use App\Http\Controllers\MonografiController;
+use App\Http\Controllers\DashboardController;
 
 
 // Rute login dan logout
@@ -30,8 +31,9 @@ Route::get('/bantuan', [HomeController::class, 'bantuan'])->name('bantuan');
 Route::middleware('auth')->group(function () {
     // Dashboard admin
     Route::middleware('role:admin')->group(function () {
-        Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+        Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     });
+
 
     // Dashboard pustakawan
     Route::middleware('role:pustakawan')->group(function () {
