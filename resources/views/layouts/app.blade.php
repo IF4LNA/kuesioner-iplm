@@ -17,7 +17,7 @@
             position: fixed;
             top: 0;
             left: 0;
-            background-color: #f8f9fa;
+            background-color: #85929e;
             padding-top: 20px;
             border-right: 1px solid #ddd;
             overflow-y: auto;
@@ -60,7 +60,7 @@
         }
 
         .sidebar .nav-item a {
-            color: rgb(155, 155, 155);
+            color: rgb(255, 255, 255);
             text-decoration: none;
             font-size: 16px;
             display: flex;
@@ -78,11 +78,11 @@
         }
 
         .sidebar .nav-item a:hover {
-            color: #007bff;
+            color: #34495e;
         }
 
         .sidebar .nav-item a.active {
-            color: #007bff;
+            color: #4a4a4a;
         }
 
         .sidebar .nav-item a .toggle-icon {
@@ -105,7 +105,7 @@
 
         /* Navbar */
         .navbar-custom {
-            background-color: #f8f9fa;
+            background-color: #34495e;
             padding: 10px 20px;
             position: fixed;
             top: 0;
@@ -127,6 +127,7 @@
         .navbar-custom .welcome-message {
             margin-left: auto;
             white-space: nowrap;
+            color: #ffffff;
         }
 
         .content {
@@ -249,7 +250,8 @@
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="btn btn-link nav-link text-danger">
-                            <i class="fas fa-sign-out-alt"></i> Logout
+                            <i class="fas fa-power-off"></i> Logout
+
                         </button>
                     </form>
                 </li>
@@ -261,7 +263,7 @@
     <div class="navbar-custom">
         <div class="d-flex">
             <!-- Sidebar toggle button -->
-            <button class="btn btn-link text-dark" id="toggleSidebar">
+            <button class="btn btn-link text-light" id="toggleSidebar">
                 <i class="fas fa-bars"></i>
             </button>
 
@@ -270,7 +272,7 @@
             </div>
 
             <div class="welcome-message">
-                <h5>{{ Auth::user()->username }}</h5>
+                <h5><i class="fas fa-user"></i> {{ Auth::user()->username }}</h5>
             </div>
         </div>
     </div>
@@ -279,6 +281,10 @@
     <div id="content" class="content">
         @yield('content')
     </div>
+
+    @livewireStyles
+@livewireScripts
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

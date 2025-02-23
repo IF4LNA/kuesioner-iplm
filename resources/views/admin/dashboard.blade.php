@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <h2 class="mb-4">Dashboard</h2>
+    <h3 class="mb-4">Dashboard</h3>
 
     <!-- Dropdown Pilih Tahun -->
     <form method="GET" action="{{ route('dashboard') }}" class="mb-3">
@@ -49,5 +49,9 @@
             </div>
         </div>
     </div>
+</div>
+<div class="mt-4">
+    <h4>Daftar Perpustakaan Belum Mengisi ({{ $selectedYear }})</h4>
+    @livewire('perpustakaan-belum-mengisi', ['selectedYear' => $selectedYear])
 </div>
 @endsection
