@@ -185,6 +185,11 @@
                 </select>
             </div>
         </form>
+
+        <a href="{{ route('pustakawan.monografi.export.pdf', ['tahun' => $tahunTerpilih]) }}" class="btn btn-danger">
+            <i class="fas fa-file-pdf"></i> Export PDF
+        </a>
+        
     
 <!-- Tabel Data Perpustakaan -->
 <table class="table table-bordered table-custom">
