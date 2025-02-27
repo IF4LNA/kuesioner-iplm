@@ -80,14 +80,14 @@ Route::middleware(['auth'])->group(function () {
 
     //export excel uplm 1
     Route::get('/uplm/export/{id}', [UplmController::class, 'exportExcel'])->name('uplm.exportExcel');
-    
+
     //export pdf uplm 1
     Route::get('/uplm/{id}/exportPdf', [UplmController::class, 'exportPdf'])
-    ->name('uplm.exportPdf1');
+        ->name('uplm.exportPdf1');
 
     //export pdf uplm 2-7
     Route::get('/uplm/{id}/exportPdf/{kategori}', [UplmController::class, 'exportUplmPdf'])->name('uplm.exportPdf');
-    
+
     //export rekap
     Route::get('/export-rekapitulasi/{tahun}', function ($tahun) {
         return Excel::download(new RekapitulasiExport($tahun), "Rekapitulasi_UPLM_Kota_Bandung_$tahun.xlsx");
@@ -121,22 +121,18 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/questions/get-by-year/{tahun}', [PertanyaanController::class, 'getByYear']);
     Route::post('/questions/copy', [PertanyaanController::class, 'copy'])->name('questions.copy');
-
 });
 
 // route halaman pustakawan
 Route::middleware(['auth'])->group(function () {
     Route::get('/form/data', [PustakawanController::class, 'showForm'])->name('form.data');
 
-    
+    Route::get('/monografi', [MonografiController::class, 'index'])->name('monografi.index');
 
-Route::get('/monografi', [MonografiController::class, 'index'])->name('monografi.index');
-
-//export pdf monografi pustakawan
-Route::get('/pustakawan/monografi/export-pdf/{tahun}', [MonografiController::class, 'exportPDF'])
-    ->name('pustakawan.monografi.export.pdf')
-    ->middleware('auth'); // Pastikan hanya user login yang bisa mengakses
-
+    //export pdf monografi pustakawan
+    Route::get('/pustakawan/monografi/export-pdf/{tahun}', [MonografiController::class, 'exportPDF'])
+        ->name('pustakawan.monografi.export.pdf')
+        ->middleware('auth'); // Pastikan hanya user login yang bisa mengakses
 
     // Route untuk menyimpan data perpustakaan
     Route::post('/pustakawan/store', [PustakawanController::class, 'store'])->name('pustakawan.store');

@@ -13,18 +13,20 @@ class IsiKuesioner extends Controller
         // Validasi data form
         $validated = $request->validate([
             'npp' => 'required',
-            'no_telpon' => 'required',
-            'foto' => 'required|image',
+            'kontak' => 'required',
+            'foto' => 'nullable|image',
             'kota' => 'required',
             'kecamatan' => 'required',
             'desa_kelurahan' => 'required',
+            'alamat' => 'required',
         ]);
-    
-        // Proses upload foto
+
+        // Proses upload foto jika ada
+        $fotoPath = null;
         if ($request->hasFile('foto')) {
-            $fotoPath = $request->file('foto')->store('perpustakaan_foto');
+            $fotoPath = $request->file('foto')->store('perpustakaan_foto', 'public');
         }
-    
+
         // Simpan data perpustakaan
         Perpustakaan::create([
             'nama_perpustakaan' => $request->input('nama_perpustakaan'),
@@ -32,12 +34,11 @@ class IsiKuesioner extends Controller
             'npp' => $request->input('npp'),
             'kontak' => $request->input('kontak'),
             'foto' => $fotoPath,
-            'id_kelurahan' => $request->input('id_kelurahan'),
-            'alamat' => 'alamat perpustakaan',
+            'id_kelurahan' => $request->input('desa_kelurahan'), // Sesuaikan nama input dengan form
+            'alamat' => $request->input('alamat'),
         ]);
-    
+
         // Redirect ke halaman isikuesioner setelah data disimpan
         return redirect()->route('isikuesioner')->with('success', 'Data berhasil disimpan. Silakan isi kuesioner.');
     }
-    
 }

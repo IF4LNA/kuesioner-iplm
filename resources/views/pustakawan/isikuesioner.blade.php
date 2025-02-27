@@ -329,20 +329,18 @@
                                 <h5 class="question-text">{{ $loop->iteration }}. {{ $pertanyaan->teks_pertanyaan }}
                                 </h5>
                                 <input type="text" name="jawaban[{{ $pertanyaan->id_pertanyaan }}]"
-                                    class="form-control" placeholder="Masukkan jawaban" required>
+                                    class="form-control" placeholder="Masukkan jawaban"
+                                    value="{{ $jawaban[$pertanyaan->id_pertanyaan] ?? '' }}" required>
                             </div>
                         </div>
                     @endforeach
                 </div>
 
-                <!-- Submit Button inside Form -->
                 <button type="submit" class="btn btn-primary mt-3 w-100">Submit Jawaban</button>
             </form>
         @elseif (isset($tahun))
             <p class="text-danger">Tidak ada pertanyaan untuk tahun {{ $tahun }}.</p>
         @endif
-
-
 
         <script>
             $(document).ready(function() {
@@ -350,9 +348,9 @@
             });
         </script>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
 </body>
 
 </html>

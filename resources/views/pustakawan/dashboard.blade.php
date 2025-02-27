@@ -61,6 +61,12 @@
             background-color: #FFC107;
             color: black;
         }
+        .navbar-custom .navbar-nav .nav-link.active {
+            color: #FFC107;
+            text-shadow: 0px 0px 5px rgba(255, 193, 7, 0.6);
+            font-weight: bold;
+            /* Optional: Tambahkan efek tebal */
+        }
 
         /* Button Styling */
         .btn-custom {
@@ -111,12 +117,14 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('pustakawan.dashboard') }}">
+                        <a class="nav-link {{ request()->is('pustakawan/dashboard') ? 'active' : '' }}"
+                            href="{{ route('pustakawan.dashboard') }}">
                             <i class="fas fa-home"></i> Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('monografi.index') }}">
+                        <a class="nav-link {{ request()->is('monografi*') ? 'active' : '' }}"
+                            href="{{ route('monografi.index') }}">
                             <i class="fas fa-book"></i> Monografi
                         </a>
                     </li>
