@@ -189,7 +189,7 @@
             <!-- Navigation Menu -->
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
+                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
                         href="{{ route('dashboard') }}">
                         <i class="fas fa-home-alt"></i> Dashboard
                     </a>
@@ -223,10 +223,11 @@
                     </a>
                 </li>                
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('recap') ? 'active' : '' }}" href="{{ route('recap') }}">
+                    <a class="nav-link {{ request()->routeIs('rekapitulasi*') || request()->routeIs('admin.rekaperpus') ? 'active' : '' }}" 
+                       href="{{ route('rekapitulasi') }}">
                         <i class="fas fa-clipboard-list"></i> Rekapitulasi
                     </a>
-                </li>
+                </li>                
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('notifications') ? 'active' : '' }}"
                         href="{{ route('notifications') }}">

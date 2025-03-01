@@ -46,7 +46,5 @@ class PerpustakaanBelumMengisi extends Component
             'selectedYear' => $selectedYear
         ]);
     }
-    
-    
 }
 

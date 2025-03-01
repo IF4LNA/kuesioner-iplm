@@ -47,7 +47,6 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/manage-users', [AdminController::class, 'manageUsers'])->name('manage.users');
-    // Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
 
     //route uplm 1-7
     Route::get('/uplm/{id}', [UplmController::class, 'showUplm'])->name('uplm.show');
@@ -71,9 +70,9 @@ Route::middleware(['auth'])->group(function () {
     // route menampilkan data subjenis di form input
     Route::get('/getSubjenis/{jenis}', [AdminController::class, 'getSubjenis']);
 
-    //route rekap
-    Route::get('/recap', [RekapitulasiController::class, 'showRekap'])->name('recap');
+    //route rekapitulasi
     Route::get('/rekapitulasi', [RekapitulasiController::class, 'showRekap'])->name('rekapitulasi');
+    // Route::get('/rekapitulasi', [RekapitulasiController::class, 'showRekap'])->name('rekapitulasi');
 
     Route::get('/notifications', [AdminController::class, 'notifications'])->name('notifications');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
