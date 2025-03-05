@@ -51,8 +51,12 @@ class PustakawanController extends Controller
             if ($perpustakaan->foto) {
                 Storage::disk('public')->delete($perpustakaan->foto);
             }
-            // Simpan foto baru
-            $fotoPath = $request->file('foto')->store('fotos', 'public');
+
+            // Ambil nama asli file
+            $originalName = $request->file('foto')->getClientOriginalName();
+
+            // Simpan dengan nama asli di dalam folder 'fotos' di penyimpanan publik
+            $fotoPath = $request->file('foto')->storeAs('fotos', $originalName, 'public');
         } else {
             $fotoPath = $perpustakaan->foto; // Gunakan foto lama jika tidak diunggah foto baru
         }
@@ -95,85 +99,80 @@ class PustakawanController extends Controller
         return redirect()->route('home')->with('error', 'Perpustakaan tidak ditemukan untuk akun ini');
     }
 
-
     public function isikuesioner(Request $request)
-{
-    // Mengambil daftar tahun unik dari tabel pertanyaan
-    $tahunList = Pertanyaan::select('tahun')->distinct()->pluck('tahun');
+    {
+        // Mengambil daftar tahun unik dari tabel pertanyaan
+        $tahunList = Pertanyaan::select('tahun')->distinct()->pluck('tahun');
 
-    // Cek apakah ada tahun yang dipilih
-    $tahun = $request->input('tahun');
-    $pertanyaans = collect();
-    $jawaban = collect();
-    $idPerpustakaan = auth()->user()->perpustakaan->id_perpustakaan;
-    
-    // Tahun sekarang
-    $tahunSekarang = now()->year;
-    
-    // Status apakah bisa mengedit
-    $editable = true;
+        // Cek apakah ada tahun yang dipilih
+        $tahun = $request->input('tahun');
+        $pertanyaans = collect();
+        $jawaban = collect();
+        $idPerpustakaan = auth()->user()->perpustakaan->id_perpustakaan;
 
-    if ($tahun) {
-        // Ambil pertanyaan berdasarkan tahun yang dipilih
-        $pertanyaans = Pertanyaan::where('tahun', $tahun)->get();
+        // Tahun sekarang
+        $tahunSekarang = now()->year;
 
-        // Ambil jawaban yang sudah diisi oleh perpustakaan untuk tahun tersebut
-        $jawaban = Jawaban::where('tahun', $tahun)
-            ->where('id_perpustakaan', $idPerpustakaan)
-            ->pluck('jawaban', 'id_pertanyaan');
+        // Status apakah bisa mengedit
+        $editable = true;
 
-        // Jika tahun lebih kecil dari tahun sekarang, set editable menjadi false
-        if ($tahun < $tahunSekarang) {
-            $editable = false;
+        if ($tahun) {
+            // Ambil pertanyaan berdasarkan tahun yang dipilih
+            $pertanyaans = Pertanyaan::where('tahun', $tahun)->get();
+
+            // Ambil jawaban yang sudah diisi oleh perpustakaan untuk tahun tersebut
+            $jawaban = Jawaban::where('tahun', $tahun)
+                ->where('id_perpustakaan', $idPerpustakaan)
+                ->pluck('jawaban', 'id_pertanyaan');
+
+            // Jika tahun lebih kecil dari tahun sekarang, set editable menjadi false
+            if ($tahun < $tahunSekarang) {
+                $editable = false;
+            }
         }
+
+        // Kirim data ke view
+        return view('pustakawan.isikuesioner', compact('tahunList', 'pertanyaans', 'tahun', 'jawaban', 'editable'));
     }
 
-    // Kirim data ke view
-    return view('pustakawan.isikuesioner', compact('tahunList', 'pertanyaans', 'tahun', 'jawaban', 'editable'));
-}
+    public function submit(Request $request)
+    {
+        // Ambil tahun dari request
+        $tahun = $request->input('tahun');
+        $tahunSekarang = now()->year;
 
+        // Cek jika tahun sudah lewat, tolak penyimpanan
+        if ($tahun < $tahunSekarang) {
+            return redirect()->back()->with('error', 'Jawaban untuk tahun yang sudah lewat tidak dapat diubah.');
+        }
 
-public function submit(Request $request)
-{
-    // Ambil tahun dari request
-    $tahun = $request->input('tahun');
-    $tahunSekarang = now()->year;
+        // Validasi input jawaban
+        $request->validate([
+            'jawaban' => 'required|array',
+            'jawaban.*' => 'required|string|max:255',
+            'tahun' => 'required|integer',
+        ]);
 
-    // Cek jika tahun sudah lewat, tolak penyimpanan
-    if ($tahun < $tahunSekarang) {
-        return redirect()->back()->with('error', 'Jawaban untuk tahun yang sudah lewat tidak dapat diubah.');
+        // Dapatkan id_perpustakaan dari user yang login
+        $idPerpustakaan = auth()->user()->perpustakaan->id_perpustakaan;
+
+        // Loop untuk menyimpan atau memperbarui jawaban
+        foreach ($request->jawaban as $idPertanyaan => $jawabanText) {
+            Jawaban::updateOrCreate(
+                [
+                    'id_pertanyaan' => $idPertanyaan,
+                    'id_perpustakaan' => $idPerpustakaan,
+                    'tahun' => $tahun,
+                ],
+                [
+                    'jawaban' => $jawabanText,
+                    'user_id' => auth()->user()->id,
+                ]
+            );
+        }
+
+        return redirect()->route('pustakawan.jawabanTersimpan')->with('success', 'Jawaban berhasil disimpan!');
     }
-
-    // Validasi input jawaban
-    $request->validate([
-        'jawaban' => 'required|array',
-        'jawaban.*' => 'required|string|max:255',
-        'tahun' => 'required|integer',
-    ]);
-
-    // Dapatkan id_perpustakaan dari user yang login
-    $idPerpustakaan = auth()->user()->perpustakaan->id_perpustakaan;
-
-    // Loop untuk menyimpan atau memperbarui jawaban
-    foreach ($request->jawaban as $idPertanyaan => $jawabanText) {
-        Jawaban::updateOrCreate(
-            [
-                'id_pertanyaan' => $idPertanyaan,
-                'id_perpustakaan' => $idPerpustakaan,
-                'tahun' => $tahun,
-            ],
-            [
-                'jawaban' => $jawabanText,
-                'user_id' => auth()->user()->id,
-            ]
-        );
-    }
-
-    return redirect()->route('pustakawan.jawabanTersimpan')->with('success', 'Jawaban berhasil disimpan!');
-}
-
-
-    // PustakawanController.php
 
     public function jawabanTersimpan()
     {
