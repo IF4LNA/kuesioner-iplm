@@ -313,34 +313,43 @@
             </div>
         </form>
 
-        <!-- Menampilkan Pertanyaan -->
-        @if ($pertanyaans->count() > 0)
-            <form action="{{ route('kuesioner.submit') }}" method="POST">
-                @csrf
-                <input type="hidden" name="tahun" value="{{ $tahun }}">
+<!-- Menampilkan Pertanyaan -->
+@if ($pertanyaans->count() > 0)
+<form action="{{ route('kuesioner.submit') }}" method="POST">
+    @csrf
+    <input type="hidden" name="tahun" value="{{ $tahun }}">
 
-                <div class="question-container">
-                    @foreach ($pertanyaans as $pertanyaan)
-                        <div class="question-box">
-                            <div class="question-left">
-                                <img src="https://via.placeholder.com/100" alt="Icon Pertanyaan" class="question-icon">
-                            </div>
-                            <div class="question-right">
-                                <h5 class="question-text">{{ $loop->iteration }}. {{ $pertanyaan->teks_pertanyaan }}
-                                </h5>
-                                <input type="text" name="jawaban[{{ $pertanyaan->id_pertanyaan }}]"
-                                    class="form-control" placeholder="Masukkan jawaban"
-                                    value="{{ $jawaban[$pertanyaan->id_pertanyaan] ?? '' }}" required>
-                            </div>
-                        </div>
-                    @endforeach
+    <div class="question-container">
+        @foreach ($pertanyaans as $pertanyaan)
+            <div class="question-box">
+                <div class="question-left">
+                    <img src="https://via.placeholder.com/100" alt="Icon Pertanyaan" class="question-icon">
                 </div>
+                <div class="question-right">
+                    <h5 class="question-text">{{ $loop->iteration }}. {{ $pertanyaan->teks_pertanyaan }}</h5>
+                    <input type="text" name="jawaban[{{ $pertanyaan->id_pertanyaan }}]"
+                        class="form-control" placeholder="Masukkan jawaban"
+                        value="{{ $jawaban[$pertanyaan->id_pertanyaan] ?? '' }}" 
+                        {{ !$editable ? 'disabled' : '' }}> <!-- Tambahkan disabled jika tidak bisa diedit -->
+                </div>
+            </div>
+        @endforeach
+    </div>
 
-                <button type="submit" class="btn btn-primary mt-3 w-100">Submit Jawaban</button>
-            </form>
-        @elseif (isset($tahun))
-            <p class="text-danger">Tidak ada pertanyaan untuk tahun {{ $tahun }}.</p>
-        @endif
+    @if($editable)
+        <button type="submit" class="btn btn-primary mt-3 w-100">Submit Jawaban</button>
+    @endif
+</form>
+
+@if (!$editable)
+    <p class="text-warning mt-3">Tahun {{ $tahun }} sudah berlalu, jawaban tidak dapat diubah.</p>
+@endif
+
+    </form>
+@elseif (isset($tahun))
+    <p class="text-danger">Tidak ada pertanyaan untuk tahun {{ $tahun }}.</p>
+@endif
+
 
         <script>
             $(document).ready(function() {

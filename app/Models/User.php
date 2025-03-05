@@ -45,4 +45,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(Perpustakaan::class, 'id_akun');
     }
+
+    public function isAdmin()
+{
+    return $this->role === 'admin'; // Sesuaikan dengan kolom yang digunakan untuk menyimpan peran user
+}
+
 }
