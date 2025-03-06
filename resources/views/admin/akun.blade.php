@@ -2,55 +2,58 @@
 
 @section('content')
     <div class="container mt-5">
-        <h3>Buat Akun Baru</h3>
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-        <form action="{{ route('admin.store-account') }}" method="POST">
-            @csrf
-            <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" name="username" id="username" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" name="password" id="password" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label for="role" class="form-label">Role</label>
-                <select name="role" id="role" class="form-select" required>
-                    <option value="admin">Admin</option>
-                    <option value="pustakawan">Pustakawan</option>
-                </select>
-            </div>
-            <div id="pustakawan-fields" style="display: none;">
-                <div class="mb-3">
-                    <label for="nama_perpustakaan" class="form-label">Nama Perpustakaan</label>
-                    <input type="text" name="nama_perpustakaan" id="nama_perpustakaan" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label for="jenis" class="form-label">Jenis Perpustakaan</label>
-                    <select name="jenis" id="jenis" class="form-select" required>
-                        <option value="">-- Pilih Jenis --</option>
-                        <option value="umum">Umum</option>
-                        <option value="sekolah">Sekolah</option>
-                        <option value="perguruan tinggi">Perguruan Tinggi</option>
-                        <option value="khusus">Khusus</option>
-                    </select>
-                </div>
+        <div class="card shadow-lg mb-4 border-0">
+            <div class="card-body">
+                <h3>Buat Akun Baru</h3>
+                @if (session('success'))
+                    <div class="alert alert-success">{{ session('success') }}</div>
+                @endif
+                <form action="{{ route('admin.store-account') }}" method="POST">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" name="username" id="username" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" name="password" id="password" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Role</label>
+                        <select name="role" id="role" class="form-select" required>
+                            <option value="admin">Admin</option>
+                            <option value="pustakawan">Pustakawan</option>
+                        </select>
+                    </div>
+                    <div id="pustakawan-fields" style="display: none;">
+                        <div class="mb-3">
+                            <label for="nama_perpustakaan" class="form-label">Nama Perpustakaan</label>
+                            <input type="text" name="nama_perpustakaan" id="nama_perpustakaan" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="jenis" class="form-label">Jenis Perpustakaan</label>
+                            <select name="jenis" id="jenis" class="form-select" required>
+                                <option value="">-- Pilih Jenis --</option>
+                                <option value="umum">Umum</option>
+                                <option value="sekolah">Sekolah</option>
+                                <option value="perguruan tinggi">Perguruan Tinggi</option>
+                                <option value="khusus">Khusus</option>
+                            </select>
+                        </div>
 
-                <!-- Field subjenis hanya muncul untuk jenis tertentu -->
-                <div class="mb-3" id="subjenis-fields" style="display: none;">
-                    <label for="subjenis" class="form-label">Subjenis Perpustakaan</label>
-                    <select name="subjenis" id="subjenis" class="form-select">
-                        <!-- Opsi akan diisi secara dinamis oleh JavaScript -->
-                    </select>
-                </div>
+                        <!-- Field subjenis hanya muncul untuk jenis tertentu -->
+                        <div class="mb-3" id="subjenis-fields" style="display: none;">
+                            <label for="subjenis" class="form-label">Subjenis Perpustakaan</label>
+                            <select name="subjenis" id="subjenis" class="form-select">
+                                <!-- Opsi akan diisi secara dinamis oleh JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Buat Akun</button>
+                </form>
             </div>
-            <button type="submit" class="btn btn-primary">Buat Akun</button>
-        </form>
+        </div>
     </div>
-
     <script>
         // Tampilkan/matikan field pustakawan berdasarkan pilihan role
         document.getElementById('role').addEventListener('change', function() {

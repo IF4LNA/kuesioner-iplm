@@ -2,107 +2,147 @@
 
 @section('content')
     <div class="container mt-4">
-        <h2>Monografi Perpustakaan</h2>
+        <!-- Card untuk Form Filter -->
+        <div class="card shadow-lg mb-4 border-0">
+            <div class="card-header bg-white text-black">
+                <h5 class="card-title mb-0">Filter Monografi Perpustakaan</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ route('admin.rekaperpus') }}" method="GET" class="mb-3">
+                    <div class="row">
+                        <!-- Dropdown Perpustakaan -->
+                        <div class="col-md-6 mb-3">
+                            <label for="perpustakaan_id" class="form-label">Pilih Perpustakaan:</label>
+                            <select name="perpustakaan_id" id="perpustakaan_id" class="form-control">
+                                <option value="">-- Pilih Perpustakaan --</option>
+                                @foreach ($perpustakaans as $p)
+                                    <option value="{{ $p->id_perpustakaan }}"
+                                        {{ $selectedPerpustakaan == $p->id_perpustakaan ? 'selected' : '' }}>
+                                        {{ $p->nama_perpustakaan }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-        <form action="{{ route('admin.rekaperpus') }}" method="GET" class="mb-3">
-            <label for="perpustakaan_id">Pilih Perpustakaan:</label>
-            <select name="perpustakaan_id" id="perpustakaan_id" class="form-control w-50">
-                <option value="">-- Pilih Perpustakaan --</option>
-                @foreach ($perpustakaans as $p)
-                    <option value="{{ $p->id_perpustakaan }}"
-                        {{ $selectedPerpustakaan == $p->id_perpustakaan ? 'selected' : '' }}>
-                        {{ $p->nama_perpustakaan }}
-                    </option>
-                @endforeach
-            </select>
+                        <!-- Dropdown Tahun -->
+                        <div class="col-md-6 mb-3">
+                            <label for="tahun" class="form-label">Pilih Tahun:</label>
+                            <select name="tahun" id="tahun" class="form-control">
+                                <option value="">-- Pilih Tahun --</option>
+                                @foreach ($tahunList as $t)
+                                    <option value="{{ $t }}" {{ $selectedTahun == $t ? 'selected' : '' }}>
+                                        {{ $t }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
 
-            <label for="tahun">Pilih Tahun:</label>
-            <select name="tahun" id="tahun" class="form-control w-50">
-                <option value="">-- Pilih Tahun --</option>
-                @foreach ($tahunList as $t)
-                    <option value="{{ $t }}" {{ $selectedTahun == $t ? 'selected' : '' }}>{{ $t }}
-                    </option>
-                @endforeach
-            </select>
-
-            <button type="submit" class="btn btn-primary mt-2">Tampilkan</button>
-        </form>
-
+                    <!-- Tombol Tampilkan -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Tampilkan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         @if ($monografi->isNotEmpty())
-            <a href="{{ route('admin.rekaperpus.export.excel', ['perpustakaan_id' => $selectedPerpustakaan, 'tahun' => $selectedTahun]) }}"
-                class="btn btn-success mb-2">
-                <i class="fas fa-file-excel"></i> Export Excel
-            </a>
-            <a href="{{ route('admin.rekaperpus.export.pdf', ['perpustakaan_id' => $selectedPerpustakaan, 'tahun' => $selectedTahun]) }}"
-                class="btn btn-danger mb-2">
-                <i class="fas fa-file-pdf"></i> Export PDF
-            </a>
+            <!-- Card untuk Tombol Export -->
+            <div class="card shadow-lg mb-4 border-0">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0">Export Data</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{{ route('admin.rekaperpus.export.excel', ['perpustakaan_id' => $selectedPerpustakaan, 'tahun' => $selectedTahun]) }}"
+                        class="btn btn-success mb-2">
+                        <i class="fas fa-file-excel"></i> Export Excel
+                    </a>
+                    <a href="{{ route('admin.rekaperpus.export.pdf', ['perpustakaan_id' => $selectedPerpustakaan, 'tahun' => $selectedTahun]) }}"
+                        class="btn btn-danger mb-2">
+                        <i class="fas fa-file-pdf"></i> Export PDF
+                    </a>
+                </div>
+            </div>
 
-            <!-- Tabel Data Perpustakaan -->
-            <h4>Data Perpustakaan</h4>
-            <table class="table table-bordered">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Nama Perpustakaan</th>
-                        <th>NPP</th>
-                        <th>Jenis</th>
-                        <th>Subjenis</th>
-                        <th>Kota</th>
-                        <th>Kecamatan</th>
-                        <th>Kelurahan</th>
-                        <th>Alamat</th>
-                        <th>Kontak</th>
-                        <th>Foto</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if ($perpustakaan)
-                        <tr>
-                            <td>{{ $perpustakaan->nama_perpustakaan }}</td>
-                            <td>{{ $perpustakaan->npp ?? '-' }}</td>
-                            <td>{{ $perpustakaan->jenis->jenis ?? '-' }}</td>
-                            <td>{{ $perpustakaan->jenis->subjenis ?? '-' }}</td>
-                            <td>{{ $perpustakaan->kelurahan->kecamatan->kota->nama_kota ?? '-' }}</td>
-                            <td>{{ $perpustakaan->kelurahan->kecamatan->nama_kecamatan ?? '-' }}</td>
-                            <td>{{ $perpustakaan->kelurahan->nama_kelurahan ?? '-' }}</td>
-                            <td>{{ $perpustakaan->alamat ?? '-' }}</td>
-                            <td>{{ $perpustakaan->kontak ?? '-' }}</td>
-                            <td>
-                                @if ($perpustakaan->foto)
-                                    <img src="{{ Storage::url($perpustakaan->foto) }}" class="img-thumbnail" width="100"
-                                        height="100">
-                                @else
-                                    <img src="{{ asset('storage/fotos/default.png') }}" class="img-thumbnail"
-                                        width="100" height="100">
+            <!-- Card untuk Tabel Data Perpustakaan -->
+            <div class="card shadow-lg mb-4 border-0">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Data Perpustakaan</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Nama Perpustakaan</th>
+                                    <th>NPP</th>
+                                    <th>Jenis</th>
+                                    <th>Subjenis</th>
+                                    <th>Kota</th>
+                                    <th>Kecamatan</th>
+                                    <th>Kelurahan</th>
+                                    <th>Alamat</th>
+                                    <th>Kontak</th>
+                                    <th>Foto</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if ($perpustakaan)
+                                    <tr>
+                                        <td>{{ $perpustakaan->nama_perpustakaan }}</td>
+                                        <td>{{ $perpustakaan->npp ?? '-' }}</td>
+                                        <td>{{ $perpustakaan->jenis->jenis ?? '-' }}</td>
+                                        <td>{{ $perpustakaan->jenis->subjenis ?? '-' }}</td>
+                                        <td>{{ $perpustakaan->kelurahan->kecamatan->kota->nama_kota ?? '-' }}</td>
+                                        <td>{{ $perpustakaan->kelurahan->kecamatan->nama_kecamatan ?? '-' }}</td>
+                                        <td>{{ $perpustakaan->kelurahan->nama_kelurahan ?? '-' }}</td>
+                                        <td>{{ $perpustakaan->alamat ?? '-' }}</td>
+                                        <td>{{ $perpustakaan->kontak ?? '-' }}</td>
+                                        <td>
+                                            @if ($perpustakaan->foto)
+                                                <img src="{{ Storage::url($perpustakaan->foto) }}" class="img-thumbnail"
+                                                    width="100" height="100">
+                                            @else
+                                                <img src="{{ asset('storage/fotos/default.png') }}" class="img-thumbnail"
+                                                    width="100" height="100">
+                                            @endif
+                                        </td>
+                                    </tr>
                                 @endif
-                            </td>
-                        </tr>
-                    @endif
-                </tbody>
-            </table>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-            <!-- Tabel Monografi -->
-            <h4>Monografi Perpustakaan</h4>
-            <table class="table table-bordered">
-                <thead class="table-dark">
-                    <tr>
-                        <th>No</th>
-                        <th>Pertanyaan</th>
-                        <th>Jawaban</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($monografi as $index => $pertanyaan)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>{{ $pertanyaan->teks_pertanyaan }}</td>
-                            <td>{{ $pertanyaan->jawaban->first()->jawaban ?? '-' }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <!-- Card untuk Tabel Monografi -->
+            <div class="card shadow-lg mb-4 border-0">
+                <div class="card-header bg-white ">
+                    <h5 class="card-title mb-0">Monografi Perpustakaan</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>No</th>
+                                    <th>Pertanyaan</th>
+                                    <th>Jawaban</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($monografi as $index => $pertanyaan)
+                                    <tr>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ $pertanyaan->teks_pertanyaan }}</td>
+                                        <td>{{ $pertanyaan->jawaban->first()->jawaban ?? '-' }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         @endif
-
     </div>
 @endsection

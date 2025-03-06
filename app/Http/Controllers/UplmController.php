@@ -23,45 +23,45 @@ class UplmController extends Controller
 {
     // Halaman UPLM
     public function showUplm($id)
-    {
-        $viewName = 'admin.uplm' . $id;
-        $data = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan'])->get();
-        $pertanyaan = collect(); // Default data kosong
-        $jawaban = collect(); // Default data kosong
+{
+    $viewName = 'admin.uplm' . $id;
+    $data = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan'])->paginate(10); // Paginasi 10 data per halaman
+    $pertanyaan = collect(); // Default data kosong
+    $jawaban = collect(); // Default data kosong
 
-        switch ($id) {
-            case 1:
-                $pertanyaan = Pertanyaan::where('kategori', 'UPLM 1')->get();
-                break;
-            case 2:
-                $pertanyaan = Pertanyaan::where('kategori', 'UPLM 2')->get();
-                break;
-            case 3:
-                $pertanyaan = Pertanyaan::where('kategori', 'UPLM 3')->get();
-                break;
-            case 4:
-                $pertanyaan = Pertanyaan::where('kategori', 'UPLM 4')->get();
-                break;
-            case 5:
-                $pertanyaan = Pertanyaan::where('kategori', 'UPLM 5')->get();
-                break;
-            case 6:
-                $pertanyaan = Pertanyaan::where('kategori', 'UPLM 6')->get();
-                break;
-            case 7:
-                $pertanyaan = Pertanyaan::where('kategori', 'UPLM 7')->get();
-                break;
-            default:
-                return abort(404, 'Page not found');
-        }
-
-        // Cek apakah view ada
-        if (view()->exists($viewName)) {
-            return view($viewName, compact('data', 'pertanyaan', 'jawaban'));
-        } else {
+    switch ($id) {
+        case 1:
+            $pertanyaan = Pertanyaan::where('kategori', 'UPLM 1')->get();
+            break;
+        case 2:
+            $pertanyaan = Pertanyaan::where('kategori', 'UPLM 2')->get();
+            break;
+        case 3:
+            $pertanyaan = Pertanyaan::where('kategori', 'UPLM 3')->get();
+            break;
+        case 4:
+            $pertanyaan = Pertanyaan::where('kategori', 'UPLM 4')->get();
+            break;
+        case 5:
+            $pertanyaan = Pertanyaan::where('kategori', 'UPLM 5')->get();
+            break;
+        case 6:
+            $pertanyaan = Pertanyaan::where('kategori', 'UPLM 6')->get();
+            break;
+        case 7:
+            $pertanyaan = Pertanyaan::where('kategori', 'UPLM 7')->get();
+            break;
+        default:
             return abort(404, 'Page not found');
-        }
     }
+
+    // Cek apakah view ada
+    if (view()->exists($viewName)) {
+        return view($viewName, compact('data', 'pertanyaan', 'jawaban'));
+    } else {
+        return abort(404, 'Page not found');
+    }
+}
 
     public function filterUplm(Request $request, $id)
     {

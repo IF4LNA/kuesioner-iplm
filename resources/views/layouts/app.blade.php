@@ -268,10 +268,6 @@
                 <i class="fas fa-bars"></i>
             </button>
 
-            <div class="search-container">
-                <input type="text" class="form-control" placeholder="Search..." aria-label="Search">
-            </div>
-
             <div class="welcome-message">
                 <h5><i class="fas fa-user"></i> {{ Auth::user()->username }}</h5>
             </div>
