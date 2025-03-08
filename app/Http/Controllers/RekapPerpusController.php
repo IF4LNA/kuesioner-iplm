@@ -88,7 +88,36 @@ class RekapPerpusController extends Controller
     
         return $pdf->download($fileName);
     }
-    
-    
+
+    public function search(Request $request)
+{
+    $search = $request->get('search');
+    $page = $request->get('page', 1); // Ambil nomor halaman, default 1
+    $perPage = 10; // Jumlah data per halaman
+
+    // Query pencarian
+    $query = Perpustakaan::query();
+    if ($search) {
+        $query->where('nama_perpustakaan', 'like', '%' . $search . '%');
+    }
+
+    // Pagination
+    $perpustakaans = $query->paginate($perPage, ['*'], 'page', $page);
+
+    // Format data untuk Select2
+    $results = collect($perpustakaans->items())->map(function ($perpustakaan) {
+        return [
+            'id' => $perpustakaan->id_perpustakaan,
+            'text' => $perpustakaan->nama_perpustakaan,
+        ];
+    });
+
+    return response()->json([
+        'results' => $results,
+        'pagination' => [
+            'more' => $perpustakaans->hasMorePages(), // Tentukan apakah masih ada halaman berikutnya
+        ],
+    ]);
+}
     
 }

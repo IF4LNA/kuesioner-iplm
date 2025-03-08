@@ -107,6 +107,9 @@ Route::middleware(['auth'])->group(function () {
     
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+    //search monografi admin
+Route::get('/perpustakaans/search', [RekapPerpusController::class, 'search'])->name('perpustakaans.search');
+
     //route edit pertanyaan
     Route::get('/questions/{id}/edit', [PertanyaanController::class, 'edit'])->name('questions.edit');
     Route::put('/questions/{id}', [PertanyaanController::class, 'update'])->name('questions.update');

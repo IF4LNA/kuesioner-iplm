@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<!-- Di bagian <head> -->
+<!-- cdn -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
     <style>
@@ -157,14 +157,37 @@
             </div>
         @endif
     </div>
-    <!-- Sebelum penutup </body> -->
+    <!-- cdn -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
             $('#perpustakaan_id').select2({
                 placeholder: "-- Pilih Perpustakaan --",
-                allowClear: true
+                allowClear: true,
+                ajax: {
+                    url: "{{ route('perpustakaans.search') }}",
+                    dataType: 'json',
+                    delay: 250, // Delay saat mengetik sebelum melakukan pencarian
+                    data: function(params) {
+                        return {
+                            search: params.term, // Kata kunci pencarian
+                            page: params.page || 1, // Nomor halaman
+                        };
+                    },
+                    processResults: function(data, params) {
+                        params.page = params.page || 1;
+    
+                        return {
+                            results: data.results, // Data hasil pencarian
+                            pagination: {
+                                more: data.pagination.more, // Apakah masih ada halaman berikutnya
+                            },
+                        };
+                    },
+                    cache: true,
+                },
+                minimumInputLength: 1, // Minimal karakter untuk memulai pencarian
             });
         });
     </script>
