@@ -17,51 +17,52 @@ use App\Exports\Uplm6Export;
 use App\Exports\Uplm7Export;
 use App\Exports\UplmPdfExport;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\ActivityLog;
 use Illuminate\Support\Facades\DB;
 
 class UplmController extends Controller
 {
     // Halaman UPLM
     public function showUplm($id)
-{
-    $viewName = 'admin.uplm' . $id;
-    $data = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan'])->paginate(10); // Paginasi 10 data per halaman
-    $pertanyaan = collect(); // Default data kosong
-    $jawaban = collect(); // Default data kosong
+    {
+        $viewName = 'admin.uplm' . $id;
+        $data = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan'])->paginate(10); // Paginasi 10 data per halaman
+        $pertanyaan = collect(); // Default data kosong
+        $jawaban = collect(); // Default data kosong
 
-    switch ($id) {
-        case 1:
-            $pertanyaan = Pertanyaan::where('kategori', 'UPLM 1')->get();
-            break;
-        case 2:
-            $pertanyaan = Pertanyaan::where('kategori', 'UPLM 2')->get();
-            break;
-        case 3:
-            $pertanyaan = Pertanyaan::where('kategori', 'UPLM 3')->get();
-            break;
-        case 4:
-            $pertanyaan = Pertanyaan::where('kategori', 'UPLM 4')->get();
-            break;
-        case 5:
-            $pertanyaan = Pertanyaan::where('kategori', 'UPLM 5')->get();
-            break;
-        case 6:
-            $pertanyaan = Pertanyaan::where('kategori', 'UPLM 6')->get();
-            break;
-        case 7:
-            $pertanyaan = Pertanyaan::where('kategori', 'UPLM 7')->get();
-            break;
-        default:
+        switch ($id) {
+            case 1:
+                $pertanyaan = Pertanyaan::where('kategori', 'UPLM 1')->get();
+                break;
+            case 2:
+                $pertanyaan = Pertanyaan::where('kategori', 'UPLM 2')->get();
+                break;
+            case 3:
+                $pertanyaan = Pertanyaan::where('kategori', 'UPLM 3')->get();
+                break;
+            case 4:
+                $pertanyaan = Pertanyaan::where('kategori', 'UPLM 4')->get();
+                break;
+            case 5:
+                $pertanyaan = Pertanyaan::where('kategori', 'UPLM 5')->get();
+                break;
+            case 6:
+                $pertanyaan = Pertanyaan::where('kategori', 'UPLM 6')->get();
+                break;
+            case 7:
+                $pertanyaan = Pertanyaan::where('kategori', 'UPLM 7')->get();
+                break;
+            default:
+                return abort(404, 'Page not found');
+        }
+
+        // Cek apakah view ada
+        if (view()->exists($viewName)) {
+            return view($viewName, compact('data', 'pertanyaan', 'jawaban'));
+        } else {
             return abort(404, 'Page not found');
+        }
     }
-
-    // Cek apakah view ada
-    if (view()->exists($viewName)) {
-        return view($viewName, compact('data', 'pertanyaan', 'jawaban'));
-    } else {
-        return abort(404, 'Page not found');
-    }
-}
 
     public function filterUplm(Request $request, $id)
     {
@@ -108,6 +109,17 @@ class UplmController extends Controller
 
     public function editJawaban($id, Jawaban $jawaban)
     {
+        // Ambil nama perpustakaan melalui relasi
+        $namaPerpustakaan = $jawaban->perpustakaan->nama_perpustakaan;
+
+        // Simpan log aktivitas
+        ActivityLog::create([
+            'action'      => 'Edit Jawaban',
+            'description' => 'Admin edit jawaban ' . $namaPerpustakaan,
+            'id_akun'     => auth()->user()->id,
+            'created_at'  => now(),
+        ]);
+
         return view('admin.jawaban_edit', compact('id', 'jawaban'));
     }
 
@@ -126,7 +138,17 @@ class UplmController extends Controller
 
     public function deleteJawaban($id, Jawaban $jawaban)
     {
+        $namaPerpustakaan = $jawaban->perpustakaan->nama_perpustakaan;
         $jawaban->delete();
+
+        // Simpan log aktivitas
+        ActivityLog::create([
+            'action'      => 'Delete Jawaban',
+            'description' => 'Admin menghapus jawaban ' . $namaPerpustakaan,
+            'id_akun'     => auth()->user()->id,
+            'created_at'  => now(),
+        ]);
+
         return redirect()->route('uplm', $id)->with('success', 'Jawaban berhasil dihapus.');
     }
 
@@ -136,6 +158,23 @@ class UplmController extends Controller
         $jenis = request()->get('jenis');
         $subjenis = request()->get('subjenis');
         $tahun = request()->get('tahun');
+
+        // $data = JenisPerpustakaan::where('jenis', $jenis)
+        //     ->where('subjenis', $subjenis)
+        //     ->whereYear('created_at', $tahun)
+        //     ->get();
+
+
+        // Simpan log aktivitas
+        ActivityLog::create([
+            'action'      => 'Export Excel',
+            'description' => "Admin mengekspor data UPLM {$id} ke Excel dengan filter:\n"
+                . "- Jenis: {$jenis}\n"
+                . "- Subjenis: {$subjenis}\n"
+                . "- Tahun: {$tahun}",
+            'id_akun'     => auth()->user()->id,
+            'created_at'  => now(),
+        ]);
 
         // Mengirim parameter filter ke UplmExport berdasarkan ID
         switch ($id) {
@@ -166,6 +205,17 @@ class UplmController extends Controller
         $subjenis = request()->get('subjenis');
         $tahun = request()->get('tahun');
 
+        // Simpan log aktivitas
+        ActivityLog::create([
+            'action'      => 'Export PDF',
+            'description' => "Admin mengekspor data UPLM {$id} ke Pdf dengan filter:\n"
+                . "- Jenis: {$jenis}\n"
+                . "- Subjenis: {$subjenis}\n"
+                . "- Tahun: {$tahun}",
+            'id_akun'     => auth()->user()->id,
+            'created_at'  => now(),
+        ]);
+
         $data = new UplmPdfExport($jenis, $subjenis, $tahun);
         $pdf = Pdf::loadView('admin.uplm_pdf', [
             'data' => $data->view()->getData()['data'],
@@ -175,12 +225,24 @@ class UplmController extends Controller
         return $pdf->download('uplm1-report.pdf');
     }
 
+
     // Export PDF UPLM 2-7
     public function exportUplmPdf($id, Request $request, $kategori)
     {
         $jenis = $request->get('jenis');
         $subjenis = $request->get('subjenis');
         $tahun = $request->get('tahun');
+
+        // Simpan log aktivitas
+        ActivityLog::create([
+            'action'      => 'Export PDF',
+            'description' => "Admin mengekspor data UPLM {$id} ke Pdf dengan filter:\n"
+            . "- Jenis: {$jenis}\n"
+            . "- Subjenis: {$subjenis}\n"
+            . "- Tahun: {$tahun}",
+            'id_akun'     => auth()->user()->id,
+            'created_at'  => now(),
+        ]);
 
         // Menentukan kelas export berdasarkan kategori
         $exportClass = 'App\\Exports\\Uplm' . $kategori . 'PdfExport';

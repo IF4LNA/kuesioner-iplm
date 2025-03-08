@@ -6,16 +6,15 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UplmController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LokasiController;
-use App\Http\Controllers\KuesionerController;
 use App\Http\Controllers\PertanyaanController;
 use App\Http\Controllers\PustakawanController;
 use App\Http\Controllers\RekapitulasiController;
 use App\Exports\RekapitulasiExport;
+use App\Http\Controllers\ActivityController;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\RekapPerpusController;
 use App\Http\Controllers\MonografiController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Livewire\PerpustakaanBelumMengisi;
 
 
 // Rute login dan logout
@@ -103,10 +102,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/rekaperpus/export/excel', [RekapPerpusController::class, 'exportExcel'])->name('admin.rekaperpus.export.excel');
     Route::get('/admin/rekaperpus/export/pdf', [RekapPerpusController::class, 'exportPdf'])->name('admin.rekaperpus.export.pdf');
 
-
-
     //route aktivitas admin
-    Route::get('activity-logs', [AdminController::class, 'showActivityLogs'])->name('admin.activity-logs');
+    Route::get('activity-logs', [ActivityController::class, 'showActivityLogs'])->name('admin.activity-logs');
+    
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     //route edit pertanyaan

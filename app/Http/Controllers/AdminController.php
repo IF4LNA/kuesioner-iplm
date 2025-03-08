@@ -117,13 +117,6 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Akun berhasil dibuat!');
     }
 
-    public function showActivityLogs()
-    {
-        // Mengambil data activity logs dengan relasi user
-        $activityLogs = ActivityLog::with('user')->get();
-        return view('admin.activity-logs', compact('activityLogs'));
-    }
-
     public function getSubjenis($jenis)
     {
         // Ambil data subjenis yang sesuai, hanya untuk jenis yang memiliki subjenis
