@@ -67,43 +67,53 @@ class UplmController extends Controller
     public function filterUplm(Request $request, $id)
     {
         $viewName = 'admin.uplm' . $id;
-
+    
         // Query untuk data Perpustakaan
         $query = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan']);
-
+    
+        // Filter berdasarkan jenis
         if ($request->has('jenis') && $request->jenis != '') {
             $query->whereHas('jenis', function ($q) use ($request) {
                 $q->where('jenis', $request->jenis);
             });
         }
-
+    
+        // Filter berdasarkan subjenis
         if ($request->has('subjenis') && $request->subjenis != '') {
             $query->whereHas('jenis', function ($q) use ($request) {
                 $q->where('subjenis', $request->subjenis);
             });
         }
-
-        // Tambahkan logika untuk sorting
-        $sortField = $request->input('sortField', 'created_at'); // Default sort by 'created_at' (tahun)
-        $sortOrder = $request->input('sortOrder', 'asc'); // Default sort order
+    
+        // Fitur pencarian
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where('nama_perpustakaan', 'like', '%' . $search . '%')
+                  ->orWhere('npp', 'like', '%' . $search . '%')
+                  ->orWhere('alamat', 'like', '%' . $search . '%');
+        }
+    
+        // Sorting
+        $sortField = $request->input('sortField', 'created_at');
+        $sortOrder = $request->input('sortOrder', 'asc');
         $query->orderBy($sortField, $sortOrder);
-
-        $data = $query->get();
-
+    
+        // Pagination
+        $perPage = $request->input('perPage', 10); // Default 10 data per halaman
+        $data = $query->paginate($perPage);
+    
         // Filter pertanyaan berdasarkan tahun
         $pertanyaanQuery = Pertanyaan::where('kategori', 'UPLM ' . $id);
         if ($request->has('tahun') && $request->tahun != '') {
             $pertanyaanQuery->where('tahun', $request->tahun);
         }
         $pertanyaan = $pertanyaanQuery->get();
-
-        // Ambil daftar tahun unik dari kolom 'tahun' di tabel 'pertanyaan'
+    
+        // Ambil daftar tahun unik, jenis, dan subjenis
         $years = Pertanyaan::select('tahun')->distinct()->pluck('tahun');
-
-        // Ambil daftar jenis dan subjenis dari tabel jenis_perpustakaans
         $jenisList = JenisPerpustakaan::select('jenis')->distinct()->pluck('jenis');
         $subjenisList = JenisPerpustakaan::select('subjenis')->distinct()->pluck('subjenis');
-
+    
         return view($viewName, compact('data', 'pertanyaan', 'id', 'years', 'jenisList', 'subjenisList'));
     }
 

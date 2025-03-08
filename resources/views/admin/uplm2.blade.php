@@ -1,6 +1,41 @@
 @extends('layouts.app')
 
 @section('content')
+    <style>
+        /* Atur margin dan padding untuk container */
+        .entries-go-to-container {
+            margin-top: 1rem;
+            /* Jarak dari atas */
+            margin-bottom: 1rem;
+            /* Jarak dari bawah */
+            margin-left: 1rem;
+            /* Jarak dari kiri */
+            margin-right: 1rem;
+            /* Jarak dari kanan */
+            padding: 0.5rem;
+            /* Padding dalam container */
+            background-color: #f8f9fa;
+            /* Warna latar belakang */
+            border-radius: 0.25rem;
+            /* Sudut melengkung */
+            border: 1px solid #dee2e6;
+            /* Garis tepi */
+        }
+
+        /* Atur jarak antara elemen */
+        .entries-go-to-container .form-control-sm,
+        .entries-go-to-container .btn-sm {
+            margin: 0 0.25rem;
+            /* Jarak antara elemen */
+        }
+
+        /* Atur lebar input "Go to Page" */
+        .entries-go-to-container input[type="number"] {
+            width: 80px;
+            /* Lebar input */
+        }
+    </style>
+    </style>
     <div class="container mt-4">
         <h3 class="p-1">UPLM 2 Ketercukupan Koleksi Perpustakaan</h3>
 
@@ -34,19 +69,20 @@
                                 @endforeach
                             </select>
                         </div>
-            
+
                         <!-- Filter Subjenis -->
                         <div class="col-md-4">
                             <select name="subjenis" class="form-select shadow-sm" aria-label="Pilih Subjenis">
                                 <option value="">Pilih Subjenis</option>
                                 @foreach ($subjenisList as $subjenis)
-                                    <option value="{{ $subjenis }}" {{ request()->subjenis == $subjenis ? 'selected' : '' }}>
+                                    <option value="{{ $subjenis }}"
+                                        {{ request()->subjenis == $subjenis ? 'selected' : '' }}>
                                         {{ $subjenis }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
-            
+
                         <!-- Filter Tahun -->
                         <div class="col-md-4">
                             <select name="tahun" class="form-select shadow-sm" aria-label="Pilih Tahun">
@@ -59,7 +95,7 @@
                             </select>
                         </div>
                     </div>
-            
+
                     <!-- Tombol Filter dan Reset -->
                     <div class="row">
                         <div class="col-md-2">
@@ -94,7 +130,62 @@
             <div class="card-header">
                 <h5 class="mb-0">Data Perpustakaan</h5>
             </div>
+            <!-- Container untuk Show Entries dan Go to Page -->
+            <!-- Container untuk Show Entries dan Go to Page -->
+            <div class="d-flex justify-content-between align-items-center entries-go-to-container">
+                <!-- Show Entries -->
+                <form action="{{ route('uplm', $id) }}" method="GET" class="d-flex align-items-center gap-2">
+                    <label for="perPage" class="mb-0">Show</label>
+                    <select name="perPage" id="perPage" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="10" {{ request()->perPage == 10 ? 'selected' : '' }}>10</option>
+                        <option value="25" {{ request()->perPage == 25 ? 'selected' : '' }}>25</option>
+                        <option value="50" {{ request()->perPage == 50 ? 'selected' : '' }}>50</option>
+                        <option value="100" {{ request()->perPage == 100 ? 'selected' : '' }}>100</option>
+                    </select>
+                    <label for="perPage" class="mb-0">entries</label>
+
+                    <!-- Input tersembunyi untuk parameter lainnya -->
+                    {{-- <input type="hidden" name="search" value="{{ request()->search }}">
+        <input type="hidden" name="jenis" value="{{ request()->jenis }}">
+        <input type="hidden" name="subjenis" value="{{ request()->subjenis }}">
+        <input type="hidden" name="tahun" value="{{ request()->tahun }}">
+        <input type="hidden" name="sortField" value="{{ request()->sortField }}">
+        <input type="hidden" name="sortOrder" value="{{ request()->sortOrder }}"> --}}
+                </form>
+
+                <!-- Go to Page -->
+                <form action="{{ route('uplm', $id) }}" method="GET" class="d-flex align-items-center gap-2">
+                    <label for="goToPage" class="mb-0">Go to page</label>
+                    <input type="number" name="page" id="goToPage" class="form-control form-control-sm"
+                        style="width: 80px;" min="1" max="{{ $data->lastPage() }}"
+                        value="{{ request()->page ?? 1 }}">
+                    <button type="submit" class="btn btn-primary btn-sm">Go</button>
+
+                    <!-- Input tersembunyi untuk parameter lainnya -->
+                    {{-- <input type="hidden" name="search" value="{{ request()->search }}">
+        <input type="hidden" name="jenis" value="{{ request()->jenis }}">
+        <input type="hidden" name="subjenis" value="{{ request()->subjenis }}">
+        <input type="hidden" name="tahun" value="{{ request()->tahun }}">
+        <input type="hidden" name="sortField" value="{{ request()->sortField }}">
+        <input type="hidden" name="sortOrder" value="{{ request()->sortOrder }}">
+        <input type="hidden" name="perPage" value="{{ request()->perPage }}"> --}}
+                </form>
+            </div>
+
             <div class="card-body">
+                <form action="{{ route('uplm', $id) }}" method="GET" class="mb-3">
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control"
+                            placeholder="Cari nama perpustakaan, NPP, atau alamat..." value="{{ request()->search }}">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Cari
+                        </button>
+                        <!-- Tombol Reset -->
+                        <a href="{{ route('uplm', $id) }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-sync"></i> Reset
+                        </a>
+                    </div>
+                </form>
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered" style="width: 150%">
                         <thead>
@@ -106,7 +197,8 @@
                                         Tahun
                                         <span style="margin-left: 5px;">
                                             @if (request('sortField') === 'created_at')
-                                                <i class="fas fa-sort-{{ request('sortOrder') === 'asc' ? 'up' : 'down' }}"></i>
+                                                <i
+                                                    class="fas fa-sort-{{ request('sortOrder') === 'asc' ? 'up' : 'down' }}"></i>
                                             @else
                                                 <i class="fas fa-sort"></i>
                                             @endif
@@ -114,12 +206,13 @@
                                     </a>
                                 </th>
                                 <th>
-                                    <a href="{{ route('uplm', ['id' => $id, 'sortField' => 'nama_perpustakaan', 'sortOrder' => request('sortOrder') === 'asc' ? 'desc' : 'asc']) }}"
+                                    <a href="{{ route('uplm', ['id' => $id, 'sortField' => 'nama_perpustakaan', 'sortOrder' => request('sortOrder') === 'asc' ? 'desc' : 'asc', 'search' => request()->search, 'jenis' => request()->jenis, 'subjenis' => request()->subjenis, 'tahun' => request()->tahun]) }}"
                                         style="color: black; text-decoration: none; display: flex; align-items: center;">
                                         Nama Perpustakaan
                                         <span style="margin-left: 5px;">
                                             @if (request('sortField') === 'nama_perpustakaan')
-                                                <i class="fas fa-sort-{{ request('sortOrder') === 'asc' ? 'up' : 'down' }}"></i>
+                                                <i
+                                                    class="fas fa-sort-{{ request('sortOrder') === 'asc' ? 'up' : 'down' }}"></i>
                                             @else
                                                 <i class="fas fa-sort"></i>
                                             @endif
@@ -197,17 +290,41 @@
                             @endforelse
                         </tbody>
                     </table>
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <div>
+                            Menampilkan {{ $data->firstItem() }} sampai {{ $data->lastItem() }} dari {{ $data->total() }}
+                            data
+                        </div>
+                        <div>
+                            {{ $data->links() }}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Script untuk validasi Go to Page -->
+    <script>
+        document.getElementById('goToPage').addEventListener('change', function() {
+            const maxPage = {{ $data->lastPage() }};
+            const inputValue = parseInt(this.value);
+
+            if (inputValue < 1) {
+                this.value = 1;
+            } else if (inputValue > maxPage) {
+                this.value = maxPage;
+            }
+        });
+    </script>
 
     <script>
         document.getElementById('toggleFilterButton').addEventListener('click', function() {
             const filterContainer = document.getElementById('filterContainer');
             const isHidden = filterContainer.style.display === 'none';
             filterContainer.style.display = isHidden ? 'block' : 'none';
-            this.innerHTML = isHidden ? '<i class="fas fa-times"></i> Sembunyikan Filter' : '<i class="fas fa-filter"></i> Tampilkan Filter';
+            this.innerHTML = isHidden ? '<i class="fas fa-times"></i> Sembunyikan Filter' :
+                '<i class="fas fa-filter"></i> Tampilkan Filter';
         });
     </script>
 @endsection
