@@ -88,10 +88,10 @@
                             <select name="tahun" class="form-select shadow-sm" aria-label="Pilih Tahun">
                                 <option value="">Pilih Tahun</option>
                                 @foreach ($years as $year)
-                                    <option value="{{ $year }}" {{ request()->tahun == $year ? 'selected' : '' }}>
-                                        {{ $year }}
-                                    </option>
-                                @endforeach
+                                <option value="{{ $year }}" {{ request()->tahun == $year ? 'selected' : '' }}>
+                                    {{ $year }} {{ $year == $selectedYear ? '(Sedang Dipilih)' : '' }}
+                                </option>
+                            @endforeach
                             </select>
                         </div>
                     </div>
@@ -131,7 +131,6 @@
                 <h5 class="mb-0">Data Perpustakaan</h5>
             </div>
             <!-- Container untuk Show Entries dan Go to Page -->
-            <!-- Container untuk Show Entries dan Go to Page -->
             <div class="d-flex justify-content-between align-items-center entries-go-to-container">
                 <!-- Show Entries -->
                 <form action="{{ route('uplm', $id) }}" method="GET" class="d-flex align-items-center gap-2">
@@ -143,14 +142,12 @@
                         <option value="100" {{ request()->perPage == 100 ? 'selected' : '' }}>100</option>
                     </select>
                     <label for="perPage" class="mb-0">entries</label>
-
-                    <!-- Input tersembunyi untuk parameter lainnya -->
-                    {{-- <input type="hidden" name="search" value="{{ request()->search }}">
-        <input type="hidden" name="jenis" value="{{ request()->jenis }}">
-        <input type="hidden" name="subjenis" value="{{ request()->subjenis }}">
-        <input type="hidden" name="tahun" value="{{ request()->tahun }}">
-        <input type="hidden" name="sortField" value="{{ request()->sortField }}">
-        <input type="hidden" name="sortOrder" value="{{ request()->sortOrder }}"> --}}
+                
+                    <!-- Sertakan parameter tahun dan lainnya sebagai input hidden -->
+                    <input type="hidden" name="tahun" value="{{ request('tahun') }}">
+                    <input type="hidden" name="jenis" value="{{ request('jenis') }}">
+                    <input type="hidden" name="subjenis" value="{{ request('subjenis') }}">
+                    <input type="hidden" name="search" value="{{ request('search') }}">
                 </form>
 
                 <!-- Go to Page -->
@@ -160,15 +157,13 @@
                         style="width: 80px;" min="1" max="{{ $data->lastPage() }}"
                         value="{{ request()->page ?? 1 }}">
                     <button type="submit" class="btn btn-primary btn-sm">Go</button>
-
-                    <!-- Input tersembunyi untuk parameter lainnya -->
-                    {{-- <input type="hidden" name="search" value="{{ request()->search }}">
-        <input type="hidden" name="jenis" value="{{ request()->jenis }}">
-        <input type="hidden" name="subjenis" value="{{ request()->subjenis }}">
-        <input type="hidden" name="tahun" value="{{ request()->tahun }}">
-        <input type="hidden" name="sortField" value="{{ request()->sortField }}">
-        <input type="hidden" name="sortOrder" value="{{ request()->sortOrder }}">
-        <input type="hidden" name="perPage" value="{{ request()->perPage }}"> --}}
+                
+                    <!-- Sertakan parameter tahun dan lainnya sebagai input hidden -->
+                    <input type="hidden" name="tahun" value="{{ request('tahun') }}">
+                    <input type="hidden" name="jenis" value="{{ request('jenis') }}">
+                    <input type="hidden" name="subjenis" value="{{ request('subjenis') }}">
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                    <input type="hidden" name="perPage" value="{{ request('perPage') }}">
                 </form>
             </div>
 
@@ -181,10 +176,22 @@
                             <i class="fas fa-search"></i> Cari
                         </button>
                         <!-- Tombol Reset -->
-                        <a href="{{ route('uplm', $id) }}" class="btn btn-outline-secondary">
+                        <a href="{{ route('uplm', [
+                            'id' => $id,
+                            'tahun' => request('tahun'), // Pertahankan parameter tahun
+                            'jenis' => request('jenis'), // Pertahankan parameter jenis
+                            'subjenis' => request('subjenis'), // Pertahankan parameter subjenis
+                            'perPage' => request('perPage'), // Pertahankan parameter show entries
+                        ]) }}" class="btn btn-outline-secondary">
                             <i class="fas fa-sync"></i> Reset
                         </a>
                     </div>
+                
+                    <!-- Sertakan parameter tahun dan lainnya sebagai input hidden -->
+                    <input type="hidden" name="tahun" value="{{ request('tahun') }}">
+                    <input type="hidden" name="jenis" value="{{ request('jenis') }}">
+                    <input type="hidden" name="subjenis" value="{{ request('subjenis') }}">
+                    <input type="hidden" name="perPage" value="{{ request('perPage') }}">
                 </form>
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered" style="width: 150%">
@@ -192,13 +199,20 @@
                             <tr>
                                 <th>#</th>
                                 <th style="width: 5%;">
-                                    <a href="{{ route('uplm', ['id' => $id, 'sortField' => 'created_at', 'sortOrder' => request('sortOrder') === 'asc' ? 'desc' : 'asc']) }}"
-                                        style="color: black; text-decoration: none; display: flex; align-items: center;">
+                                    <a href="{{ route('uplm', [
+                                        'id' => $id,
+                                        'sortField' => 'created_at',
+                                        'sortOrder' => request('sortOrder') === 'asc' ? 'desc' : 'asc',
+                                        'tahun' => request('tahun'), // Pertahankan parameter tahun
+                                        'jenis' => request('jenis'), // Pertahankan parameter jenis
+                                        'subjenis' => request('subjenis'), // Pertahankan parameter subjenis
+                                        'search' => request('search'), // Pertahankan parameter pencarian
+                                        'perPage' => request('perPage'), // Pertahankan parameter show entries
+                                    ]) }}" style="color: black; text-decoration: none; display: flex; align-items: center;">
                                         Tahun
                                         <span style="margin-left: 5px;">
                                             @if (request('sortField') === 'created_at')
-                                                <i
-                                                    class="fas fa-sort-{{ request('sortOrder') === 'asc' ? 'up' : 'down' }}"></i>
+                                                <i class="fas fa-sort-{{ request('sortOrder') === 'asc' ? 'up' : 'down' }}"></i>
                                             @else
                                                 <i class="fas fa-sort"></i>
                                             @endif
@@ -235,7 +249,7 @@
                             @forelse ($data as $index => $item)
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
-                                    <td>{{ $item->created_at->format('Y') }}</td>
+<td>{{ $selectedYear ?? $item->created_at->format('Y') }}</td>
                                     <td>{{ $item->nama_perpustakaan ?? '-' }}</td>
                                     <td>{{ $item->npp ?? '-' }}</td>
                                     <td>{{ $item->jenis->jenis ?? '-' }}</td>
@@ -292,11 +306,18 @@
                     </table>
                     <div class="d-flex justify-content-between align-items-center mt-4">
                         <div>
-                            Menampilkan {{ $data->firstItem() }} sampai {{ $data->lastItem() }} dari {{ $data->total() }}
-                            data
+                            Menampilkan {{ $data->firstItem() }} sampai {{ $data->lastItem() }} dari {{ $data->total() }} data
                         </div>
                         <div>
-                            {{ $data->links() }}
+                            {{ $data->appends([
+                                'tahun' => request('tahun'),
+                                'jenis' => request('jenis'),
+                                'subjenis' => request('subjenis'),
+                                'search' => request('search'),
+                                'perPage' => request('perPage'),
+                                'sortField' => request('sortField'),
+                                'sortOrder' => request('sortOrder'),
+                            ])->links() }}
                         </div>
                     </div>
                 </div>
