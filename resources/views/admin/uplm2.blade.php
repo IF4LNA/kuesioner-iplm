@@ -34,6 +34,42 @@
             width: 80px;
             /* Lebar input */
         }
+
+        /* Container untuk tabel dan pagination */
+        .table-container {
+            position: relative;
+            overflow-x: auto;
+            /* Memungkinkan scroll horizontal */
+            width: 100%;
+            /* Pastikan container mengambil lebar penuh */
+        }
+
+        /* Tabel responsive */
+        .table-responsive {
+            width: 100%;
+            /* Pastikan tabel mengambil lebar penuh */
+            overflow-x: auto;
+            /* Memungkinkan scroll horizontal */
+        }
+
+        /* Pagination sticky */
+        .sticky-pagination {
+            position: sticky;
+            left: 0;
+            /* Menempel di kiri */
+            bottom: 0;
+            /* Menempel di bawah */
+            width: 100%;
+            /* Lebar penuh */
+            background-color: white;
+            /* Warna latar belakang */
+            padding: 10px 0;
+            /* Padding untuk jarak */
+            z-index: 100;
+            /* Pastikan pagination di atas konten lain */
+            border-top: 1px solid #dee2e6;
+            /* Garis atas untuk estetika */
+        }
     </style>
     </style>
     <div class="container mt-4">
@@ -88,10 +124,10 @@
                             <select name="tahun" class="form-select shadow-sm" aria-label="Pilih Tahun">
                                 <option value="">Pilih Tahun</option>
                                 @foreach ($years as $year)
-                                <option value="{{ $year }}" {{ request()->tahun == $year ? 'selected' : '' }}>
-                                    {{ $year }} {{ $year == $selectedYear ? '(Sedang Dipilih)' : '' }}
-                                </option>
-                            @endforeach
+                                    <option value="{{ $year }}" {{ request()->tahun == $year ? 'selected' : '' }}>
+                                        {{ $year }} {{ $year == $selectedYear ? '(Sedang Dipilih)' : '' }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -142,7 +178,7 @@
                         <option value="100" {{ request()->perPage == 100 ? 'selected' : '' }}>100</option>
                     </select>
                     <label for="perPage" class="mb-0">entries</label>
-                
+
                     <!-- Sertakan parameter tahun dan lainnya sebagai input hidden -->
                     <input type="hidden" name="tahun" value="{{ request('tahun') }}">
                     <input type="hidden" name="jenis" value="{{ request('jenis') }}">
@@ -157,7 +193,7 @@
                         style="width: 80px;" min="1" max="{{ $data->lastPage() }}"
                         value="{{ request()->page ?? 1 }}">
                     <button type="submit" class="btn btn-primary btn-sm">Go</button>
-                
+
                     <!-- Sertakan parameter tahun dan lainnya sebagai input hidden -->
                     <input type="hidden" name="tahun" value="{{ request('tahun') }}">
                     <input type="hidden" name="jenis" value="{{ request('jenis') }}">
@@ -182,11 +218,12 @@
                             'jenis' => request('jenis'), // Pertahankan parameter jenis
                             'subjenis' => request('subjenis'), // Pertahankan parameter subjenis
                             'perPage' => request('perPage'), // Pertahankan parameter show entries
-                        ]) }}" class="btn btn-outline-secondary">
+                        ]) }}"
+                            class="btn btn-outline-secondary">
                             <i class="fas fa-sync"></i> Reset
                         </a>
                     </div>
-                
+
                     <!-- Sertakan parameter tahun dan lainnya sebagai input hidden -->
                     <input type="hidden" name="tahun" value="{{ request('tahun') }}">
                     <input type="hidden" name="jenis" value="{{ request('jenis') }}">
@@ -208,11 +245,13 @@
                                         'subjenis' => request('subjenis'), // Pertahankan parameter subjenis
                                         'search' => request('search'), // Pertahankan parameter pencarian
                                         'perPage' => request('perPage'), // Pertahankan parameter show entries
-                                    ]) }}" style="color: black; text-decoration: none; display: flex; align-items: center;">
+                                    ]) }}"
+                                        style="color: black; text-decoration: none; display: flex; align-items: center;">
                                         Tahun
                                         <span style="margin-left: 5px;">
                                             @if (request('sortField') === 'created_at')
-                                                <i class="fas fa-sort-{{ request('sortOrder') === 'asc' ? 'up' : 'down' }}"></i>
+                                                <i
+                                                    class="fas fa-sort-{{ request('sortOrder') === 'asc' ? 'up' : 'down' }}"></i>
                                             @else
                                                 <i class="fas fa-sort"></i>
                                             @endif
@@ -249,7 +288,7 @@
                             @forelse ($data as $index => $item)
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
-<td>{{ $selectedYear ?? $item->created_at->format('Y') }}</td>
+                                    <td>{{ $selectedYear ?? $item->created_at->format('Y') }}</td>
                                     <td>{{ $item->nama_perpustakaan ?? '-' }}</td>
                                     <td>{{ $item->npp ?? '-' }}</td>
                                     <td>{{ $item->jenis->jenis ?? '-' }}</td>
@@ -304,20 +343,25 @@
                             @endforelse
                         </tbody>
                     </table>
-                    <div class="d-flex justify-content-between align-items-center mt-4">
-                        <div>
-                            Menampilkan {{ $data->firstItem() }} sampai {{ $data->lastItem() }} dari {{ $data->total() }} data
-                        </div>
-                        <div>
-                            {{ $data->appends([
-                                'tahun' => request('tahun'),
-                                'jenis' => request('jenis'),
-                                'subjenis' => request('subjenis'),
-                                'search' => request('search'),
-                                'perPage' => request('perPage'),
-                                'sortField' => request('sortField'),
-                                'sortOrder' => request('sortOrder'),
-                            ])->links() }}
+                    <!-- Pagination -->
+                    <!-- Pagination -->
+                    <div class="sticky-pagination">
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <div>
+                                Menampilkan {{ $data->firstItem() }} sampai {{ $data->lastItem() }} dari
+                                {{ $data->total() }} data
+                            </div>
+                            <div>
+                                {{ $data->appends([
+                                        'tahun' => request('tahun'),
+                                        'jenis' => request('jenis'),
+                                        'subjenis' => request('subjenis'),
+                                        'search' => request('search'),
+                                        'perPage' => request('perPage'),
+                                        'sortField' => request('sortField'),
+                                        'sortOrder' => request('sortOrder'),
+                                    ])->links() }}
+                            </div>
                         </div>
                     </div>
                 </div>
