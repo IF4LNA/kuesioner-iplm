@@ -70,7 +70,19 @@
             border-top: 1px solid #dee2e6;
             /* Garis atas untuk estetika */
         }
-    </style>
+
+        .table th {
+            max-width: 200px;
+            /* Sesuaikan dengan lebar kolom */
+            white-space: nowrap;
+            /* Mencegah teks wrap */
+            overflow: hidden;
+            /* Menyembunyikan teks yang melebihi lebar */
+            text-overflow: ellipsis;
+            /* Menambahkan "..." untuk teks yang dipotong */
+            cursor: pointer;
+            /* Mengubah kursor menjadi pointer untuk menunjukkan interaktivitas */
+        }
     </style>
     <div class="container mt-4">
         <h3 class="p-1">UPLM 2 Ketercukupan Koleksi Perpustakaan</h3>
@@ -279,7 +291,9 @@
                                 <th>Kelurahan</th>
                                 <th>Kecamatan</th>
                                 @foreach ($pertanyaan as $pertanyaanItem)
-                                    <th>{{ $pertanyaanItem->teks_pertanyaan }}</th>
+                                    <th data-bs-toggle="tooltip" title="{{ $pertanyaanItem->teks_pertanyaan }}">
+                                        {{ Str::limit($pertanyaanItem->teks_pertanyaan, 30, '...') }}
+                                    </th>
                                 @endforeach
                                 <th>Aksi</th>
                             </tr>
@@ -380,6 +394,18 @@
             } else if (inputValue > maxPage) {
                 this.value = maxPage;
             }
+        });
+    </script>
+
+    <script>
+        // Inisialisasi tooltip Bootstrap
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl, {
+                    trigger: 'hover click' // Tooltip muncul saat hover atau klik
+                });
+            });
         });
     </script>
 
