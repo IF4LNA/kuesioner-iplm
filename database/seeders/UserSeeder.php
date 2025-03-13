@@ -15,9 +15,9 @@ class UserSeeder extends Seeder
     {
         // Data akun admin
         $admins = [
-            ['username' => 'Admin Disarpus 1', 'password' => Hash::make('adm_disarpus1'), 'role' => 'admin'],
-            ['username' => 'Admin Disarpus 2', 'password' => Hash::make('adm_disarpus2'), 'role' => 'admin'],
-            ['username' => 'Admin Disarpus 3', 'password' => Hash::make('adm_disarpus3'), 'role' => 'admin'],
+            ['username' => 'Admin Disarpus 1','email' => 'fajarusb2@gmail.com', 'password' => Hash::make('adm_disarpus1'), 'role' => 'admin'],
+            // ['username' => 'Admin Disarpus 2', 'password' => Hash::make('adm_disarpus2'), 'role' => 'admin'],
+            // ['username' => 'Admin Disarpus 3', 'password' => Hash::make('adm_disarpus3'), 'role' => 'admin'],
         ];
 
         // Data akun pustakawan

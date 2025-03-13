@@ -22,6 +22,21 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Menampilkan form lupa password
+Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
+
+// Mengirim email reset password
+Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
+
+// Menampilkan form reset password
+Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
+
+// Proses reset password
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+
+// Memproses reset password (harus dengan metode POST)
+Route::post('/reset-password', [AuthController::class, 'updatePassword'])->name('password.update');
+
 // Rute umum (tanpa autentikasi)
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/tentang', [HomeController::class, 'tentang'])->name('tentang');
