@@ -36,6 +36,12 @@
             text-shadow: 0px 0px 5px rgba(255, 193, 7, 0.6);
         }
 
+        .navbar-custom .navbar-nav .nav-link.active {
+            color: #FFC107;
+            text-shadow: 0px 0px 5px rgba(255, 193, 7, 0.6);
+            font-weight: bold;
+        }
+
         .navbar-toggler {
             border: none;
         }
@@ -78,48 +84,38 @@
             color: black;
         }
 
+        /* Card Styling */
+        .card-custom {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
 
-            /* Gaya untuk tabel */
-    .table-custom {
-        border: 2px solid #333;
-        border-radius: 10px;
-        overflow: hidden;
-    }
+        .card-custom .card-header {
+            background-color: #2E3B55;
+            color: white;
+            font-weight: bold;
+            border-radius: 10px 10px 0 0;
+        }
 
-    .table-custom th {
-        background-color: #cacaca;
-        color: rgb(0, 0, 0);
-        font-weight: bold;
-        text-align: left;
-        padding: 12px;
-        border: 2px solid #000000;
-    }
+        .card-custom .card-body {
+            background-color: #F8F9FA;
+            border-radius: 0 0 10px 10px;
+        }
 
-    .table-custom td {
-        background-color: #F8F9FA;
-        padding: 10px;
-        border: 2px solid #000000;
-    }
+        .card-custom img {
+            border: 3px solid #c7c7c7;
+            border-radius: 5px;
+            width: 120px;
+            height: auto;
+        }
 
-    .table-custom img {
-        border: 3px solid #c7c7c7;
-        border-radius: 5px;
-        width: 120px;
-        height: auto;
-    }
-
-    /* Gaya untuk tabel pertanyaan */
-    .table-striped th {
-        background-color: #bfbfbf;
-        color: rgb(0, 0, 0);
-        font-weight: bold;
-        padding: 10px;
-    }
-
-    .table-striped td {
-        padding: 10px;
-        border: 1px solid #DDD;
-    }
+        .img-thumbnail {
+            max-width: 150px;
+            /* Atur sesuai kebutuhan */
+            height: auto;
+            /* Menjaga aspek rasio */
+        }
     </style>
 </head>
 
@@ -142,7 +138,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('monografi.index') }}">
+                        <a class="nav-link {{ request()->is('monografi*') ? 'active' : '' }}"
+                            href="{{ route('monografi.index') }}">
                             <i class="fas fa-book"></i> Monografi
                         </a>
                     </li>
@@ -171,76 +168,99 @@
         </div>
     </nav>
 
-    <div class="container">
-        <h2>Data Monografi Perpustakaan</h2>
-    
-        <!-- Dropdown Tahun -->
-        <form method="GET" action="{{ route('monografi.index') }}">
-            <div class="mb-3">
-                <label for="tahun" class="form-label">Pilih Tahun:</label>
-                <select name="tahun" id="tahun" class="form-select" onchange="this.form.submit()">
-                    @foreach($tahunList as $tahun)
-                        <option value="{{ $tahun }}" {{ $tahun == $tahunTerpilih ? 'selected' : '' }}>{{ $tahun }}</option>
-                    @endforeach
-                </select>
+    <div class="container mt-4">
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
             </div>
-        </form>
+        @else
+            <!-- Card untuk Judul dan Dropdown Tahun -->
+            <div class="card shadow-lg mb-4 border-0">
+                <div class="card-body">
+                    <h2>Data Monografi Perpustakaan</h2>
+                    <form method="GET" action="{{ route('monografi.index') }}">
+                        <div class="mb-3">
+                            <label for="tahun" class="form-label">Pilih Tahun:</label>
+                            <select name="tahun" id="tahun" class="form-select" onchange="this.form.submit()">
+                                @foreach ($tahunList as $tahun)
+                                    <option value="{{ $tahun }}"
+                                        {{ $tahun == $tahunTerpilih ? 'selected' : '' }}>{{ $tahun }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </form>
+                    <a href="{{ route('pustakawan.monografi.export.pdf', ['tahun' => $tahunTerpilih]) }}"
+                        class="btn btn-danger">
+                        <i class="fas fa-file-pdf"></i> Export PDF
+                    </a>
+                </div>
+            </div>
 
-        <a href="{{ route('pustakawan.monografi.export.pdf', ['tahun' => $tahunTerpilih]) }}" class="btn btn-danger">
-            <i class="fas fa-file-pdf"></i> Export PDF
-        </a>
-        
-    
-<!-- Tabel Data Perpustakaan -->
-<table class="table table-bordered table-custom">
-    <tr>
-        <th>Nama Perpustakaan</th>
-        <td>{{ $perpustakaan->nama_perpustakaan }}</td>
-    </tr>
-    <tr>
-        <th>NPP</th>
-        <td>{{ $perpustakaan->npp }}</td>
-    </tr>
-    <tr>
-        <th>Jenis</th>
-        <td>{{ $perpustakaan->jenis->jenis }} - {{ $perpustakaan->jenis->subjenis }}</td>
-    </tr>
-    <tr>
-        <th>Alamat</th>
-        <td>{{ $perpustakaan->alamat }}</td>
-    </tr>
-    <tr>
-        <th>Kelurahan</th>
-        <td>{{ $perpustakaan->kelurahan->nama_kelurahan }}</td>
-    </tr>
-    <tr>
-        <th>Kecamatan</th>
-        <td>{{ $perpustakaan->kelurahan->kecamatan->nama_kecamatan }}</td>
-    </tr>
-    <tr>
-        <th>Kota</th>
-        <td>{{ $perpustakaan->kelurahan->kecamatan->kota->nama_kota }}</td>
-    </tr>
-    <tr>
-        <th>Kontak</th>
-        <td>{{ $perpustakaan->kontak }}</td>
-    </tr>
-    <tr>
-        <th>Foto</th>
-        <td><img src="{{ asset('storage/' . $perpustakaan->foto) }}" class="img-thumbnail"></td>
-    </tr>
-</table>
+            <!-- Card untuk Data Perpustakaan -->
+            <div class="card shadow-lg mb-4 border-0">
+                <div class="card-header bg-dark text-white">
+                    Informasi Perpustakaan
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Nama Perpustakaan</th>
+                            <td>{{ $perpustakaan->nama_perpustakaan }}</td>
+                        </tr>
+                        <tr>
+                            <th>NPP</th>
+                            <td>{{ $perpustakaan->npp }}</td>
+                        </tr>
+                        <tr>
+                            <th>Jenis</th>
+                            <td>{{ $perpustakaan->jenis->jenis }} - {{ $perpustakaan->jenis->subjenis }}</td>
+                        </tr>
+                        <tr>
+                            <th>Alamat</th>
+                            <td>{{ $perpustakaan->alamat }}</td>
+                        </tr>
+                        <tr>
+                            <th>Kelurahan</th>
+                            <td>{{ $perpustakaan->kelurahan->nama_kelurahan }}</td>
+                        </tr>
+                        <tr>
+                            <th>Kecamatan</th>
+                            <td>{{ $perpustakaan->kelurahan->kecamatan->nama_kecamatan }}</td>
+                        </tr>
+                        <tr>
+                            <th>Kota</th>
+                            <td>{{ $perpustakaan->kelurahan->kecamatan->kota->nama_kota }}</td>
+                        </tr>
+                        <tr>
+                            <th>Kontak</th>
+                            <td>{{ $perpustakaan->kontak }}</td>
+                        </tr>
+                        <tr>
+                            <th>Foto</th>
+                            <td><img src="{{ asset('storage/' . $perpustakaan->foto) }}" class="img-thumbnail"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
 
-<!-- Tabel Pertanyaan & Jawaban -->
-<h4>Jawaban Monografi Tahun {{ $tahunTerpilih }}</h4>
-<table class="table table-striped table-bordered">
-    @foreach($pertanyaans as $pertanyaan)
-        <tr>
-            <th>{{ $pertanyaan->teks_pertanyaan }}</th>
-            <td>{{ $jawabans[$pertanyaan->id_pertanyaan] ?? '-' }}</td>
-        </tr>
-    @endforeach
-</table>
+            <!-- Card untuk Pertanyaan & Jawaban -->
+            <div class="card shadow-lg mb-4 border-0">
+                <div class="card-header bg-dark text-white">
+                    Jawaban Monografi Tahun {{ $tahunTerpilih }}
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped table-bordered">
+                        @foreach ($pertanyaans as $pertanyaan)
+                            <tr>
+                                <th>{{ $pertanyaan->teks_pertanyaan }}</th>
+                                <td>{{ $jawabans[$pertanyaan->id_pertanyaan] ?? '-' }}</td>
+                            </tr>
+                        @endforeach
+                    </table>
+                </div>
+            </div>
+        @endif
+    </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
