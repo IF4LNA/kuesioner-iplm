@@ -9,14 +9,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-        body {
-            background-color: #F6EEE1;
+               body {
+            background-color: #ffffff;
             font-family: 'Poppins', sans-serif;
         }
 
         /* Navbar Styling */
         .navbar-custom {
-            background-color: #1F2A44;
+            background-color: #2c3e50;
             padding: 10px 20px;
         }
 
@@ -25,15 +25,28 @@
         }
 
         .navbar-custom .navbar-nav .nav-link {
-            color: white;
+            color: #ecf0f1;
             font-size: 15px;
             padding: 10px 15px;
             transition: all 0.3s ease-in-out;
         }
 
         .navbar-custom .navbar-nav .nav-link:hover {
-            color: #FFC107;
-            text-shadow: 0px 0px 5px rgba(255, 193, 7, 0.6);
+            color: #7f8c8d;
+            /* Warna kuning saat hover */
+            text-decoration: underline;
+            /* Garis bawah */
+            text-underline-offset: 4px;
+            /* Jarak garis bawah dari teks */
+        }
+
+        .navbar-custom .navbar-nav .nav-link.active {
+            color: #ffffff;
+            font-weight: bold;
+            text-decoration: underline;
+            /* Garis bawah */
+            text-underline-offset: 4px;
+            /* Jarak garis bawah dari teks */
         }
 
         .navbar-toggler {
@@ -46,7 +59,7 @@
 
         /* Dropdown Styling */
         .navbar-nav .dropdown-menu {
-            background-color: #1A2335;
+            background-color: #1c2833;
             border: none;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
         }
@@ -58,13 +71,14 @@
         }
 
         .navbar-nav .dropdown-item:hover {
-            background-color: #FFC107;
+            background-color: #7f8c8d;
             color: black;
         }
 
-        /* Button Styling */
-        .btn-custom {
-            background-color: #FFC107;
+
+     /* Button Styling */
+     .btn-custom {
+            background-color: #7f8c8d;
             color: black;
             border-radius: 20px;
             font-size: 14px;
@@ -74,12 +88,12 @@
         }
 
         .btn-custom:hover {
-            background-color: #E0A800;
+            background-color: #cacaca;
             color: black;
         }
 
         body {
-            background-color: #f4f4f4;
+            background-color: #f4f6f6;
             font-family: Arial, sans-serif;
         }
 
@@ -94,7 +108,7 @@
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            background-color: #ffffff;
+            background-color: #d5d5d5;
             border-radius: 10px;
             padding: 20px;
             margin-bottom: 15px;
@@ -160,19 +174,19 @@
         }
 
         .question-box:nth-child(odd) {
-            background-color: #E6D9C6;
+            background-color: #7f8c8d;
         }
 
         .question-box:nth-child(odd) .question-text {
-            color: #555555;
+            color: #ecf0f1;
         }
 
         .question-box:nth-child(even) {
-            background-color: #174166;
+            background-color: #bdc3c7;
         }
 
         .question-box:nth-child(even) .question-text {
-            color: #E4D9CD;
+            color: #4a4a4a;
         }
 
         @media (max-width: 768px) {

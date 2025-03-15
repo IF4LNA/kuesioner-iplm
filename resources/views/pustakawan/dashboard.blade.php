@@ -9,14 +9,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-        body {
-            background-color: #F6EEE1;
+                body {
+            background-color: #ffffff;
             font-family: 'Poppins', sans-serif;
         }
 
         /* Navbar Styling */
         .navbar-custom {
-            background-color: #1F2A44;
+            background-color: #2c3e50;
             padding: 10px 20px;
         }
 
@@ -25,15 +25,28 @@
         }
 
         .navbar-custom .navbar-nav .nav-link {
-            color: white;
+            color: #ecf0f1;
             font-size: 15px;
             padding: 10px 15px;
             transition: all 0.3s ease-in-out;
         }
 
         .navbar-custom .navbar-nav .nav-link:hover {
-            color: #FFC107;
-            text-shadow: 0px 0px 5px rgba(255, 193, 7, 0.6);
+            color: #7f8c8d;
+            /* Warna kuning saat hover */
+            text-decoration: underline;
+            /* Garis bawah */
+            text-underline-offset: 4px;
+            /* Jarak garis bawah dari teks */
+        }
+
+        .navbar-custom .navbar-nav .nav-link.active {
+            color: #ffffff;
+            font-weight: bold;
+            text-decoration: underline;
+            /* Garis bawah */
+            text-underline-offset: 4px;
+            /* Jarak garis bawah dari teks */
         }
 
         .navbar-toggler {
@@ -46,7 +59,7 @@
 
         /* Dropdown Styling */
         .navbar-nav .dropdown-menu {
-            background-color: #1A2335;
+            background-color: #1c2833;
             border: none;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
         }
@@ -58,19 +71,14 @@
         }
 
         .navbar-nav .dropdown-item:hover {
-            background-color: #FFC107;
+            background-color: #7f8c8d;
             color: black;
         }
-        .navbar-custom .navbar-nav .nav-link.active {
-            color: #FFC107;
-            text-shadow: 0px 0px 5px rgba(255, 193, 7, 0.6);
-            font-weight: bold;
-            /* Optional: Tambahkan efek tebal */
-        }
 
-        /* Button Styling */
-        .btn-custom {
-            background-color: #FFC107;
+
+     /* Button Styling */
+     .btn-custom {
+            background-color: #7f8c8d;
             color: black;
             border-radius: 20px;
             font-size: 14px;
@@ -80,7 +88,7 @@
         }
 
         .btn-custom:hover {
-            background-color: #E0A800;
+            background-color: #cacaca;
             color: black;
         }
 
