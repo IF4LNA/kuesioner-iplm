@@ -292,90 +292,89 @@
         </div>
     </nav>
 
-    <!-- Konten halaman -->
-    <div class="container mt-5">
-        {{-- <h3>Pilih Tahun untuk Menampilkan Pertanyaan</h3> --}}
+<!-- Konten halaman -->
+<div class="container mt-5">
+    {{-- <h3>Pilih Tahun untuk Menampilkan Pertanyaan</h3> --}}
 
-        <!-- Form Dropdown untuk Tahun -->
-        <form method="GET" action="{{ route('pustakawan.isikuesioner') }}" class="mb-4 p-4 shadow-sm rounded"
-            style="background-color: #ffffff;">
-            <h5 class="mb-3">Pilih Tahun untuk Menampilkan Pertanyaan</h5>
-            <div class="row align-items-center">
-                <!-- Dropdown Tahun -->
-                <div class="col-md-8 mb-3 mb-md-0">
-                    <div class="form-floating">
-                        <select name="tahun" class="form-select selectpicker" id="tahunSelect" required
-                            data-live-search="true">
-                            <option value="" disabled sele cted>Pilih Tahun</option>
-                            @foreach ($tahunList as $tahunOption)
-                                <option
-                                    value="{{ $tahunOption }}"{{ isset($tahun) && $tahun == $tahunOption ? 'selected' : '' }}>
-                                    {{ $tahunOption }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <label for="tahunSelect" class="text-muted">Tahun</label>
-                    </div>
-                </div>
-
-                <!-- Tombol Submit -->
-                <div class="col-md-4 text-end">
-                    <button type="submit" class="btn btn-primary btn-lg w-100 px-4">
-                        <i class="fas fa-search me-2"></i> Tampilkan Pertanyaan
-                    </button>
+    <!-- Form Dropdown untuk Tahun -->
+    <form method="GET" action="{{ route('pustakawan.isikuesioner') }}" class="mb-4 p-4 shadow-sm rounded"
+        style="background-color: #ffffff;">
+        <h5 class="mb-3">Pilih Tahun untuk Menampilkan Pertanyaan</h5>
+        <div class="row align-items-center">
+            <!-- Dropdown Tahun -->
+            <div class="col-md-8 mb-3 mb-md-0">
+                <div class="form-floating">
+                    <select name="tahun" class="form-select selectpicker" id="tahunSelect" required
+                        data-live-search="true">
+                        <option value="" disabled selected>Pilih Tahun</option>
+                        @foreach ($tahunList as $tahunOption)
+                            <option
+                                value="{{ $tahunOption }}"{{ isset($tahun) && $tahun == $tahunOption ? 'selected' : '' }}>
+                                {{ $tahunOption }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <label for="tahunSelect" class="text-muted">Tahun</label>
                 </div>
             </div>
+
+            <!-- Tombol Submit -->
+            <div class="col-md-4 text-end">
+                <button type="submit" class="btn btn-primary btn-lg w-100 px-4">
+                    <i class="fas fa-search me-2"></i> Tampilkan Pertanyaan
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Menampilkan Pertanyaan -->
+    @if ($pertanyaans->count() > 0)
+        <form action="{{ route('kuesioner.submit') }}" method="POST">
+            @csrf
+            <input type="hidden" name="tahun" value="{{ $tahun }}">
+
+            <div class="question-container">
+                @foreach ($pertanyaans as $pertanyaan)
+                    <div class="question-box">
+                        <div class="question-left">
+                            <img src="https://via.placeholder.com/100" alt="Icon Pertanyaan" class="question-icon">
+                        </div>
+                        <div class="question-right">
+                            <h5 class="question-text">{{ $loop->iteration }}. {{ $pertanyaan->teks_pertanyaan }}
+                            </h5>
+                            <input type="text" name="jawaban[{{ $pertanyaan->id_pertanyaan }}]"
+                                class="form-control" placeholder="Masukkan jawaban"
+                                value="{{ $jawaban[$pertanyaan->id_pertanyaan] ?? '' }}"
+                                {{ !$editable ? 'disabled' : '' }}>
+                            <!-- Tambahkan disabled jika tidak bisa diedit -->
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            @if ($editable)
+                <button type="submit" class="btn btn-primary mt-3 w-100">Submit Jawaban</button>
+            @endif
         </form>
 
-        <!-- Menampilkan Pertanyaan -->
-        @if ($pertanyaans->count() > 0)
-            <form action="{{ route('kuesioner.submit') }}" method="POST">
-                @csrf
-                <input type="hidden" name="tahun" value="{{ $tahun }}">
-
-                <div class="question-container">
-                    @foreach ($pertanyaans as $pertanyaan)
-                        <div class="question-box">
-                            <div class="question-left">
-                                <img src="https://via.placeholder.com/100" alt="Icon Pertanyaan" class="question-icon">
-                            </div>
-                            <div class="question-right">
-                                <h5 class="question-text">{{ $loop->iteration }}. {{ $pertanyaan->teks_pertanyaan }}
-                                </h5>
-                                <input type="text" name="jawaban[{{ $pertanyaan->id_pertanyaan }}]"
-                                    class="form-control" placeholder="Masukkan jawaban"
-                                    value="{{ $jawaban[$pertanyaan->id_pertanyaan] ?? '' }}"
-                                    {{ !$editable ? 'disabled' : '' }}>
-                                <!-- Tambahkan disabled jika tidak bisa diedit -->
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-
-                @if ($editable)
-                    <button type="submit" class="btn btn-primary mt-3 w-100">Submit Jawaban</button>
-                @endif
-            </form>
-
-            @if (!$editable)
-                <p class="text-warning mt-3">Tahun {{ $tahun }} sudah berlalu, jawaban tidak dapat diubah.</p>
-            @endif
-
-            </form>
-        @elseif (isset($tahun))
-            <p class="text-danger">Tidak ada pertanyaan untuk tahun {{ $tahun }}.</p>
+        @if (!$editable)
+            <p class="text-warning mt-3">Hanya tahun {{ now()->year }} yang dapat diisi atau diubah.</p>
         @endif
 
+        </form>
+    @elseif (isset($tahun))
+        <p class="text-danger">Tidak ada pertanyaan untuk tahun {{ $tahun }}.</p>
+    @endif
 
-        <script>
-            $(document).ready(function() {
-                $('.selectpicker').selectpicker();
-            });
-        </script>
+    <script>
+        $(document).ready(function() {
+            $('.selectpicker').selectpicker();
+        });
+    </script>
 
-        <!-- Bootstrap JS -->
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
 </body>
 
 </html>
