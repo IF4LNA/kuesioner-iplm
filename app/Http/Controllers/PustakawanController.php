@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Kota;
 use App\Models\Jawaban;
 use App\Models\Pertanyaan;
+use App\Models\User;
 use App\Models\Perpustakaan;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+
 
 class PustakawanController extends Controller
 {
@@ -27,51 +29,71 @@ class PustakawanController extends Controller
 
     // Mengirim data dari form ke database yang di redirect ke halaman isi kuesioner
     public function store(Request $request)
-    {
-        // Validasi input
-        $request->validate([
-            'alamat' => 'required|string|max:50',
-            'npp' => 'required|string|max:50',
-            'kontak' => 'nullable|string|max:50|regex:/^[0-9+\-\s]+$/',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:6144',
-            'desa_kelurahan' => 'required|integer|exists:kelurahans,id',
-        ]);
+{
+    // Ambil user yang sedang login
+    $user = auth()->user();
 
-        // Ambil data perpustakaan dari user yang login
-        $perpustakaan = auth()->user()->perpustakaan;
+    // Validasi input
+    $rules = [
+        'alamat' => 'required|string|max:50',
+        'npp' => 'required|string|max:50',
+        'kontak' => 'nullable|string|max:50|regex:/^[0-9+\-\s]+$/',
+        'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:6144',
+        'desa_kelurahan' => 'required|integer|exists:kelurahans,id',
+    ];
 
-        // Jika perpustakaan tidak ditemukan, kembalikan dengan error
-        if (!$perpustakaan) {
-            return redirect()->route('pustakawan.isikuesioner')->with('error', 'Data perpustakaan tidak ditemukan.');
-        }
-
-        // Proses penyimpanan foto jika diunggah
-        if ($request->hasFile('foto')) {
-            // Hapus foto lama jika ada
-            if ($perpustakaan->foto) {
-                Storage::disk('public')->delete($perpustakaan->foto);
-            }
-
-            // Ambil nama asli file
-            $originalName = $request->file('foto')->getClientOriginalName();
-
-            // Simpan dengan nama asli di dalam folder 'fotos' di penyimpanan publik
-            $fotoPath = $request->file('foto')->storeAs('fotos', $originalName, 'public');
-        } else {
-            $fotoPath = $perpustakaan->foto; // Gunakan foto lama jika tidak diunggah foto baru
-        }
-
-        // Update data perpustakaan
-        $perpustakaan->update([
-            'alamat' => $request->alamat,
-            'npp' => $request->npp,
-            'kontak' => $request->kontak,
-            'foto' => $fotoPath,
-            'id_kelurahan' => $request->desa_kelurahan,
-        ]);
-
-        return redirect()->route('pustakawan.isikuesioner')->with('success', 'Data pustakawan berhasil disimpan.');
+    // Jika email diubah, tambahkan validasi unique
+    if ($request->email !== $user->email) {
+        $rules['email'] = 'required|string|email|max:255|unique:users,email,' . $user->id;
+    } else {
+        $rules['email'] = 'required|string|email|max:255';
     }
+
+    $request->validate($rules);
+
+    // Ambil data perpustakaan dari user yang login
+    /** @var \App\Models\User $user */
+    $perpustakaan = $user->perpustakaan;
+
+    // Jika perpustakaan tidak ditemukan, kembalikan dengan error
+    if (!$perpustakaan) {
+        return redirect()->route('pustakawan.isikuesioner')->with('error', 'Data perpustakaan tidak ditemukan.');
+    }
+
+    // Update email user jika email diubah
+    if ($request->email !== $user->email) {
+        $user->update([
+            'email' => $request->email,
+        ]);
+    }
+
+    // Proses penyimpanan foto jika diunggah
+    if ($request->hasFile('foto')) {
+        // Hapus foto lama jika ada
+        if ($perpustakaan->foto) {
+            Storage::disk('public')->delete($perpustakaan->foto);
+        }
+
+        // Ambil nama asli file
+        $originalName = $request->file('foto')->getClientOriginalName();
+
+        // Simpan dengan nama asli di dalam folder 'fotos' di penyimpanan publik
+        $fotoPath = $request->file('foto')->storeAs('fotos', $originalName, 'public');
+    } else {
+        $fotoPath = $perpustakaan->foto; // Gunakan foto lama jika tidak diunggah foto baru
+    }
+
+    // Update data perpustakaan
+    $perpustakaan->update([
+        'alamat' => $request->alamat,
+        'npp' => $request->npp,
+        'kontak' => $request->kontak,
+        'foto' => $fotoPath,
+        'id_kelurahan' => $request->desa_kelurahan,
+    ]);
+
+    return redirect()->route('pustakawan.isikuesioner')->with('success', 'Data pustakawan berhasil disimpan.');
+}
 
     public function showForm()
     {

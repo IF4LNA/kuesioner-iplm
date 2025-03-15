@@ -161,7 +161,13 @@
                     <label for="alamat" class="form-label">Detail alamat:</label>
                     <input type="text" id="alamat" name="alamat" class="form-control" value="{{ $alamatPustakawan }}" required>
                 </div>
-        
+                
+                <!-- Detail Email -->
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" name="email" id="email" class="form-control" value="{{ old('email', auth()->user()->email) }}" required>
+                </div>
+                
                 <!-- NPP -->
                 <div class="mb-3">
                     <label for="npp" class="form-label">NPP:</label>
@@ -266,6 +272,19 @@
                 }
             });
         });
+
+        document.addEventListener('DOMContentLoaded', function() {
+        const emailInput = document.getElementById('email');
+        const originalEmail = "{{ auth()->user()->email }}";
+
+        emailInput.addEventListener('change', function() {
+            if (emailInput.value === originalEmail) {
+                emailInput.removeAttribute('name'); // Hapus atribut name agar tidak dikirim
+            } else {
+                emailInput.setAttribute('name', 'email'); // Tambahkan kembali atribut name
+            }
+        });
+    });
     </script>
 
     <!-- Bootstrap JS -->
