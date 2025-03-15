@@ -148,6 +148,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pustakawan/monografi/export-pdf/{tahun}', [MonografiController::class, 'exportPDF'])
         ->name('pustakawan.monografi.export.pdf')
         ->middleware('auth'); // Pastikan hanya user login yang bisa mengakses
+        Route::get('/monografi/exportPDF/{tahun}', [MonografiController::class, 'exportPDF'])->name('monografi.exportPDF');
 
     // Route untuk menyimpan data perpustakaan
     Route::post('/pustakawan/store', [PustakawanController::class, 'store'])->name('pustakawan.store');

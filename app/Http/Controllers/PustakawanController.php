@@ -24,7 +24,59 @@ class PustakawanController extends Controller
     // Menampilkan halaman dashboard pustakawan
     public function index()
     {
-        return view('pustakawan.dashboard');
+        // Ambil data pengguna yang login
+        $user = Auth::user();
+        $username = $user->username;
+    
+        // Ambil data perpustakaan terkait
+        $perpustakaan = Perpustakaan::where('id_akun', $user->id)->first();
+    
+        // Jika tidak ada perpustakaan, kembalikan pesan error
+        if (!$perpustakaan) {
+            return redirect()->back()->with('error', 'Data perpustakaan tidak ditemukan.');
+        }
+    
+        // Ambil tahun sekarang
+        $tahunSekarang = now()->year;
+    
+        // Statistik Cepat
+        $totalPertanyaan = Pertanyaan::where('tahun', $tahunSekarang)->count();
+        $pertanyaanDijawab = Jawaban::where('id_perpustakaan', $perpustakaan->id_perpustakaan)
+            ->where('tahun', $tahunSekarang)
+            ->count();
+        $pertanyaanBelumDijawab = $totalPertanyaan - $pertanyaanDijawab;
+    
+        // Aktivitas Terbaru (satu jawaban terbaru per tahun)
+        $aktivitasTerbaru = Jawaban::where('id_perpustakaan', $perpustakaan->id_perpustakaan)
+            ->with('pertanyaan') // Eager load relasi pertanyaan
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->groupBy('tahun') // Kelompokkan berdasarkan tahun
+            ->map(function ($jawabanPerTahun) {
+                return $jawabanPerTahun->first(); // Ambil satu jawaban terbaru per tahun
+            });
+    
+        // Data untuk bar chart (jawaban per bulan)
+        $jawabanPerBulan = Jawaban::where('id_perpustakaan', $perpustakaan->id_perpustakaan)
+            ->where('tahun', $tahunSekarang)
+            ->selectRaw('MONTH(created_at) as bulan, COUNT(*) as total')
+            ->groupBy('bulan')
+            ->pluck('total', 'bulan');
+    
+        // Inisialisasi array untuk data chart (12 bulan)
+        $chartData = array_fill(0, 12, 0); // Index 0 = Januari, 11 = Desember
+        foreach ($jawabanPerBulan as $bulan => $total) {
+            $chartData[$bulan - 1] = $total; // Sesuaikan index (bulan dimulai dari 1)
+        }
+    
+        return view('pustakawan.dashboard', compact(
+            'username',
+            'totalPertanyaan',
+            'pertanyaanDijawab',
+            'pertanyaanBelumDijawab',
+            'aktivitasTerbaru',
+            'chartData' // Data untuk chart
+        ));
     }
 
     // Mengirim data dari form ke database yang di redirect ke halaman isi kuesioner

@@ -9,7 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-                body {
+        body {
             background-color: #ffffff;
             font-family: 'Poppins', sans-serif;
         }
@@ -33,20 +33,15 @@
 
         .navbar-custom .navbar-nav .nav-link:hover {
             color: #7f8c8d;
-            /* Warna kuning saat hover */
             text-decoration: underline;
-            /* Garis bawah */
             text-underline-offset: 4px;
-            /* Jarak garis bawah dari teks */
         }
 
         .navbar-custom .navbar-nav .nav-link.active {
             color: #ffffff;
             font-weight: bold;
             text-decoration: underline;
-            /* Garis bawah */
             text-underline-offset: 4px;
-            /* Jarak garis bawah dari teks */
         }
 
         .navbar-toggler {
@@ -75,9 +70,8 @@
             color: black;
         }
 
-
-     /* Button Styling */
-     .btn-custom {
+        /* Button Styling */
+        .btn-custom {
             background-color: #7f8c8d;
             color: black;
             border-radius: 20px;
@@ -107,6 +101,29 @@
             font-size: 1.7rem;
             margin-right: 15px;
             color: #FFC107;
+        }
+
+        /* Card Styling */
+        .card-custom {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .card-custom:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-custom .card-header {
+            background-color: #2E3B55;
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .card-custom .card-body {
+            background-color: #f8f9fa;
+            border-radius: 0 0 10px 10px;
         }
     </style>
 </head>
@@ -162,6 +179,7 @@
     </nav>
 
     <div class="container mt-4">
+        <!-- Welcome Box -->
         <div class="row mb-3">
             <div class="col-12">
                 <div class="welcome-box">
@@ -170,7 +188,119 @@
                 </div>
             </div>
         </div>
+
+        <!-- Quick Links -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <a href="{{ route('monografi.exportPDF', ['tahun' => now()->year]) }}" class="btn btn-danger w-100">
+                    <i class="fas fa-file-pdf"></i> Ekspor PDF Monografi
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a href="{{ route('form.data') }}" class="btn btn-info w-100">
+                    <i class="fas fa-edit"></i> Isi Kuesioner
+                </a>
+            </div>
+        </div>
+
+<!-- Statistik Cepat -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card card-custom">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="fas fa-check-circle"></i> Pertanyaan Dijawab</h5>
+            </div>
+            <div class="card-body">
+                <h3 class="text-center">{{ $pertanyaanDijawab }}</h3>
+                <p class="text-center text-muted">Total pertanyaan yang sudah dijawab.</p>
+            </div>
+        </div>
     </div>
+    <div class="col-md-4">
+        <div class="card card-custom">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="fas fa-times-circle"></i> Pertanyaan Belum Dijawab</h5>
+            </div>
+            <div class="card-body">
+                <h3 class="text-center">{{ $pertanyaanBelumDijawab }}</h3>
+                <p class="text-center text-muted">Total pertanyaan yang belum dijawab.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-custom">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="fas fa-list-alt"></i> Total Pertanyaan</h5>
+            </div>
+            <div class="card-body">
+                <h3 class="text-center">{{ $totalPertanyaan }}</h3>
+                <p class="text-center text-muted">Total pertanyaan tersedia.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Aktivitas Terbaru -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card card-custom">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="fas fa-history"></i> Aktivitas Terbaru</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    @forelse($aktivitasTerbaru as $tahun => $jawaban)
+                        <li class="list-group-item">
+                            Pertanyaan tahun {{ $tahun }} telah dijawab pada {{ $jawaban->created_at->format('d F Y') }}.
+                        </li>
+                    @empty
+                        <li class="list-group-item">Tidak ada aktivitas terbaru.</li>
+                    @endforelse
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+ <!-- Grafik -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card card-custom">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="fas fa-chart-bar"></i> Statistik Jawaban per Bulan</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('barChart').getContext('2d');
+    const barChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+            datasets: [{
+                label: 'Jumlah Jawaban',
+                data: @json($chartData), // Gunakan data dari controller
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
