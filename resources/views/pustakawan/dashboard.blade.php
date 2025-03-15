@@ -9,7 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-                body {
+        body {
             background-color: #ffffff;
             font-family: 'Poppins', sans-serif;
         }
@@ -76,8 +76,8 @@
         }
 
 
-     /* Button Styling */
-     .btn-custom {
+        /* Button Styling */
+        .btn-custom {
             background-color: #7f8c8d;
             color: black;
             border-radius: 20px;

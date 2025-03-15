@@ -33,20 +33,15 @@
 
         .navbar-custom .navbar-nav .nav-link:hover {
             color: #7f8c8d;
-            /* Warna kuning saat hover */
             text-decoration: underline;
-            /* Garis bawah */
             text-underline-offset: 4px;
-            /* Jarak garis bawah dari teks */
         }
 
         .navbar-custom .navbar-nav .nav-link.active {
             color: #ffffff;
             font-weight: bold;
             text-decoration: underline;
-            /* Garis bawah */
             text-underline-offset: 4px;
-            /* Jarak garis bawah dari teks */
         }
 
         .navbar-toggler {
@@ -119,9 +114,12 @@
 
         .img-thumbnail {
             max-width: 150px;
-            /* Atur sesuai kebutuhan */
             height: auto;
-            /* Menjaga aspek rasio */
+        }
+
+        /* Responsive Table */
+        .table-responsive {
+            overflow-x: auto;
         }
     </style>
 </head>
@@ -209,44 +207,46 @@
                     Informasi Perpustakaan
                 </div>
                 <div class="card-body">
-                    <table class="table table-bordered">
-                        <tr>
-                            <th>Nama Perpustakaan</th>
-                            <td>{{ $perpustakaan->nama_perpustakaan }}</td>
-                        </tr>
-                        <tr>
-                            <th>NPP</th>
-                            <td>{{ $perpustakaan->npp }}</td>
-                        </tr>
-                        <tr>
-                            <th>Jenis</th>
-                            <td>{{ $perpustakaan->jenis->jenis }} - {{ $perpustakaan->jenis->subjenis }}</td>
-                        </tr>
-                        <tr>
-                            <th>Alamat</th>
-                            <td>{{ $perpustakaan->alamat }}</td>
-                        </tr>
-                        <tr>
-                            <th>Kelurahan</th>
-                            <td>{{ $perpustakaan->kelurahan->nama_kelurahan }}</td>
-                        </tr>
-                        <tr>
-                            <th>Kecamatan</th>
-                            <td>{{ $perpustakaan->kelurahan->kecamatan->nama_kecamatan }}</td>
-                        </tr>
-                        <tr>
-                            <th>Kota</th>
-                            <td>{{ $perpustakaan->kelurahan->kecamatan->kota->nama_kota }}</td>
-                        </tr>
-                        <tr>
-                            <th>Kontak</th>
-                            <td>{{ $perpustakaan->kontak }}</td>
-                        </tr>
-                        <tr>
-                            <th>Foto</th>
-                            <td><img src="{{ asset('storage/' . $perpustakaan->foto) }}" class="img-thumbnail"></td>
-                        </tr>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Nama Perpustakaan</th>
+                                <td>{{ $perpustakaan->nama_perpustakaan }}</td>
+                            </tr>
+                            <tr>
+                                <th>NPP</th>
+                                <td>{{ $perpustakaan->npp }}</td>
+                            </tr>
+                            <tr>
+                                <th>Jenis</th>
+                                <td>{{ $perpustakaan->jenis->jenis }} - {{ $perpustakaan->jenis->subjenis }}</td>
+                            </tr>
+                            <tr>
+                                <th>Alamat</th>
+                                <td>{{ $perpustakaan->alamat }}</td>
+                            </tr>
+                            <tr>
+                                <th>Kelurahan</th>
+                                <td>{{ $perpustakaan->kelurahan->nama_kelurahan }}</td>
+                            </tr>
+                            <tr>
+                                <th>Kecamatan</th>
+                                <td>{{ $perpustakaan->kelurahan->kecamatan->nama_kecamatan }}</td>
+                            </tr>
+                            <tr>
+                                <th>Kota</th>
+                                <td>{{ $perpustakaan->kelurahan->kecamatan->kota->nama_kota }}</td>
+                            </tr>
+                            <tr>
+                                <th>Kontak</th>
+                                <td>{{ $perpustakaan->kontak }}</td>
+                            </tr>
+                            <tr>
+                                <th>Foto</th>
+                                <td><img src="{{ asset('storage/' . $perpustakaan->foto) }}" class="img-thumbnail img-fluid"></td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -256,14 +256,16 @@
                     Jawaban Monografi Tahun {{ $tahunTerpilih }}
                 </div>
                 <div class="card-body">
-                    <table class="table table-striped table-bordered">
-                        @foreach ($pertanyaans as $pertanyaan)
-                            <tr>
-                                <th>{{ $pertanyaan->teks_pertanyaan }}</th>
-                                <td>{{ $jawabans[$pertanyaan->id_pertanyaan] ?? '-' }}</td>
-                            </tr>
-                        @endforeach
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered">
+                            @foreach ($pertanyaans as $pertanyaan)
+                                <tr>
+                                    <th>{{ $pertanyaan->teks_pertanyaan }}</th>
+                                    <td>{{ $jawabans[$pertanyaan->id_pertanyaan] ?? '-' }}</td>
+                                </tr>
+                            @endforeach
+                        </table>
+                    </div>
                 </div>
             </div>
         @endif

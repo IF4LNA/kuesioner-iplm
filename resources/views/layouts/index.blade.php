@@ -10,13 +10,14 @@
     <style>
         body {
             margin-top: 100px;
+            font-family: 'Poppins', sans-serif;
         }
 
         .navbar {
             border-bottom: 1px solid #ccc;
             background-color: white;
         }
-
+        
         .navbar-brand img {
             height: 70px;
             width: auto;
@@ -24,6 +25,8 @@
         }
 
         .navbar-nav .nav-link {
+            font-weight: 500;
+            font-size: 16px;
             color: black;
             text-decoration: none;
             position: relative;
@@ -77,6 +80,7 @@
 
         .judul-konten {
             padding-top: 80px;
+            font-weight: 500;
         }
 
         .paragraf {
@@ -97,6 +101,8 @@
             color: blue;
             padding: 10px 20px;
             font-size: 16px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
             border-radius: 5px;
             transition: all 0.3s ease;
         }
@@ -159,6 +165,7 @@
                 font-size: 14px;
                 margin-top: 10px;
             }
+
             .navbar-toggler {
                 border: none;
                 /* Menghilangkan border jika ada */

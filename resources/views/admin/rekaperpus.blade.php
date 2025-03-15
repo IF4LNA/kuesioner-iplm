@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<!-- cdn -->
+    <!-- cdn -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
     <style>
@@ -9,8 +9,13 @@
             height: 38px;
             padding: 5px;
         }
+
         .select2-container--default .select2-selection--single .select2-selection__arrow {
             height: 36px;
+        }
+
+        .select2-container--default .select2-selection__placeholder {
+            color: #1b1a1a !important;
         }
     </style>
     <div class="container mt-4">
@@ -25,21 +30,21 @@
                         <!-- Dropdown Perpustakaan -->
                         <div class="col-md-6 mb-3">
                             <label for="perpustakaan_id" class="form-label">Pilih Perpustakaan:</label>
-                            <select name="perpustakaan_id" id="perpustakaan_id" class="form-control">
+                            <select name="perpustakaan_id" id="perpustakaan_id" class="form-control border-light">
                                 <option value="">-- Pilih Perpustakaan --</option>
                                 @foreach ($perpustakaans as $p)
-                                    <option value="{{ $p->id_perpustakaan }}"
+                                    <option value="{{ $p->id_perpustakaan }}" 
                                         {{ $selectedPerpustakaan == $p->id_perpustakaan ? 'selected' : '' }}>
                                         {{ $p->nama_perpustakaan }}
                                     </option>
                                 @endforeach
-                            </select>
+                            </select>                            
                         </div>
 
                         <!-- Dropdown Tahun -->
                         <div class="col-md-6 mb-3">
                             <label for="tahun" class="form-label">Pilih Tahun:</label>
-                            <select name="tahun" id="tahun" class="form-control">
+                            <select name="tahun" id="tahun" class="form-control border-secondary">
                                 <option value="">-- Pilih Tahun --</option>
                                 @foreach ($tahunList as $t)
                                     <option value="{{ $t }}" {{ $selectedTahun == $t ? 'selected' : '' }}>
@@ -101,27 +106,29 @@
                             <tbody>
                                 @if ($perpustakaan)
                                     <tr>
-                                        <td>{{ $perpustakaan->nama_perpustakaan }}</td>
-                                        <td>{{ $perpustakaan->npp ?? '-' }}</td>
-                                        <td>{{ $perpustakaan->jenis->jenis ?? '-' }}</td>
-                                        <td>{{ $perpustakaan->jenis->subjenis ?? '-' }}</td>
-                                        <td>{{ $perpustakaan->kelurahan->kecamatan->kota->nama_kota ?? '-' }}</td>
-                                        <td>{{ $perpustakaan->kelurahan->kecamatan->nama_kecamatan ?? '-' }}</td>
-                                        <td>{{ $perpustakaan->kelurahan->nama_kelurahan ?? '-' }}</td>
-                                        <td>{{ $perpustakaan->alamat ?? '-' }}</td>
-                                        <td>{{ $perpustakaan->kontak ?? '-' }}</td>
+                                        @php
+                                            $data = [
+                                                $perpustakaan->nama_perpustakaan,
+                                                $perpustakaan->npp ?? '-',
+                                                $perpustakaan->jenis->jenis ?? '-',
+                                                $perpustakaan->jenis->subjenis ?? '-',
+                                                $perpustakaan->kelurahan->kecamatan->kota->nama_kota ?? '-',
+                                                $perpustakaan->kelurahan->kecamatan->nama_kecamatan ?? '-',
+                                                $perpustakaan->kelurahan->nama_kelurahan ?? '-',
+                                                $perpustakaan->alamat ?? '-',
+                                                $perpustakaan->kontak ?? '-'
+                                            ];
+                                        @endphp
+                                        @foreach ($data as $value)
+                                            <td>{{ $value }}</td>
+                                        @endforeach
                                         <td>
-                                            @if ($perpustakaan->foto)
-                                                <img src="{{ Storage::url($perpustakaan->foto) }}" class="img-thumbnail"
-                                                    width="100" height="100">
-                                            @else
-                                                <img src="{{ asset('storage/fotos/default.png') }}" class="img-thumbnail"
-                                                    width="100" height="100">
-                                            @endif
+                                            <img src="{{ $perpustakaan->foto ? Storage::url($perpustakaan->foto) : asset('storage/fotos/default.png') }}" 
+                                                class="img-thumbnail" width="100" height="100">
                                         </td>
                                     </tr>
                                 @endif
-                            </tbody>
+                            </tbody>                            
                         </table>
                     </div>
                 </div>
@@ -162,32 +169,33 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#perpustakaan_id').select2({
-                placeholder: "-- Pilih Perpustakaan --",
-                allowClear: true,
-                ajax: {
-                    url: "{{ route('perpustakaans.search') }}",
-                    dataType: 'json',
-                    delay: 250, // Delay saat mengetik sebelum melakukan pencarian
-                    data: function(params) {
-                        return {
-                            search: params.term, // Kata kunci pencarian
-                            page: params.page || 1, // Nomor halaman
-                        };
-                    },
-                    processResults: function(data, params) {
-                        params.page = params.page || 1;
-    
-                        return {
-                            results: data.results, // Data hasil pencarian
-                            pagination: {
-                                more: data.pagination.more, // Apakah masih ada halaman berikutnya
-                            },
-                        };
-                    },
-                    cache: true,
+    let $perpustakaanSelect = $('#perpustakaan_id');
+
+    $perpustakaanSelect.select2({
+        placeholder: "-- Pilih Perpustakaan --",
+        allowClear: true,
+        language: {
+            loadingMore: () => "Sedang memuat data...",
+            searching: () => "Mencari perpustakaan...",
+        },
+        ajax: {
+            url: "{{ route('perpustakaans.search') }}",
+            dataType: 'json',
+            delay: 250,
+            data: params => ({
+                search: params.term,
+                page: params.page || 1,
+            }),
+            processResults: (data, params) => ({
+                results: data.results,
+                pagination: { more: data.pagination.more },
+            }),
+            cache: true,
+                    complete: function() {
+                        $('#perpustakaan_id').next('.select2-container').find(
+                            '.select2-selection__placeholder').text('-- Pilih Perpustakaan --');
+                    }
                 },
-                minimumInputLength: 1, // Minimal karakter untuk memulai pencarian
             });
         });
     </script>
