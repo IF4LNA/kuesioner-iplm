@@ -70,8 +70,9 @@
             color: black;
         }
 
-        /* Button Styling */
-        .btn-custom {
+
+     /* Button Styling */
+     .btn-custom {
             background-color: #7f8c8d;
             color: black;
             border-radius: 20px;
