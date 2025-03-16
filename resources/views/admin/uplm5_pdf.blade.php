@@ -37,7 +37,7 @@
             @foreach ($data as $index => $item)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $item->created_at->format('Y') }}</td>
+                    <td>{{ $tahun }}</td>
                     <td>{{ $item->nama_perpustakaan ?? '-' }}</td>
                     <td>{{ $item->npp ?? '-' }}</td>
                     <td>{{ $item->jenis->jenis ?? '-' }}</td>

@@ -49,15 +49,6 @@ class Uplm2PdfExport implements FromCollection, WithHeadings, WithMapping
             $this->tahun = Pertanyaan::where('kategori', 'UPLM 2')->max('tahun');
         }
 
-        // Filter berdasarkan tahun (Pastikan hanya mengambil jawaban sesuai tahun)
-        // if ($this->tahun) {
-        //     $query->whereHas('jawaban', function ($q) {
-        //         $q->whereHas('pertanyaan', function ($p) {
-        //             $p->where('tahun', $this->tahun)->where('kategori', 'UPLM 2');
-        //         });
-        //     });
-        // }
-
         // Hitung total data yang tersedia
         $totalData = $query->count();
 
@@ -149,7 +140,10 @@ class Uplm2PdfExport implements FromCollection, WithHeadings, WithMapping
             })
             ->get();
 
-        $pdf = Pdf::loadView('admin.uplm2_pdf', compact('data', 'headings', 'pertanyaan'))
+        // Teruskan tahun ke view PDF
+        $tahun = $this->tahun;
+
+        $pdf = Pdf::loadView('admin.uplm2_pdf', compact('data', 'headings', 'pertanyaan', 'tahun'))
             ->setPaper('a4', 'landscape');
 
         return $pdf->download('uplm2-report.pdf');

@@ -48,15 +48,6 @@ class Uplm5Export implements FromCollection, WithHeadings, WithMapping
             $this->tahun = Pertanyaan::where('kategori', 'UPLM 5')->max('tahun');
         }
 
-        // Filter berdasarkan tahun (Pastikan hanya mengambil jawaban sesuai tahun)
-        if ($this->tahun) {
-            $query->whereHas('jawaban', function ($q) {
-                $q->whereHas('pertanyaan', function ($p) {
-                    $p->where('tahun', $this->tahun)->where('kategori', 'UPLM 5');
-                });
-            });
-        }
-
         // Hitung total data yang tersedia
         $totalData = $query->count();
 
@@ -104,7 +95,7 @@ class Uplm5Export implements FromCollection, WithHeadings, WithMapping
     {
         $data = [
             $item->id,
-            $item->created_at->format('Y'),
+            $this->tahun, // Menggunakan tahun yang dipilih di filter
             $item->nama_perpustakaan ?? '-',
             $item->npp ?? '-',
             $item->jenis->jenis ?? '-',

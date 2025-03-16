@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>UPLM 7</title>
+    <title>UPLM 1 Report</title>
     <style>
         body {
             font-size: 10px; /* Ukuran teks utama */
@@ -24,7 +24,7 @@
     </style>
 </head>
 <body>
-    <h2>UPLM 7 Anggota Perpustakaan</h2>
+    <h2>UPLM 1 Pemerataan Layanan Perpustakaan</h2>
     <table>
         <thead>
             <tr>

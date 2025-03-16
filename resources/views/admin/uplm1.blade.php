@@ -166,24 +166,24 @@
                         'jenis' => request()->jenis,
                         'subjenis' => request()->subjenis,
                         'tahun' => request()->tahun,
-                        'perPage' => request()->perPage ?? 10,
+                        'perPage' => request()->perPage,
                         'page' => request()->page ?? 1,
                     ]) }}"
                         class="btn btn-success shadow-sm">
                         <i class="fas fa-file-excel"></i> Export Excel
                     </a>
 
-                    <a href="{{ route('uplm.exportPdf1', [
-                        'id' => $id,
-                        'jenis' => request()->jenis,
-                        'subjenis' => request()->subjenis,
-                        'tahun' => request()->tahun,
-                        'perPage' => request()->perPage ?? 10,
-                        'page' => request()->page ?? 1,
-                    ]) }}"
-                        class="btn btn-danger shadow-sm">
-                        <i class="fas fa-file-pdf"></i> Export PDF
-                    </a>
+                    <a href="{{ route('uplm.exportPdf', [
+                    'id' => $id, 
+                    'kategori' => '1', 
+                    'perPage' => request('perPage', 10), 
+                    'page' => request('page', 1), 
+                    'tahun' => request('tahun'), 
+                    'jenis' => request('jenis'), 
+                    'subjenis' => request('subjenis')]) }}"
+                        class="btn btn-danger">
+                         Export PDF
+                     </a>
                 </div>
             </div>
         </div>
@@ -372,7 +372,7 @@
                             @endforelse
                         </tbody>
                     </table>
-
+                    <!-- Pagination -->
                     <!-- Pagination -->
                     <div class="sticky-pagination">
                         <div class="d-flex justify-content-between align-items-center mt-4">

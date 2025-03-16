@@ -9,7 +9,7 @@ use App\Models\Perpustakaan;
 use App\Models\Pertanyaan;
 use App\Models\Jawaban;
 
-class Uplm7Export implements FromCollection, WithHeadings, WithMapping
+class Uplm1Export implements FromCollection, WithHeadings, WithMapping
 {
     protected $jenis;
     protected $subjenis;
@@ -45,7 +45,7 @@ class Uplm7Export implements FromCollection, WithHeadings, WithMapping
 
         // Jika tidak ada tahun dikirim, gunakan tahun terbaru
         if (!$this->tahun) {
-            $this->tahun = Pertanyaan::where('kategori', 'UPLM 7')->max('tahun');
+            $this->tahun = Pertanyaan::where('kategori', 'UPLM 1')->max('tahun');
         }
 
         // Hitung total data yang tersedia
@@ -76,14 +76,15 @@ class Uplm7Export implements FromCollection, WithHeadings, WithMapping
 
         // Gunakan tahun terbaru jika tidak ada tahun yang dikirim
         if (!$this->tahun) {
-            $this->tahun = Pertanyaan::where('kategori', 'UPLM 7')->max('tahun');
+            $this->tahun = Pertanyaan::where('kategori', 'UPLM 1')->max('tahun');
         }
 
-        // Ambil pertanyaan khusus untuk tahun tertentu
-        $pertanyaan = Pertanyaan::where('kategori', 'UPLM 7')
+        // Ambil semua pertanyaan UPLM 1 untuk tahun tertentu
+        $pertanyaan = Pertanyaan::where('kategori', 'UPLM 1')
             ->where('tahun', $this->tahun)
             ->get();
 
+        // Tambahkan header untuk setiap pertanyaan
         foreach ($pertanyaan as $pertanyaanItem) {
             $headings[] = $pertanyaanItem->teks_pertanyaan;
         }
@@ -92,38 +93,35 @@ class Uplm7Export implements FromCollection, WithHeadings, WithMapping
     }
 
     public function map($item): array
-    {
-        $data = [
-            $item->id,
-            $this->tahun, // Menggunakan tahun yang dipilih di filter
-            $item->nama_perpustakaan ?? '-',
-            $item->npp ?? '-',
-            $item->jenis->jenis ?? '-',
-            $item->jenis->subjenis ?? '-',
-            $item->alamat ?? '-',
-            $item->kelurahan->nama_kelurahan ?? '-',
-            $item->kelurahan->kecamatan->nama_kecamatan ?? '-',
-        ];
+{
+    $data = [
+        $item->id,
+        $this->tahun, // Menggunakan tahun yang dipilih di filter
+        $item->nama_perpustakaan ?? '-',
+        $item->npp ?? '-',
+        $item->jenis->jenis ?? '-',
+        $item->jenis->subjenis ?? '-',
+        $item->alamat ?? '-',
+        $item->kelurahan->nama_kelurahan ?? '-',
+        $item->kelurahan->kecamatan->nama_kecamatan ?? '-',
+    ];
 
-        // Gunakan tahun terbaru jika tidak ada tahun yang dikirim
-        if (!$this->tahun) {
-            $this->tahun = Pertanyaan::where('kategori', 'UPLM 7')->max('tahun');
-        }
+    // Ambil semua pertanyaan UPLM 1 untuk tahun tertentu
+    $pertanyaan = Pertanyaan::where('kategori', 'UPLM 1')
+        ->where('tahun', $this->tahun)
+        ->get();
 
-        // Ambil jawaban hanya untuk pertanyaan di tahun tertentu
-        $pertanyaan = Pertanyaan::where('kategori', 'UPLM 7')
-            ->where('tahun', $this->tahun)
-            ->get();
+    // Loop melalui setiap pertanyaan dan cari jawaban yang sesuai
+    foreach ($pertanyaan as $pertanyaanItem) {
+        $jawaban = $item->jawaban
+            ->where('id_pertanyaan', $pertanyaanItem->id_pertanyaan)
+            ->where('pertanyaan.tahun', $this->tahun)
+            ->first();
 
-        foreach ($pertanyaan as $pertanyaanItem) {
-            $jawaban = $item->jawaban
-                ->where('id_pertanyaan', $pertanyaanItem->id_pertanyaan)
-                ->where('pertanyaan.tahun', $this->tahun) // Pastikan hanya tahun yang sesuai
-                ->first();
-
-            $data[] = $jawaban ? $jawaban->jawaban : '-';
-        }
-
-        return $data;
+        // Tambahkan jawaban atau nilai default jika jawaban tidak ditemukan
+        $data[] = $jawaban ? $jawaban->jawaban : '-';
     }
+
+    return $data;
+}
 }

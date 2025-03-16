@@ -192,8 +192,10 @@ class PustakawanController extends Controller
     $editable = false;
 
     if ($tahun) {
-        // Ambil pertanyaan berdasarkan tahun yang dipilih
-        $pertanyaans = Pertanyaan::where('tahun', $tahun)->get();
+        // Ambil pertanyaan berdasarkan tahun yang dipilih dan kategori UPLM 2 sampai UPLM 7
+        $pertanyaans = Pertanyaan::where('tahun', $tahun)
+            ->whereIn('kategori', ['UPLM 2', 'UPLM 3', 'UPLM 4', 'UPLM 5', 'UPLM 6', 'UPLM 7'])
+            ->get();
 
         // Ambil jawaban yang sudah diisi oleh perpustakaan untuk tahun tersebut
         $jawaban = Jawaban::where('tahun', $tahun)
