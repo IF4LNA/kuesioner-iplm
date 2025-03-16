@@ -50,13 +50,13 @@ class Uplm3PdfExport implements FromCollection, WithHeadings, WithMapping
         }
 
         // Filter berdasarkan tahun (Pastikan hanya mengambil jawaban sesuai tahun)
-        if ($this->tahun) {
-            $query->whereHas('jawaban', function ($q) {
-                $q->whereHas('pertanyaan', function ($p) {
-                    $p->where('tahun', $this->tahun)->where('kategori', 'UPLM 3');
-                });
-            });
-        }
+        // if ($this->tahun) {
+        //     $query->whereHas('jawaban', function ($q) {
+        //         $q->whereHas('pertanyaan', function ($p) {
+        //             $p->where('tahun', $this->tahun)->where('kategori', 'UPLM 3');
+        //         });
+        //     });
+        // }
 
         // Hitung total data yang tersedia
         $totalData = $query->count();
