@@ -26,7 +26,6 @@ class UplmController extends Controller
     public function showUplm($id)
     {
         $viewName = 'admin.uplm' . $id;
-        $data = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan'])->paginate(10); // Paginasi 10 data per halaman
         $pertanyaan = collect(); // Default data kosong
         $jawaban = collect(); // Default data kosong
 
@@ -65,65 +64,71 @@ class UplmController extends Controller
     }
 
     public function filterUplm(Request $request, $id)
-{
-    $viewName = 'admin.uplm' . $id;
+    {
+        $viewName = 'admin.uplm' . $id;
 
-    // Query untuk data Perpustakaan
-    $query = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan']);
+        // Query untuk data Perpustakaan
+        $query = Perpustakaan::with([
+            'user',
+            'kelurahan.kecamatan',
+            'jawaban.pertanyaan',
+            'jenis'
+        ]);
 
-    // Filter berdasarkan jenis
-    if ($request->has('jenis') && $request->jenis != '') {
-        $query->whereHas('jenis', function ($q) use ($request) {
-            $q->where('jenis', $request->jenis);
-        });
+        // Optimasi filter dengan whereIn
+        if ($request->filled('jenis')) {
+            $jenisIds = JenisPerpustakaan::where('jenis', $request->jenis)
+                ->pluck('id_jenis');
+            $query->whereIn('id_jenis', $jenisIds);
+        }
+
+        if ($request->filled('subjenis')) {
+            $subjenisIds = JenisPerpustakaan::where('subjenis', $request->subjenis)
+                ->pluck('id_jenis');
+            $query->whereIn('id_jenis', $subjenisIds);
+        }
+
+        // Optimasi pencarian
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_perpustakaan', 'like', "%$search%")
+                    ->orWhere('npp', 'like', "%$search%")
+                    ->orWhere('alamat', 'like', "%$search%");
+            });
+        }
+
+        // Sorting
+        $sortField = $request->input('sortField', 'created_at');
+        $sortOrder = $request->input('sortOrder', 'asc');
+        $query->orderBy($sortField, $sortOrder);
+
+        // Pagination
+        $perPage = $request->input('perPage', 10); // Default 10 data per halaman
+        $data = $query->paginate($perPage);
+
+        // Filter pertanyaan berdasarkan tahun
+        $pertanyaanQuery = Pertanyaan::where('kategori', 'UPLM ' . $id);
+
+        // Jika tahun dipilih di filter, gunakan tahun tersebut
+        if ($request->has('tahun') && $request->tahun != '') {
+            $selectedYear = $request->tahun;
+            $pertanyaanQuery->where('tahun', $selectedYear);
+        } else {
+            // Jika tidak, gunakan tahun terbaru
+            $selectedYear = Pertanyaan::where('kategori', 'UPLM ' . $id)->max('tahun');
+            $pertanyaanQuery->where('tahun', $selectedYear);
+        }
+
+        $pertanyaan = $pertanyaanQuery->get();
+
+        // Ambil daftar tahun unik, jenis, dan subjenis
+        $years = Pertanyaan::select('tahun')->distinct()->pluck('tahun');
+        $jenisList = JenisPerpustakaan::select('jenis')->distinct()->pluck('jenis');
+        $subjenisList = JenisPerpustakaan::select('subjenis')->distinct()->pluck('subjenis');
+
+        return view($viewName, compact('data', 'pertanyaan', 'id', 'years', 'jenisList', 'subjenisList', 'selectedYear'));
     }
-
-    // Filter berdasarkan subjenis
-    if ($request->has('subjenis') && $request->subjenis != '') {
-        $query->whereHas('jenis', function ($q) use ($request) {
-            $q->where('subjenis', $request->subjenis);
-        });
-    }
-
-    // Fitur pencarian
-    if ($request->has('search') && $request->search != '') {
-        $search = $request->search;
-        $query->where('nama_perpustakaan', 'like', '%' . $search . '%')
-              ->orWhere('npp', 'like', '%' . $search . '%')
-              ->orWhere('alamat', 'like', '%' . $search . '%');
-    }
-
-    // Sorting
-    $sortField = $request->input('sortField', 'created_at');
-    $sortOrder = $request->input('sortOrder', 'asc');
-    $query->orderBy($sortField, $sortOrder);
-
-    // Pagination
-    $perPage = $request->input('perPage', 10); // Default 10 data per halaman
-    $data = $query->paginate($perPage);
-
-    // Filter pertanyaan berdasarkan tahun
-    $pertanyaanQuery = Pertanyaan::where('kategori', 'UPLM ' . $id);
-
-    // Jika tahun dipilih di filter, gunakan tahun tersebut
-    if ($request->has('tahun') && $request->tahun != '') {
-        $selectedYear = $request->tahun;
-        $pertanyaanQuery->where('tahun', $selectedYear);
-    } else {
-        // Jika tidak, gunakan tahun terbaru
-        $selectedYear = Pertanyaan::where('kategori', 'UPLM ' . $id)->max('tahun');
-        $pertanyaanQuery->where('tahun', $selectedYear);
-    }
-
-    $pertanyaan = $pertanyaanQuery->get();
-
-    // Ambil daftar tahun unik, jenis, dan subjenis
-    $years = Pertanyaan::select('tahun')->distinct()->pluck('tahun');
-    $jenisList = JenisPerpustakaan::select('jenis')->distinct()->pluck('jenis');
-    $subjenisList = JenisPerpustakaan::select('subjenis')->distinct()->pluck('subjenis');
-
-    return view($viewName, compact('data', 'pertanyaan', 'id', 'years', 'jenisList', 'subjenisList', 'selectedYear'));
-}
 
     public function editJawaban($id, Jawaban $jawaban)
     {
@@ -176,12 +181,8 @@ class UplmController extends Controller
         $jenis = request()->get('jenis');
         $subjenis = request()->get('subjenis');
         $tahun = request()->get('tahun');
-
-        // $data = JenisPerpustakaan::where('jenis', $jenis)
-        //     ->where('subjenis', $subjenis)
-        //     ->whereYear('created_at', $tahun)
-        //     ->get();
-
+        $perPage = request()->get('perPage', 10); // Ambil nilai perPage dari request, default 10
+        $page = request()->get('page', 1); // Ambil nilai page dari request, default 1
 
         // Simpan log aktivitas
         ActivityLog::create([
@@ -189,31 +190,30 @@ class UplmController extends Controller
             'description' => "Admin mengekspor data UPLM {$id} ke Excel dengan filter:\n"
                 . "- Jenis: {$jenis}\n"
                 . "- Subjenis: {$subjenis}\n"
-                . "- Tahun: {$tahun}",
+                . "- Tahun: {$tahun}\n"
+                . "- Per Page: {$perPage}\n"
+                . "- Page: {$page}",
             'id_akun'     => auth()->user()->id,
             'created_at'  => now(),
         ]);
 
         // Mengirim parameter filter ke UplmExport berdasarkan ID
-        switch ($id) {
-            case 1:
-                // Mengirim parameter filter ke UplmExport
-                return Excel::download(new UplmExport($jenis, $subjenis, $tahun), 'uplm1_data.xlsx');
-            case 2:
-                return Excel::download(new Uplm2Export($jenis, $subjenis, $tahun), 'uplm2_data.xlsx');
-            case 3:
-                return Excel::download(new Uplm3Export($jenis, $subjenis, $tahun), 'uplm3_data.xlsx');
-            case 4:
-                return Excel::download(new Uplm4Export($jenis, $subjenis, $tahun), 'uplm4_data.xlsx');
-            case 5:
-                return Excel::download(new Uplm5Export($jenis, $subjenis, $tahun), 'uplm5_data.xlsx');
-            case 6:
-                return Excel::download(new Uplm6Export($jenis, $subjenis, $tahun), 'uplm6_data.xlsx');
-            case 7:
-                return Excel::download(new Uplm7Export($jenis, $subjenis, $tahun), 'uplm7_data.xlsx');
-            default:
-                return abort(404, 'Export not found');
+        $exports = [
+            1 => UplmExport::class,
+            2 => Uplm2Export::class,
+            3 => Uplm3Export::class,
+            4 => Uplm4Export::class,
+            5 => Uplm5Export::class,
+            6 => Uplm6Export::class,
+            7 => Uplm7Export::class,
+        ];
+
+        if (!isset($exports[$id])) {
+            return abort(404, 'Export not found');
         }
+
+        // Teruskan perPage dan page ke kelas ekspor
+        return Excel::download(new $exports[$id]($jenis, $subjenis, $tahun, $page, $perPage), "uplm{$id}_data.xlsx");
     }
 
     // Export PDF UPLM 1
@@ -222,6 +222,39 @@ class UplmController extends Controller
         $jenis = request()->get('jenis');
         $subjenis = request()->get('subjenis');
         $tahun = request()->get('tahun');
+        $perPage = request()->get('perPage', 10); // Default 10 data per halaman
+        $page = request()->get('page', 1); // Default halaman pertama
+    
+        // Simpan log aktivitas
+        ActivityLog::create([
+            'action'      => 'Export PDF',
+            'description' => "Admin mengekspor data UPLM {$id} ke PDF dengan filter:\n"
+                . "- Jenis: {$jenis}\n"
+                . "- Subjenis: {$subjenis}\n"
+                . "- Tahun: {$tahun}\n"
+                . "- Per Page: {$perPage}\n"
+                . "- Page: {$page}",
+            'id_akun'     => auth()->user()->id,
+            'created_at'  => now(),
+        ]);
+    
+        // **Gunakan Paginasi**
+        $data = new UplmPdfExport($jenis, $subjenis, $tahun, $perPage, $page);
+        $pdf = Pdf::loadView('admin.uplm_pdf', [
+            'data' => $data->view()->getData()['data'],
+            'headings' => $data->view()->getData()['headings']
+        ]);
+    
+        return $pdf->download('uplm1-report.pdf');
+    }
+
+    public function exportUplmPdf($id, Request $request, $kategori)
+    {
+        $jenis = $request->get('jenis');
+        $subjenis = $request->get('subjenis');
+        $tahun = $request->get('tahun');
+        $perPage = $request->get('perPage', 10); // Default 10 jika tidak ada request
+        $page = $request->get('page', 1); // Default halaman 1
 
         // Simpan log aktivitas
         ActivityLog::create([
@@ -229,35 +262,8 @@ class UplmController extends Controller
             'description' => "Admin mengekspor data UPLM {$id} ke Pdf dengan filter:\n"
                 . "- Jenis: {$jenis}\n"
                 . "- Subjenis: {$subjenis}\n"
-                . "- Tahun: {$tahun}",
-            'id_akun'     => auth()->user()->id,
-            'created_at'  => now(),
-        ]);
-
-        $data = new UplmPdfExport($jenis, $subjenis, $tahun);
-        $pdf = Pdf::loadView('admin.uplm_pdf', [
-            'data' => $data->view()->getData()['data'],
-            'headings' => $data->view()->getData()['headings']
-        ]);
-
-        return $pdf->download('uplm1-report.pdf');
-    }
-
-
-    // Export PDF UPLM 2-7
-    public function exportUplmPdf($id, Request $request, $kategori)
-    {
-        $jenis = $request->get('jenis');
-        $subjenis = $request->get('subjenis');
-        $tahun = $request->get('tahun');
-
-        // Simpan log aktivitas
-        ActivityLog::create([
-            'action'      => 'Export PDF',
-            'description' => "Admin mengekspor data UPLM {$id} ke Pdf dengan filter:\n"
-            . "- Jenis: {$jenis}\n"
-            . "- Subjenis: {$subjenis}\n"
-            . "- Tahun: {$tahun}",
+                . "- Tahun: {$tahun}\n"
+                . "- Entries: {$perPage}",
             'id_akun'     => auth()->user()->id,
             'created_at'  => now(),
         ]);
@@ -269,7 +275,8 @@ class UplmController extends Controller
             return response()->json(['error' => 'Kategori tidak valid'], 404);
         }
 
-        $export = new $exportClass($jenis, $subjenis, $tahun);
+        // Kirim nilai perPage dan page ke class export
+        $export = new $exportClass($jenis, $subjenis, $tahun, $page, $perPage);
         return $export->downloadPdf();
     }
 }

@@ -5,67 +5,63 @@ namespace App\Exports;
 use App\Models\Perpustakaan;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-use Illuminate\Http\Request;
+use Maatwebsite\Excel\Concerns\WithMapping;
 
-class UplmExport implements FromCollection, WithHeadings
+class UplmExport implements FromCollection, WithHeadings, WithMapping
 {
     protected $jenis;
     protected $subjenis;
     protected $tahun;
+    protected $page;
+    protected $perPage;
 
-    // Menerima parameter filter dari controller
-    public function __construct($jenis, $subjenis, $tahun)
+    public function __construct($jenis, $subjenis, $tahun, $page = 1, $perPage = 10)
     {
         $this->jenis = $jenis;
         $this->subjenis = $subjenis;
         $this->tahun = $tahun;
+        $this->page = $page;
+        $this->perPage = $perPage;
     }
 
     public function collection()
     {
-        // Memulai query dengan relasi
-        $query = Perpustakaan::with('jenis', 'kelurahan.kecamatan.kota');
-
-        // Mengaplikasikan filter berdasarkan input
-        if ($this->jenis) {
-            $query->whereHas('jenis', function ($query) {
-                $query->where('jenis', $this->jenis);
-            });
-        }
-
-        if ($this->subjenis) {
-            $query->whereHas('jenis', function ($query) {
-                $query->where('subjenis', $this->subjenis);
-            });
-        }
-
-        if ($this->tahun) {
-            $query->whereYear('created_at', $this->tahun);
-        }
-
-        // Mengambil data hasil query
-        return $query->get()->map(function ($perpustakaan) {
-            return [
-                'id_perpustakaan' => $perpustakaan->id_perpustakaan,
-                'nama_perpustakaan' => $perpustakaan->nama_perpustakaan,
-                'npp' => $perpustakaan->npp,
-                'jenis_perpustakaan' => $perpustakaan->jenis?->jenis ?? '-',
-                'subjenis' => $perpustakaan->jenis?->subjenis ?? '-',
-                'alamat' => $perpustakaan->alamat,
-                'kontak' => $perpustakaan->kontak,
-                'kelurahan' => $perpustakaan->kelurahan?->nama_kelurahan ?? '-',
-                'kecamatan' => $perpustakaan->kelurahan?->kecamatan?->nama_kecamatan ?? 'Tidak ada data',
-                'kota' => $perpustakaan->kelurahan?->kecamatan?->kota?->nama_kota ?? '-',
-            ];
-        });
+        return collect(
+            Perpustakaan::with('jenis', 'kelurahan.kecamatan.kota')
+                ->when($this->jenis, fn($query) => $query->whereHas('jenis', fn($q) => $q->where('jenis', $this->jenis)))
+                ->when($this->subjenis, fn($query) => $query->whereHas('jenis', fn($q) => $q->where('subjenis', $this->subjenis)))
+                ->when($this->tahun, fn($query) => $query->whereHas('jawaban.pertanyaan', fn($q) => $q->where('tahun', $this->tahun)))
+                ->paginate($this->perPage, ['*'], 'page', $this->page)
+                ->items() // Mengambil hasil paginasi sebagai array
+        );
     }
+
+    public function map($perpustakaan): array
+{
+    static $counter = 0; // Variabel statis agar tetap dihitung dalam satu ekspor
+    $counter++; // Tambah nomor urut setiap baris
+
+    return [
+        $counter, // Menampilkan nomor urut dari 1 setiap ekspor
+        $perpustakaan->nama_perpustakaan,
+        $perpustakaan->npp,
+        $perpustakaan->jenis?->jenis ?? '-',
+        $perpustakaan->jenis?->subjenis ?? '-',
+        $perpustakaan->alamat,
+        $perpustakaan->kontak,
+        $perpustakaan->kelurahan?->nama_kelurahan ?? '-',
+        $perpustakaan->kelurahan?->kecamatan?->nama_kecamatan ?? '-',
+        $perpustakaan->kelurahan?->kecamatan?->kota?->nama_kota ?? '-',
+    ];
+}
+
 
     public function headings(): array
     {
         return [
             'No',
             'Nama Perpustakaan',
-            'Npp',
+            'NPP',
             'Jenis Perpustakaan',
             'Subjenis',
             'Alamat',
@@ -76,4 +72,3 @@ class UplmExport implements FromCollection, WithHeadings
         ];
     }
 }
-

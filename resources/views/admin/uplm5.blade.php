@@ -161,14 +161,29 @@
 
                 <!-- Tombol Export -->
                 <div class="mt-4 d-flex gap-2">
-                    <a href="{{ route('uplm.exportExcel', ['id' => 5, 'jenis' => request()->jenis, 'subjenis' => request()->subjenis, 'tahun' => request()->tahun]) }}"
+                    <a href="{{ route('uplm.exportExcel', [
+                        'id' => 5,
+                        'jenis' => request()->jenis,
+                        'subjenis' => request()->subjenis,
+                        'tahun' => request()->tahun,
+                        'perPage' => request()->perPage,
+                        'page' => request()->page ?? 1,
+                    ]) }}"
                         class="btn btn-success shadow-sm">
                         <i class="fas fa-file-excel"></i> Export Excel
                     </a>
-                    <a href="{{ route('uplm.exportPdf', ['id' => 5, 'kategori' => 5, 'jenis' => request()->jenis, 'subjenis' => request()->subjenis, 'tahun' => request()->tahun]) }}"
-                        class="btn btn-danger shadow-sm">
-                        <i class="fas fa-file-pdf"></i> Export PDF
-                    </a>
+
+                    <a href="{{ route('uplm.exportPdf', [
+                    'id' => 5, 
+                    'kategori' => '5', 
+                    'perPage' => request('perPage', 10), 
+                    'page' => request('page', 1), 
+                    'tahun' => request('tahun'), 
+                    'jenis' => request('jenis'), 
+                    'subjenis' => request('subjenis')]) }}"
+                        class="btn btn-danger">
+                         Export PDF
+                     </a>
                 </div>
             </div>
         </div>

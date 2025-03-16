@@ -14,85 +14,126 @@ class Uplm3Export implements FromCollection, WithHeadings, WithMapping
     protected $jenis;
     protected $subjenis;
     protected $tahun;
+    protected $page;
+    protected $perPage;
 
-    public function __construct($jenis = null, $subjenis = null, $tahun = null)
+    public function __construct($jenis = null, $subjenis = null, $tahun = null, $page = 1, $perPage = 10)
     {
         $this->jenis = $jenis;
         $this->subjenis = $subjenis;
         $this->tahun = $tahun;
+        $this->page = $page;
+        $this->perPage = $perPage;
     }
 
     public function collection()
-    {
-        $query = Perpustakaan::with(['user', 'jenis', 'kelurahan.kecamatan.kota', 'jawaban.pertanyaan']);
+{
+    $query = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan']);
 
-        // Filter berdasarkan jenis dan subjenis
-        if ($this->jenis) {
-            $query->whereHas('jenis', function ($q) {
-                $q->where('jenis', $this->jenis);
-            });
-        }
-
-        if ($this->subjenis) {
-            $query->whereHas('jenis', function ($q) {
-                $q->where('subjenis', $this->subjenis);
-            });
-        }
-
-        // Filter berdasarkan tahun pertanyaan
-        if ($this->tahun) {
-            $query->whereHas('jawaban.pertanyaan', function ($q) {
-                $q->where('tahun', $this->tahun)->where('kategori', 'UPLM 3');
-            });
-        }
-
-        return $query->get();
+    // Filter berdasarkan jenis dan subjenis
+    if ($this->jenis) {
+        $query->whereHas('jenis', function ($q) {
+            $q->where('jenis', $this->jenis);
+        });
     }
 
-    public function headings(): array
-    {
-        $headings = [
-            'No',
-            'Tahun',
-            'Nama Perpustakaan',
-            'NPP',
-            'Jenis Perpustakaan',
-            'Sub Jenis Perpustakaan',
-            'Alamat',
-            'Kelurahan',
-            'Kecamatan',
-        ];
-
-        // Ambil pertanyaan khusus untuk UPLM 3
-        $pertanyaan = Pertanyaan::where('kategori', 'UPLM 3')->get();
-        foreach ($pertanyaan as $pertanyaanItem) {
-            $headings[] = $pertanyaanItem->teks_pertanyaan;
-        }
-
-        return $headings;
+    if ($this->subjenis) {
+        $query->whereHas('jenis', function ($q) {
+            $q->where('subjenis', $this->subjenis);
+        });
     }
 
-    public function map($item): array
-    {
-        $data = [
-            $item->id,
-            $item->created_at->format('Y'),
-            $item->nama_perpustakaan ?? '-',
-            $item->npp ?? '-',
-            $item->jenis->jenis ?? '-',
-            $item->jenis->subjenis ?? '-',
-            $item->alamat ?? '-',
-            $item->kelurahan->nama_kelurahan ?? '-',
-            $item->kelurahan->kecamatan->nama_kecamatan ?? '-',
-        ];
-
-        // Ambil jawaban untuk pertanyaan UPLM 3
-        $pertanyaan = Pertanyaan::where('kategori', 'UPLM 3')->get();
-        foreach ($pertanyaan as $pertanyaanItem) {
-            $jawaban = $item->jawaban->firstWhere('id_pertanyaan', $pertanyaanItem->id_pertanyaan);
-            $data[] = $jawaban ? $jawaban->jawaban : '-';
-        }
-
-        return $data;
+    // Jika tidak ada tahun dikirim, gunakan tahun terbaru
+    if (!$this->tahun) {
+        $this->tahun = Pertanyaan::where('kategori', 'UPLM 3')->max('tahun');
     }
+
+    // Filter berdasarkan tahun (Pastikan hanya mengambil jawaban sesuai tahun)
+    if ($this->tahun) {
+        $query->whereHas('jawaban', function ($q) {
+            $q->whereHas('pertanyaan', function ($p) {
+                $p->where('tahun', $this->tahun)->where('kategori', 'UPLM 3');
+            });
+        });
+    }
+
+    // Hitung total data yang tersedia
+    $totalData = $query->count();
+
+    // Jika perPage lebih besar dari total data, gunakan total data sebagai batas
+    $limit = min($this->perPage, $totalData);
+
+    // Paginasi sesuai halaman dan jumlah data yang ditampilkan
+    return $query->skip(($this->page - 1) * $this->perPage)
+        ->take($limit)
+        ->get();
+}
+
+public function headings(): array
+{
+    $headings = [
+        'No',
+        'Tahun',
+        'Nama Perpustakaan',
+        'NPP',
+        'Jenis Perpustakaan',
+        'Sub Jenis Perpustakaan',
+        'Alamat',
+        'Kelurahan',
+        'Kecamatan',
+    ];
+
+    // Gunakan tahun terbaru jika tidak ada tahun yang dikirim
+    if (!$this->tahun) {
+        $this->tahun = Pertanyaan::where('kategori', 'UPLM 3')->max('tahun');
+    }
+
+    // Ambil pertanyaan khusus untuk tahun tertentu
+    $pertanyaan = Pertanyaan::where('kategori', 'UPLM 3')
+        ->where('tahun', $this->tahun)
+        ->get();
+
+    foreach ($pertanyaan as $pertanyaanItem) {
+        $headings[] = $pertanyaanItem->teks_pertanyaan;
+    }
+
+    return $headings;
+}
+
+public function map($item): array
+{   
+    $data = [
+        $item->id,
+        $item->created_at->format('Y'),
+        $item->nama_perpustakaan ?? '-',
+        $item->npp ?? '-',
+        $item->jenis->jenis ?? '-',
+        $item->jenis->subjenis ?? '-',
+        $item->alamat ?? '-',
+        $item->kelurahan->nama_kelurahan ?? '-',
+        $item->kelurahan->kecamatan->nama_kecamatan ?? '-',
+    ];
+
+    // Gunakan tahun terbaru jika tidak ada tahun yang dikirim
+    if (!$this->tahun) {
+        $this->tahun = Pertanyaan::where('kategori', 'UPLM 3')->max('tahun');
+    }
+
+    // Ambil jawaban hanya untuk pertanyaan di tahun tertentu
+    $pertanyaan = Pertanyaan::where('kategori', 'UPLM 3')
+        ->where('tahun', $this->tahun)
+        ->get();
+
+    foreach ($pertanyaan as $pertanyaanItem) {
+        $jawaban = $item->jawaban
+            ->where('id_pertanyaan', $pertanyaanItem->id_pertanyaan)
+            ->where('pertanyaan.tahun', $this->tahun) // Pastikan hanya tahun yang sesuai
+            ->first();
+
+        $data[] = $jawaban ? $jawaban->jawaban : '-';
+    }
+
+    return $data;
+}
+
 }

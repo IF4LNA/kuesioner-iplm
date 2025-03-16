@@ -161,11 +161,26 @@
 
                 <!-- Tombol Export -->
                 <div class="mt-4 d-flex gap-2">
-                    <a href="{{ route('uplm.exportExcel', ['id' => $id, 'jenis' => request()->jenis, 'subjenis' => request()->subjenis, 'tahun' => request()->tahun]) }}"
+                    <a href="{{ route('uplm.exportExcel', [
+                        'id' => $id,
+                        'jenis' => request()->jenis,
+                        'subjenis' => request()->subjenis,
+                        'tahun' => request()->tahun,
+                        'perPage' => request()->perPage ?? 10,
+                        'page' => request()->page ?? 1,
+                    ]) }}"
                         class="btn btn-success shadow-sm">
                         <i class="fas fa-file-excel"></i> Export Excel
                     </a>
-                    <a href="{{ route('uplm.exportPdf1', ['id' => 1, 'kategori' => 1, 'jenis' => request()->jenis, 'subjenis' => request()->subjenis, 'tahun' => request()->tahun]) }}"
+
+                    <a href="{{ route('uplm.exportPdf1', [
+                        'id' => $id,
+                        'jenis' => request()->jenis,
+                        'subjenis' => request()->subjenis,
+                        'tahun' => request()->tahun,
+                        'perPage' => request()->perPage ?? 10,
+                        'page' => request()->page ?? 1,
+                    ]) }}"
                         class="btn btn-danger shadow-sm">
                         <i class="fas fa-file-pdf"></i> Export PDF
                     </a>
@@ -357,7 +372,7 @@
                             @endforelse
                         </tbody>
                     </table>
-                    <!-- Pagination -->
+
                     <!-- Pagination -->
                     <div class="sticky-pagination">
                         <div class="d-flex justify-content-between align-items-center mt-4">

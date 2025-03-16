@@ -15,12 +15,16 @@ class Uplm5PdfExport implements FromCollection, WithHeadings, WithMapping
     protected $jenis;
     protected $subjenis;
     protected $tahun;
+    protected $page;
+    protected $perPage;
 
-    public function __construct($jenis = null, $subjenis = null, $tahun = null)
+    public function __construct($jenis = null, $subjenis = null, $tahun = null, $page = 1, $perPage = 10)
     {
         $this->jenis = $jenis;
         $this->subjenis = $subjenis;
         $this->tahun = $tahun;
+        $this->page = $page;
+        $this->perPage = $perPage;
     }
 
     public function collection()
@@ -40,16 +44,29 @@ class Uplm5PdfExport implements FromCollection, WithHeadings, WithMapping
             });
         }
 
-        // Filter berdasarkan tahun pertanyaan
+        if (!$this->tahun) {
+            $this->tahun = Pertanyaan::where('kategori', 'UPLM 5')->max('tahun');
+        }
+
+        // Filter berdasarkan tahun (Pastikan hanya mengambil jawaban sesuai tahun)
         if ($this->tahun) {
             $query->whereHas('jawaban', function ($q) {
-                $q->whereHas('pertanyaan', function ($qPertanyaan) {
-                    $qPertanyaan->where('tahun', $this->tahun)->where('kategori', 'UPLM 5');
+                $q->whereHas('pertanyaan', function ($p) {
+                    $p->where('tahun', $this->tahun)->where('kategori', 'UPLM 5');
                 });
             });
         }
 
-        return $query->get();
+        // Hitung total data yang tersedia
+        $totalData = $query->count();
+
+        // Jika perPage lebih besar dari total data, gunakan total data sebagai batas
+        $limit = min($this->perPage, $totalData);
+
+        // Paginasi sesuai halaman dan jumlah data yang ditampilkan
+        return $query->skip(($this->page - 1) * $this->perPage)
+            ->take($limit)
+            ->get();
     }
 
     public function headings(): array
@@ -66,11 +83,14 @@ class Uplm5PdfExport implements FromCollection, WithHeadings, WithMapping
             'Kecamatan',
         ];
 
-        // Ambil pertanyaan khusus untuk UPLM 5 dan filter berdasarkan tahun
+        // Gunakan tahun terbaru jika tidak ada tahun yang dikirim
+        if (!$this->tahun) {
+            $this->tahun = Pertanyaan::where('kategori', 'UPLM 5')->max('tahun');
+        }
+
+        // Ambil pertanyaan khusus untuk tahun tertentu
         $pertanyaan = Pertanyaan::where('kategori', 'UPLM 5')
-            ->when($this->tahun, function ($query) {
-                $query->where('tahun', $this->tahun);
-            })
+            ->where('tahun', $this->tahun)
             ->get();
 
         foreach ($pertanyaan as $pertanyaanItem) {
@@ -94,15 +114,22 @@ class Uplm5PdfExport implements FromCollection, WithHeadings, WithMapping
             $item->kelurahan->kecamatan->nama_kecamatan ?? '-',
         ];
 
-        // Ambil pertanyaan UPLM 5 dan filter berdasarkan tahun
+        // Gunakan tahun terbaru jika tidak ada tahun yang dikirim
+        if (!$this->tahun) {
+            $this->tahun = Pertanyaan::where('kategori', 'UPLM 5')->max('tahun');
+        }
+
+        // Ambil jawaban hanya untuk pertanyaan di tahun tertentu
         $pertanyaan = Pertanyaan::where('kategori', 'UPLM 5')
-            ->when($this->tahun, function ($query) {
-                $query->where('tahun', $this->tahun);
-            })
+            ->where('tahun', $this->tahun)
             ->get();
 
         foreach ($pertanyaan as $pertanyaanItem) {
-            $jawaban = $item->jawaban->firstWhere('id_pertanyaan', $pertanyaanItem->id);
+            $jawaban = $item->jawaban
+                ->where('id_pertanyaan', $pertanyaanItem->id_pertanyaan)
+                ->where('pertanyaan.tahun', $this->tahun) // Pastikan hanya tahun yang sesuai
+                ->first();
+
             $data[] = $jawaban ? $jawaban->jawaban : '-';
         }
 
