@@ -3,6 +3,10 @@
 @section('title', 'Buat Pertanyaan')
 
 @section('content')
+<!-- CSS DataTables -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+
 <div class="container">
     <h1 class="mb-4">Buat Pertanyaan</h1>
 
@@ -66,26 +70,26 @@
 
     <!-- Tabel untuk menampilkan pertanyaan yang sudah dibuat -->
     <h2 class="mb-3">Daftar Pertanyaan</h2>
-    <table class="table table-bordered">
+    <table id="questionsTable" class="table table-bordered table-striped table-hover table-sm">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>No</th> <!-- Kolom nomor urut -->
                 <th>Teks Pertanyaan</th>
                 <th>Kategori</th>
                 <th>Tahun</th>
                 <th>Aksi</th>
-            </tr>   
+            </tr>
         </thead>
         <tbody>
             @foreach ($questions as $index => $question)
             <tr>
-                <td>{{ $index + 1 }}</td> <!-- Menampilkan nomor urut, bukan ID asli -->
+                <td>{{ $index + 1 }}</td> <!-- Nomor urut -->
                 <td>{{ $question->teks_pertanyaan }}</td>
                 <td>{{ $question->kategori }}</td>
                 <td>{{ $question->tahun }}</td>
                 <td>
                     <div class="btn-group" role="group">
-                        <a href="{{ route('questions.edit', $question->id_pertanyaan) }}" class="btn btn-warning btn-sm me-1"> 
+                        <a href="{{ route('questions.edit', $question->id_pertanyaan) }}" class="btn btn-warning btn-sm me-1">
                             <i class="fas fa-edit"></i>
                         </a>
                         <form action="{{ route('questions.destroy', $question->id_pertanyaan) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus?')">
@@ -96,53 +100,61 @@
                             </button>
                         </form>
                     </div>
-                </td>                
+                </td>
             </tr>
-        @endforeach        
+            @endforeach
         </tbody>
     </table>
 </div>
 
 <!-- Modal Copy Pertanyaan -->
 <div class="modal fade" id="copyQuestionModal" tabindex="-1" aria-labelledby="copyQuestionModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg"> <!-- Gunakan modal-lg untuk modal yang lebih lebar -->
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-primary text-white"> <!-- Header dengan background berwarna -->
                 <h5 class="modal-title" id="copyQuestionModalLabel">Copy Pertanyaan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="copyQuestionForm" action="{{ route('questions.copy') }}" method="POST">
                     @csrf
-                    <div class="mb-3">
-                        <label for="tahun_sumber" class="form-label">Pilih Tahun Sumber</label>
-                        <select id="tahun_sumber" name="tahun_sumber" class="form-control" required>
-                            <option value="" disabled selected>Pilih Tahun</option>
-                            @foreach ($questions->pluck('tahun')->unique() as $tahun)
-                                <option value="{{ $tahun }}">{{ $tahun }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                    <div class="row g-3"> <!-- Gunakan grid system Bootstrap -->
+                        <!-- Pilih Tahun Sumber -->
+                        <div class="col-md-6">
+                            <label for="tahun_sumber" class="form-label">Pilih Tahun Sumber</label>
+                            <select id="tahun_sumber" name="tahun_sumber" class="form-select" required>
+                                <option value="" disabled selected>Pilih Tahun</option>
+                                @foreach ($questions->pluck('tahun')->unique() as $tahun)
+                                    <option value="{{ $tahun }}">{{ $tahun }}</option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Pilih Pertanyaan</label>
-                        <div id="questionList">
-                            <p class="text-muted">Pilih tahun sumber terlebih dahulu.</p>
+                        <!-- Pilih Tahun Tujuan -->
+                        <div class="col-md-6">
+                            <label for="tahun_tujuan" class="form-label">Pilih Tahun Tujuan</label>
+                            <input type="number" id="tahun_tujuan" name="tahun_tujuan" class="form-control" required>
+                        </div>
+
+                        <!-- Daftar Pertanyaan -->
+                        <div class="col-12">
+                            <label class="form-label">Pilih Pertanyaan</label>
+                            <div id="questionList" class="border p-3" style="max-height: 200px; overflow-y: auto;">
+                                <p class="text-muted mb-0">Pilih tahun sumber terlebih dahulu.</p>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="tahun_tujuan" class="form-label">Pilih Tahun Tujuan</label>
-                        <input type="number" id="tahun_tujuan" name="tahun_tujuan" class="form-control" required>
+                    <!-- Tombol Submit -->
+                    <div class="modal-footer mt-4">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Copy Pertanyaan</button>
                     </div>
-
-                    <button type="submit" class="btn btn-primary">Copy</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -210,5 +222,33 @@
                 });
             });
     });
-    </script>    
+    </script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const table = $('#questionsTable').DataTable({
+            columnDefs: [
+                { orderable: true, targets: [2, 3] }, // Kolom Kategori (2) dan Tahun (3) bisa di-sort
+                { orderable: false, targets: [0, 4] } // Kolom No (0) dan Aksi (4) tidak bisa di-sort
+            ],
+            order: [[2, 'asc']], // Default sorting berdasarkan Kategori (asc)
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' // Bahasa Indonesia (opsional)
+            },
+            createdRow: function(row, data, dataIndex) {
+                // Update nomor urut di kolom pertama (No)
+                $('td', row).eq(0).html(dataIndex + 1);
+            }
+        });
+
+        // Update nomor urut saat sorting atau pagination
+        table.on('order.dt search.dt', function() {
+            table.column(0, { search: 'applied', order: 'applied' }).nodes().each(function(cell, i) {
+                cell.innerHTML = i + 1;
+            });
+        }).draw();
+    });
+</script>
+    <!-- JavaScript DataTables -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>    
 @endsection
