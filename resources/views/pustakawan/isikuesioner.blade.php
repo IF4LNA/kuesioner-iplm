@@ -278,7 +278,7 @@
                             <i class="fas fa-user-circle"></i> {{ Auth::user()->username }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-user"></i> Profil Saya</a></li>
+                            <li><a class="dropdown-item" href="{{ route('monografi.index') }}"><i class="fas fa-user"></i> Profil Saya</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>

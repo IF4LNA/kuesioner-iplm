@@ -281,7 +281,7 @@
                     @if (Auth::user()->adminProfile && Auth::user()->adminProfile->foto)
                         <img src="{{ asset('storage/' . Auth::user()->adminProfile->foto) }}" alt="Foto Profil" class="rounded-circle" width="30" height="30">
                     @else
-                        <img src="{{ asset('images/default-profile.png') }}" alt="Foto Profil Default" class="rounded-circle" width="30" height="30">
+                       <i class="fas fa-user-circle fa-2x text-light"></i>
                     @endif
                     {{ Auth::user()->username }}
                 </a>
