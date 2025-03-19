@@ -87,7 +87,6 @@
 
         .sidebar .nav-item a .toggle-icon {
             margin-left: 18px;
-            /* Atur margin sesuai keinginan Anda */
         }
 
         /* Content */
@@ -97,7 +96,6 @@
             transition: margin-left 0.3s ease, width 0.3s ease;
         }
 
-        /* Saat sidebar tersembunyi, konten akan mengisi lebar penuh */
         .content.shifted {
             margin-left: 0;
             width: 100%;
@@ -114,7 +112,6 @@
             z-index: 1000;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             width: calc(100% - 250px);
-            /* Set width to fill remaining space */
             transition: left 0.3s ease, width 0.3s ease;
         }
 
@@ -134,17 +131,26 @@
             margin-top: 70px;
         }
 
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .profile-dropdown .dropdown-menu {
+            right: 0;
+            left: auto;
+        }
+
         /* Media Query for Mobile */
         @media (max-width: 768px) {
             .sidebar {
                 width: 0;
                 transform: translateX(-250px);
-                /* Menyembunyikan sidebar */
             }
 
             .sidebar.hidden {
                 transform: translateX(0);
-                /* Menampilkan sidebar jika hidden class ditambahkan */
             }
 
             .content {
@@ -154,25 +160,35 @@
             .navbar-custom {
                 left: 0;
                 width: 100%;
-                /* Navbar akan mengisi lebar penuh jika sidebar tersembunyi */
             }
 
-            /* Menampilkan tombol toggle */
             #toggleSidebar {
                 display: block;
-                /* Pastikan tombol tampil */
                 position: absolute;
                 top: 20px;
                 left: 15px;
             }
         }
 
-
         @media (max-width: 576px) {
             .navbar-custom .welcome-message {
                 font-size: 14px;
             }
         }
+
+        /* Di bagian <style> */
+.profile-dropdown img {
+    border: 2px solid #fff;
+    margin-right: 10px;
+}
+
+.profile-dropdown .dropdown-menu img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
     </style>
     @stack('styles')
 </head>
@@ -182,29 +198,24 @@
     <div id="sidebar" class="sidebar">
         <div class="container">
             <div class="mb-4 text-center">
-                <!-- Logo -->
                 <img src="{{ asset('images/disarpus.png') }}" alt="Logo" class="img-fluid" style="height: 70px;">
             </div>
 
-            <!-- Navigation Menu -->
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-                        href="{{ route('dashboard') }}">
+                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
                         <i class="fas fa-home-alt"></i> Dashboard
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link d-flex justify-content-between align-items-center" href="#uplmSubmenu"
-                        data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="uplmSubmenu">
+                    <a class="nav-link d-flex justify-content-between align-items-center" href="#uplmSubmenu" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="uplmSubmenu">
                         <span><i class="fas fa-chart-bar"></i> UPLM</span>
                         <i class="fas fa-chevron-right toggle-icon"></i>
                     </a>
                     <ul class="collapse list-unstyled" id="uplmSubmenu">
                         @for ($i = 1; $i <= 7; $i++)
                             <li class="nav-item">
-                                <a class="nav-link ms-3 {{ request()->is('uplm/' . $i) || request()->is('uplm/' . $i . '/filter') ? 'active' : '' }}"
-                                   href="{{ route('uplm', $i) }}">
+                                <a class="nav-link ms-3 {{ request()->is('uplm/' . $i) || request()->is('uplm/' . $i . '/filter') ? 'active' : '' }}" href="{{ route('uplm', $i) }}">
                                     UPLM {{ $i }}
                                 </a>
                             </li>
@@ -212,8 +223,7 @@
                     </ul>                                        
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('user.create') ? 'active' : '' }}"
-                        href="{{ route('user.create') }}">
+                    <a class="nav-link {{ request()->routeIs('user.create') ? 'active' : '' }}" href="{{ route('user.create') }}">
                         <i class="fas fa-user-plus"></i> Buat Akun
                     </a>
                 </li>
@@ -223,20 +233,17 @@
                     </a>
                 </li>                
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('rekapitulasi*') || request()->routeIs('admin.rekaperpus') ? 'active' : '' }}" 
-                       href="{{ route('rekapitulasi') }}">
+                    <a class="nav-link {{ request()->routeIs('rekapitulasi*') || request()->routeIs('admin.rekaperpus') ? 'active' : '' }}" href="{{ route('rekapitulasi') }}">
                         <i class="fas fa-clipboard-list"></i> Rekapitulasi
                     </a>
                 </li>                
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('notifications') ? 'active' : '' }}"
-                        href="{{ route('notifications') }}">
+                    <a class="nav-link {{ request()->routeIs('notifications') ? 'active' : '' }}" href="{{ route('notifications') }}">
                         <i class="fas fa-bell"></i> Notifikasi
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('settings') ? 'active' : '' }}"
-                        href="{{ route('settings') }}">
+                    <a class="nav-link {{ request()->routeIs('settings') ? 'active' : '' }}" href="{{ route('settings') }}">
                         <i class="fas fa-cogs"></i> Pengaturan
                     </a>
                 </li>
@@ -252,7 +259,6 @@
                         @csrf
                         <button type="submit" class="btn btn-link nav-link text-danger fs-6">
                             <i class="fas fa-power-off"></i> Logout
-
                         </button>
                     </form>
                 </li>
@@ -262,14 +268,36 @@
 
     <!-- Navbar -->
     <div class="navbar-custom">
-        <div class="d-flex">
+        <div class="d-flex align-items-center">
             <!-- Sidebar toggle button -->
             <button class="btn btn-link text-light" id="toggleSidebar">
                 <i class="fas fa-bars"></i>
             </button>
 
-            <div class="welcome-message">
-                <h5><i class="fas fa-user"></i> {{ Auth::user()->username }}</h5>
+            <!-- Profile Dropdown -->
+            <div class="profile-dropdown ms-auto">
+                <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <!-- Tampilkan foto profil sebagai thumbnail -->
+                    @if (Auth::user()->adminProfile && Auth::user()->adminProfile->foto)
+                        <img src="{{ asset('storage/' . Auth::user()->adminProfile->foto) }}" alt="Foto Profil" class="rounded-circle" width="30" height="30">
+                    @else
+                        <img src="{{ asset('images/default-profile.png') }}" alt="Foto Profil Default" class="rounded-circle" width="30" height="30">
+                    @endif
+                    {{ Auth::user()->username }}
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="{{ route('admin.profile') }}"><i class="fas fa-user-circle"></i> Profile</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="dropdown-item text-danger">
+                                <i class="fas fa-power-off"></i> Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
@@ -280,8 +308,7 @@
     </div>
 
     @livewireStyles
-@livewireScripts
-
+    @livewireScripts
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -294,20 +321,18 @@
                 sidebar.classList.toggle('hidden');
                 content.classList.toggle('shifted');
 
-                // Menangani posisi navbar saat sidebar muncul atau tersembunyi
                 if (sidebar.classList.contains('hidden')) {
-                    navbar.style.left = '0'; // Navbar tetap di kiri saat sidebar tersembunyi
-                    navbar.style.width = '100%'; // Navbar penuh saat sidebar tersembunyi
+                    navbar.style.left = '0';
+                    navbar.style.width = '100%';
                 } else {
-                    navbar.style.left = '250px'; // Navbar bergerak ke kanan saat sidebar terlihat
-                    navbar.style.width = 'calc(100% - 250px)'; // Sesuaikan lebar navbar
+                    navbar.style.left = '250px';
+                    navbar.style.width = 'calc(100% - 250px)';
                 }
 
-                // Update lebar konten untuk memastikan responsif
                 if (sidebar.classList.contains('hidden')) {
-                    content.style.width = '100%'; // Konten mengisi lebar penuh saat sidebar tersembunyi
+                    content.style.width = '100%';
                 } else {
-                    content.style.width = 'calc(100% - 250px)'; // Konten disesuaikan saat sidebar terlihat
+                    content.style.width = 'calc(100% - 250px)';
                 }
             });
         });
@@ -317,7 +342,6 @@
             const toggleIcon = toggleLink.querySelector('.toggle-icon');
             const submenu = document.querySelector('#uplmSubmenu');
 
-            // Restore submenu state from sessionStorage
             if (sessionStorage.getItem('uplmSubmenu') === 'open') {
                 submenu.classList.add('show');
                 toggleIcon.classList.remove('fa-chevron-right');
@@ -328,7 +352,6 @@
                 toggleIcon.classList.add('fa-chevron-right');
             }
 
-            // Handle submenu state changes
             submenu.addEventListener('show.bs.collapse', function() {
                 toggleIcon.classList.remove('fa-chevron-right');
                 toggleIcon.classList.add('fa-chevron-down');
@@ -342,7 +365,6 @@
             });
         });
     </script>
-
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

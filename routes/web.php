@@ -15,6 +15,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\RekapPerpusController;
 use App\Http\Controllers\MonografiController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AdminProfileController;
 
 
 // Rute login dan logout
@@ -80,6 +81,12 @@ Route::middleware(['auth'])->group(function () {
     // route buat akun
     Route::get('/admin/create-account', [AdminController::class, 'createAccountForm'])->name('admin.create-account');
     Route::post('/admin/create-account', [AdminController::class, 'storeAccount'])->name('admin.store-account');
+
+    //profiladmin
+Route::middleware('auth')->group(function () {
+    Route::get('/admin/profile', [AdminProfileController::class, 'edit'])->name('admin.profile');
+    Route::post('/admin/profile/update', [AdminProfileController::class, 'update'])->name('admin.profile.update');
+});
 
     // route menampilkan data subjenis di form input
     Route::get('/getSubjenis/{jenis}', [AdminController::class, 'getSubjenis']);

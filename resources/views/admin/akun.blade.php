@@ -32,7 +32,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="jenis" class="form-label">Jenis Perpustakaan</label>
-                            <select name="jenis" id="jenis" class="form-select" required>
+                            <select name="jenis" id="jenis" class="form-select">
                                 <option value="">-- Pilih Jenis --</option>
                                 <option value="umum">Umum</option>
                                 <option value="sekolah">Sekolah</option>
