@@ -9,7 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-               body {
+        body {
             background-color: #ffffff;
             font-family: 'Poppins', sans-serif;
         }
@@ -76,8 +76,8 @@
         }
 
 
-     /* Button Styling */
-     .btn-custom {
+        /* Button Styling */
+        .btn-custom {
             background-color: #7f8c8d;
             color: black;
             border-radius: 20px;
@@ -97,6 +97,27 @@
             font-family: Arial, sans-serif;
         }
 
+        .form-control {
+            transition: all 0.3s ease-in-out;
+            /* Animasi halus */
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 1rem;
+            background-color: #f9fafb;
+        }
+
+        .form-control:focus {
+            transform: scale(1.02);
+            /* Membesar 2% saat difokus */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            /* Shadow untuk efek kedalaman */
+            border-color: #7f8c8d;
+            /* Warna border saat difokus */
+            background-color: #ffffff;
+            /* Warna background saat difokus */
+        }
+
         .question-container {
             padding: 20px;
             background-color: #ffffff;
@@ -110,8 +131,8 @@
             align-items: center;
             background-color: #d5d5d5;
             border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
+            padding: 35px;
+            margin-bottom: 35px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
@@ -123,40 +144,33 @@
             justify-content: center;
             align-items: center;
         }
-
-        .question-icon {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 2px solid #ddd;
-        }
-
         .question-right {
             flex: 1;
             padding-left: 20px;
         }
 
         .question-text {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: bold;
             color: #333;
             margin-bottom: 10px;
         }
 
         input.form-control {
-            border: 2px solid #dcdcdc;
+            border: 2px solid #ffffff;
             border-radius: 5px;
             padding: 10px;
         }
 
         input.form-control:focus {
-            border-color: #4caf50;
+            border-color: #ebe4e4;
             box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
         }
 
         button.btn-primary {
-            margin-bottom: 20px;
+            padding: 10px 20px;
+            border: none;
+            transition: all 0.3s ease-in-out;
             /* Menambahkan jarak bawah pada tombol */
         }
 
@@ -174,7 +188,7 @@
         }
 
         .question-box:nth-child(odd) {
-            background-color: #7f8c8d;
+            background-color: #4b647c;
         }
 
         .question-box:nth-child(odd) .question-text {
@@ -182,7 +196,7 @@
         }
 
         .question-box:nth-child(even) {
-            background-color: #bdc3c7;
+            background-color: #e6e6e6;
         }
 
         .question-box:nth-child(even) .question-text {
@@ -206,7 +220,9 @@
             }
 
             button.btn-primary {
-                margin-bottom: 20px;
+                padding: 10px 20px;
+                border: none;
+                transition: all 0.3s ease-in-out;
                 /* Menambahkan jarak bawah pada tombol */
             }
 
@@ -224,8 +240,16 @@
                 font-size: 1.5rem;
             }
 
-            .question-text {
+            button.btn-primary {
                 font-size: 1rem;
+                padding: 10px 20px;
+                border: none;
+                transition: all 0.3s ease-in-out;
+                /* Menambahkan jarak bawah pada tombol */
+            }
+
+            .question-text {
+                font-size: 1.2rem;
             }
 
             input.form-control {
@@ -278,7 +302,8 @@
                             <i class="fas fa-user-circle"></i> {{ Auth::user()->username }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                            <li><a class="dropdown-item" href="{{ route('monografi.index') }}"><i class="fas fa-user"></i> Profil Saya</a></li>
+                            <li><a class="dropdown-item" href="{{ route('monografi.index') }}"><i
+                                        class="fas fa-user"></i> Profil Saya</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -292,89 +317,86 @@
         </div>
     </nav>
 
-<!-- Konten halaman -->
-<div class="container mt-5">
-    {{-- <h3>Pilih Tahun untuk Menampilkan Pertanyaan</h3> --}}
+    <!-- Konten halaman -->
+    <div class="container mt-5">
+        {{-- <h3>Pilih Tahun untuk Menampilkan Pertanyaan</h3> --}}
 
-    <!-- Form Dropdown untuk Tahun -->
-    <form method="GET" action="{{ route('pustakawan.isikuesioner') }}" class="mb-4 p-4 shadow-sm rounded"
-        style="background-color: #ffffff;">
-        <h5 class="mb-3">Pilih Tahun untuk Menampilkan Pertanyaan</h5>
-        <div class="row align-items-center">
-            <!-- Dropdown Tahun -->
-            <div class="col-md-8 mb-3 mb-md-0">
-                <div class="form-floating">
-                    <select name="tahun" class="form-select selectpicker" id="tahunSelect" required
-                        data-live-search="true">
-                        <option value="" disabled selected>Pilih Tahun</option>
-                        @foreach ($tahunList as $tahunOption)
-                            <option
-                                value="{{ $tahunOption }}"{{ isset($tahun) && $tahun == $tahunOption ? 'selected' : '' }}>
-                                {{ $tahunOption }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <label for="tahunSelect" class="text-muted">Tahun</label>
+        <!-- Form Dropdown untuk Tahun -->
+        <form method="GET" action="{{ route('pustakawan.isikuesioner') }}" class="mb-4 p-4 shadow-sm rounded"
+            style="background-color: #ffffff;">
+            <h5 class="mb-3">Pilih Tahun untuk Menampilkan Pertanyaan</h5>
+            <div class="row align-items-center">
+                <!-- Dropdown Tahun -->
+                <div class="col-md-8 mb-3 mb-md-0">
+                    <div class="form-floating">
+                        <select name="tahun" class="form-select selectpicker" id="tahunSelect" required
+                            data-live-search="true">
+                            <option value="" disabled selected>Pilih Tahun</option>
+                            @foreach ($tahunList as $tahunOption)
+                                <option
+                                    value="{{ $tahunOption }}"{{ isset($tahun) && $tahun == $tahunOption ? 'selected' : '' }}>
+                                    {{ $tahunOption }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <label for="tahunSelect" class="text-muted">Tahun</label>
+                    </div>
+                </div>
+
+                <!-- Tombol Submit -->
+                <div class="col-md-4 text-end">
+                    <button type="submit" class="btn btn-primary btn-lg w-100 px-4">
+                        <i class="fas fa-search me-2"></i> Tampilkan Pertanyaan
+                    </button>
                 </div>
             </div>
-
-            <!-- Tombol Submit -->
-            <div class="col-md-4 text-end">
-                <button type="submit" class="btn btn-primary btn-lg w-100 px-4">
-                    <i class="fas fa-search me-2"></i> Tampilkan Pertanyaan
-                </button>
-            </div>
-        </div>
-    </form>
-
-    <!-- Menampilkan Pertanyaan -->
-    @if ($pertanyaans->count() > 0)
-        <form action="{{ route('kuesioner.submit') }}" method="POST">
-            @csrf
-            <input type="hidden" name="tahun" value="{{ $tahun }}">
-
-            <div class="question-container">
-                @foreach ($pertanyaans as $pertanyaan)
-                    <div class="question-box">
-                        <div class="question-left">
-                            <img src="https://via.placeholder.com/100" alt="Icon Pertanyaan" class="question-icon">
-                        </div>
-                        <div class="question-right">
-                            <h5 class="question-text">{{ $loop->iteration }}. {{ $pertanyaan->teks_pertanyaan }}
-                            </h5>
-                            <input type="text" name="jawaban[{{ $pertanyaan->id_pertanyaan }}]"
-                                class="form-control" placeholder="Masukkan jawaban"
-                                value="{{ $jawaban[$pertanyaan->id_pertanyaan] ?? '' }}"
-                                {{ !$editable ? 'disabled' : '' }}>
-                            <!-- Tambahkan disabled jika tidak bisa diedit -->
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-
-            @if ($editable)
-                <button type="submit" class="btn btn-primary mt-3 w-100">Submit Jawaban</button>
-            @endif
         </form>
 
-        @if (!$editable)
-            <p class="text-warning mt-3">Hanya tahun {{ now()->year }} yang dapat diisi atau diubah.</p>
+        <!-- Menampilkan Pertanyaan -->
+        @if ($pertanyaans->count() > 0)
+            <form action="{{ route('kuesioner.submit') }}" method="POST">
+                @csrf
+                <input type="hidden" name="tahun" value="{{ $tahun }}">
+
+                <div class="question-container">
+                    @foreach ($pertanyaans as $pertanyaan)
+                        <div class="question-box">
+                            <div class="question-right">
+                                <h5 class="question-text">{{ $loop->iteration }}. {{ $pertanyaan->teks_pertanyaan }}
+                                </h5>
+                                <input type="text" name="jawaban[{{ $pertanyaan->id_pertanyaan }}]"
+                                    class="form-control" placeholder="Masukkan jawaban"
+                                    value="{{ $jawaban[$pertanyaan->id_pertanyaan] ?? '' }}"
+                                    {{ !$editable ? 'disabled' : '' }}>
+                                <!-- Tambahkan disabled jika tidak bisa diedit -->
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                @if ($editable)
+                    <button type="submit" class="btn btn-primary mt-3 mb-3 w-100">Submit Jawaban</button>
+                @endif
+            </form>
+
+            @if (!$editable)
+                <p class="text-warning mt-3">Hanya tahun {{ now()->year }} yang dapat diisi atau diubah.</p>
+            @endif
+
+            </form>
+        @elseif (isset($tahun))
+            <p class="text-danger">Tidak ada pertanyaan untuk tahun {{ $tahun }}.</p>
         @endif
 
-        </form>
-    @elseif (isset($tahun))
-        <p class="text-danger">Tidak ada pertanyaan untuk tahun {{ $tahun }}.</p>
-    @endif
+        <script>
+            $(document).ready(function() {
+                $('.selectpicker').selectpicker();
+            });
+        </script>
 
-    <script>
-        $(document).ready(function() {
-            $('.selectpicker').selectpicker();
-        });
-    </script>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
 </body>
 
 </html>
