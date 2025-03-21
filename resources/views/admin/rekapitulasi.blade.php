@@ -38,7 +38,7 @@
                 </a>
 
                 <a href="{{ route('admin.rekaperpus') }}" class="btn btn-primary mb-3">
-                    Rekapitulasi Perpustakaan <i class="fas fa-arrow-right"></i>
+                    Monografi Perpustakaan <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
         </div>

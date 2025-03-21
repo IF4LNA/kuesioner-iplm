@@ -59,6 +59,19 @@
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
+            <!-- Field Tipe Jawaban -->
+            <div class="mb-3">
+                <label for="tipe_jawaban" class="form-label">Tipe Jawaban</label>
+                <select name="tipe_jawaban" id="tipe_jawaban" class="form-control @error('tipe_jawaban') is-invalid @enderror" required>
+                    <option value="" disabled selected>Pilih Tipe Jawaban</option>
+                    <option value="text" {{ old('tipe_jawaban') === 'text' ? 'selected' : '' }}>Text</option>
+                    <option value="number" {{ old('tipe_jawaban') === 'number' ? 'selected' : '' }}>Number</option>
+                    <option value="radio" {{ old('tipe_jawaban') === 'radio' ? 'selected' : '' }}>Radio</option>
+                </select>
+                @error('tipe_jawaban')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
             <button type="submit" class="btn btn-primary">Simpan</button>
             <button type="button" class="btn btn-info ms-2" data-bs-toggle="modal" data-bs-target="#copyQuestionModal">
                 Copy Pertanyaan
@@ -73,20 +86,22 @@
     <table id="questionsTable" class="table table-bordered table-striped table-hover table-sm">
         <thead>
             <tr>
-                <th>No</th> <!-- Kolom nomor urut -->
+                <th>No</th>
                 <th>Teks Pertanyaan</th>
                 <th>Kategori</th>
                 <th>Tahun</th>
+                <th>Tipe Jawaban</th> <!-- Kolom baru untuk tipe jawaban -->
                 <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($questions as $index => $question)
             <tr>
-                <td>{{ $index + 1 }}</td> <!-- Nomor urut -->
+                <td>{{ $index + 1 }}</td>
                 <td>{{ $question->teks_pertanyaan }}</td>
                 <td>{{ $question->kategori }}</td>
                 <td>{{ $question->tahun }}</td>
+                <td>{{ $question->tipe_jawaban }}</td> <!-- Tampilkan tipe jawaban -->
                 <td>
                     <div class="btn-group" role="group">
                         <a href="{{ route('questions.edit', $question->id_pertanyaan) }}" class="btn btn-warning btn-sm me-1">

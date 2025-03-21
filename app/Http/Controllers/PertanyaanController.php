@@ -22,10 +22,11 @@ class PertanyaanController extends Controller
             'teks_pertanyaan' => 'required|string|max:255',
             'kategori' => 'required|string|in:UPLM 1,UPLM 2,UPLM 3,UPLM 4,UPLM 5,UPLM 6,UPLM 7',
             'tahun' => 'required|integer|min:1900|max:' . date('Y'),
+            'tipe_jawaban' => 'required|string|in:text,number,radio', // Validasi untuk tipe jawaban
         ]);
-
+    
         Pertanyaan::create($request->all());
-
+    
         return redirect()->back()->with('success', 'Pertanyaan berhasil dibuat!');
     }
 
@@ -93,6 +94,7 @@ public function copy(Request $request)
             'teks_pertanyaan' => $question->teks_pertanyaan,
             'kategori' => $question->kategori,
             'tahun' => $tahunTujuan,
+            'tipe_jawaban' => $question->tipe_jawaban, // Salin tipe jawaban
         ]);
     }
 
