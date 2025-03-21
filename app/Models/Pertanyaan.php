@@ -11,7 +11,7 @@ class Pertanyaan extends Model
 
     protected $table = 'pertanyaans'; // Jika menggunakan nama tabel custom (opsional)
     protected $primaryKey = 'id_pertanyaan'; // Menentukan primary key secara eksplisit
-    protected $fillable = ['teks_pertanyaan', 'kategori', 'tahun'];
+    protected $fillable = ['teks_pertanyaan', 'kategori', 'tahun', 'tipe_jawaban'];
 
     public function jawaban()
     {

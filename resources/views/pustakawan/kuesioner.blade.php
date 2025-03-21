@@ -98,21 +98,29 @@
             @csrf
             <div class="form-box">
                 <h2>Form Data Responden</h2>
-        
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <!-- Nama Perpustakaan -->
                 <div class="mb-3">
                     <label for="nama_perpustakaan" class="form-label">Nama Perpustakaan:</label>
                     <input type="text" id="nama_perpustakaan" name="nama_perpustakaan" class="form-control"
                         value="{{ $namaPerpustakaan }}" readonly>
                 </div>
-        
+
                 <!-- Jenis Perpustakaan -->
                 <div class="mb-3">
                     <label for="jenis_perpustakaan" class="form-label">Jenis Perpustakaan:</label>
                     <input type="text" id="jenis_perpustakaan" name="jenis_perpustakaan" class="form-control"
                         value="{{ $jenisPerpustakaan }}" readonly>
                 </div>
-        
+
                 <!-- Kota -->
                 <div class="mb-3">
                     <label for="kota" class="form-label">Kota:</label>
@@ -125,7 +133,7 @@
                         @endforeach
                     </select>
                 </div>
-        
+
                 <!-- Kecamatan -->
                 <div class="mb-3">
                     <label for="kecamatan" class="form-label">Kecamatan:</label>
@@ -133,14 +141,15 @@
                         <option value="">Pilih Kecamatan</option>
                         @if ($selectedKota)
                             @foreach (App\Models\Kecamatan::where('id_kota', $selectedKota)->get() as $kecamatan)
-                                <option value="{{ $kecamatan->id }}" {{ $selectedKecamatan == $kecamatan->id ? 'selected' : '' }}>
+                                <option value="{{ $kecamatan->id }}"
+                                    {{ $selectedKecamatan == $kecamatan->id ? 'selected' : '' }}>
                                     {{ $kecamatan->nama_kecamatan }}
                                 </option>
                             @endforeach
                         @endif
                     </select>
                 </div>
-        
+
                 <!-- Desa/Kelurahan -->
                 <div class="mb-3">
                     <label for="desa_kelurahan" class="form-label">Desa/Kelurahan:</label>
@@ -148,70 +157,83 @@
                         <option value="">Pilih Desa/Kelurahan</option>
                         @if ($selectedKecamatan)
                             @foreach (App\Models\Kelurahan::where('id_kecamatan', $selectedKecamatan)->get() as $kelurahan)
-                                <option value="{{ $kelurahan->id }}" {{ $selectedKelurahan == $kelurahan->id ? 'selected' : '' }}>
+                                <option value="{{ $kelurahan->id }}"
+                                    {{ $selectedKelurahan == $kelurahan->id ? 'selected' : '' }}>
                                     {{ $kelurahan->nama_kelurahan }}
                                 </option>
                             @endforeach
                         @endif
                     </select>
                 </div>
-        
+
                 <!-- Detail Alamat -->
                 <div class="mb-3">
                     <label for="alamat" class="form-label">Detail alamat:</label>
-                    <input type="text" id="alamat" name="alamat" class="form-control" value="{{ $alamatPustakawan }}" required>
+                    <input type="text" id="alamat" name="alamat" class="form-control"
+                        value="{{ $alamatPustakawan }}" required>
                 </div>
-                
+
                 <!-- Detail Email -->
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input type="email" name="email" id="email" class="form-control" value="{{ old('email', auth()->user()->email) }}">
+                    <input type="email" name="email" id="email" class="form-control"
+                        value="{{ old('email', auth()->user()->email) }}">
                 </div>
-                
+
                 <!-- NPP -->
                 <div class="mb-3">
                     <label for="npp" class="form-label">NPP:</label>
-                    <input type="text" id="npp" name="npp" class="form-control" value="{{ $nppPustakawan }}" required>
+                    <input type="text" id="npp" name="npp" class="form-control"
+                        value="{{ $nppPustakawan }}" required>
                 </div>
-        
+
+                <!-- Nama Pengelola -->
+                <div class="mb-3">
+                    <label for="nama_pengelola" class="form-label">Nama Pengelola Perpustakaan (dapat diisi lebih dari
+                        satu nama)</label>
+                        <input type="text" id="nama_pengelola" name="nama_pengelola" class="form-control" value="{{ $namaPengelola }}" required>
+                </div>
+
                 <!-- No Telepon -->
                 <div class="mb-3">
                     <label for="kontak" class="form-label">No Telepon:</label>
-                    <input type="text" id="kontak" name="kontak" class="form-control" value="{{ $kontakPustakawan }}" required>
+                    <input type="text" id="kontak" name="kontak" class="form-control"
+                        value="{{ $kontakPustakawan }}" required>
                 </div>
-        
+
                 <!-- Upload Foto -->
                 <div class="mb-3">
                     <label for="foto" class="form-label">Upload Foto Perpustakaan:</label>
-        
+
                     @if (!empty($fotoPustakawan))
                         <div class="mb-3">
-                            <img id="preview" src="{{ asset('storage/' . $fotoPustakawan) }}" 
+                            <img id="preview" src="{{ asset('storage/' . $fotoPustakawan) }}"
                                 alt="Foto Perpustakaan" class="img-thumbnail" style="max-width: 200px;">
                         </div>
                     @endif
-        
+
                     <input type="hidden" id="foto_lama" name="foto_lama" value="{{ $fotoPustakawan ?? '' }}">
-        
+
                     <div class="custom-file">
-                        <input type="file" id="foto" name="foto" class="custom-file-input" accept="image/*">
+                        <input type="file" id="foto" name="foto" class="custom-file-input"
+                            accept="image/*">
                         <label for="foto" class="custom-file-label">
                             <i class="fas fa-upload"></i> Pilih File
                         </label>
                     </div>
                 </div>
-        
+
                 <!-- Button Next -->
                 <div class="mb-3 text-center">
                     <button type="submit" class="btn btn-primary">Next</button>
                 </div>
             </div>
-        </form>        
+        </form>
     </div>
-    
+
     {{-- // Preview Gambar Diperbarui --}}
     <script src="{{ asset('js/script.js') }}"></script>
-    
+
     <script>
         // Menambahkan event listener agar label berubah ketika memilih file
         document.addEventListener("DOMContentLoaded", function() {
@@ -274,17 +296,17 @@
         });
 
         document.addEventListener('DOMContentLoaded', function() {
-        const emailInput = document.getElementById('email');
-        const originalEmail = "{{ auth()->user()->email }}";
+            const emailInput = document.getElementById('email');
+            const originalEmail = "{{ auth()->user()->email }}";
 
-        emailInput.addEventListener('change', function() {
-            if (emailInput.value === originalEmail) {
-                emailInput.removeAttribute('name'); // Hapus atribut name agar tidak dikirim
-            } else {
-                emailInput.setAttribute('name', 'email'); // Tambahkan kembali atribut name
-            }
+            emailInput.addEventListener('change', function() {
+                if (emailInput.value === originalEmail) {
+                    emailInput.removeAttribute('name'); // Hapus atribut name agar tidak dikirim
+                } else {
+                    emailInput.setAttribute('name', 'email'); // Tambahkan kembali atribut name
+                }
+            });
         });
-    });
     </script>
 
     <!-- Bootstrap JS -->
