@@ -14,7 +14,7 @@ class Perpustakaan extends Model
     protected $primaryKey = 'id_perpustakaan'; // Menentukan primary key yang benar
 
     protected $fillable = [
-        'nama_perpustakaan', 'npp', 'id_jenis', 'id_kelurahan', 'alamat', 'kontak', 'foto', 'id_akun'
+        'nama_perpustakaan', 'npp', 'nama_pengelola','id_jenis', 'id_kelurahan', 'alamat', 'kontak', 'foto', 'id_akun'
     ];
 
     // Relasi dengan tabel users

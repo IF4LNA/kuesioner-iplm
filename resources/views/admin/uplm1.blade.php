@@ -302,7 +302,10 @@
                                 <th>NPP</th>
                                 <th>Jenis Perpustakaan</th>
                                 <th>Sub Jenis Perpustakaan</th>
+                                <th>Nama Pengelola</th>
+                                <th>Kontak</th>
                                 <th>Alamat</th>
+                                <th>Email</th>
                                 <th>Kelurahan</th>
                                 <th>Kecamatan</th>
                                 @foreach ($pertanyaan as $pertanyaanItem)
@@ -322,7 +325,10 @@
                                     <td>{{ $item->npp ?? '-' }}</td>
                                     <td>{{ $item->jenis->jenis ?? '-' }}</td>
                                     <td>{{ $item->jenis->subjenis ?? '-' }}</td>
+                                    <td>{{ $item->nama_pengelola ?? '-' }}</td>
+                                    <td>{{ $item->kontak ?? '-' }}</td>
                                     <td>{{ $item->alamat ?? '-' }}</td>
+                                    <td>{{ $item->user->email }}</td> 
                                     <td>{{ $item->kelurahan->nama_kelurahan ?? '-' }}</td>
                                     <td>{{ $item->kelurahan->kecamatan->nama_kecamatan ?? '-' }}</td>
                                     @foreach ($pertanyaan as $pertanyaanItem)

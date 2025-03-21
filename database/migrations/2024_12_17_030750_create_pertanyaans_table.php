@@ -9,10 +9,11 @@ class CreatePertanyaansTable extends Migration
     public function up()
     {
         Schema::create('pertanyaans', function (Blueprint $table) {
-            $table->id('id_pertanyaan'); // Primary key dengan nama id_pertanyaan
+            $table->id('id_pertanyaan');
             $table->text('teks_pertanyaan');
             $table->string('kategori');
             $table->year('tahun');
+            $table->enum('tipe_jawaban', ['text', 'number', 'radio']); // Tambahkan tipe jawaban
             $table->timestamps();
         });
     }

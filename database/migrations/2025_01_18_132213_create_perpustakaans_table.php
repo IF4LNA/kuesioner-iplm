@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('id_perpustakaan'); // Primary key
             $table->string('nama_perpustakaan');
             $table->string('npp')->nullable();
+            $table->string('nama_pengelola')->nullable();
             $table->unsignedBigInteger('id_jenis');
             $table->unsignedBigInteger('id_kelurahan')->nullable()->default(null); // Foreign key ke kelurahans
             $table->string('alamat')->nullable();

@@ -89,6 +89,7 @@ class PustakawanController extends Controller
         $rules = [
             'alamat' => 'required|string|max:50',
             'npp' => 'required|string|max:50',
+            'nama_pengelola' => 'nullable|string|max:70', // Ubah menjadi nullable
             'kontak' => 'nullable|string|max:50|regex:/^[0-9+\-\s]+$/',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:6144',
             'desa_kelurahan' => 'required|integer|exists:kelurahans,id',
@@ -139,6 +140,7 @@ class PustakawanController extends Controller
         $perpustakaan->update([
             'alamat' => $request->alamat,
             'npp' => $request->npp,
+            'nama_pengelola' => $request->nama_pengelola,
             'kontak' => $request->kontak,
             'foto' => $fotoPath,
             'id_kelurahan' => $request->desa_kelurahan,
@@ -162,6 +164,7 @@ class PustakawanController extends Controller
                 'kotas' => $kotas,
                 'alamatPustakawan' => $perpustakaan->alamat,
                 'nppPustakawan' => $perpustakaan->npp,
+                'namaPengelola' => $perpustakaan->nama_pengelola,
                 'kontakPustakawan' => $perpustakaan->kontak,
                 'fotoPustakawan' => $perpustakaan->foto, // Kirimkan foto ke view
                 'selectedKota' => $perpustakaan->kelurahan->kecamatan->kota->id ?? null,  // Ambil ID Kota
@@ -174,84 +177,97 @@ class PustakawanController extends Controller
     }
 
     public function isikuesioner(Request $request)
-{
-    // Mengambil daftar tahun unik dari tabel pertanyaan
-    $tahunList = Pertanyaan::select('tahun')->distinct()->pluck('tahun');
+    {
+        // Mengambil daftar tahun unik dari tabel pertanyaan
+        $tahunList = Pertanyaan::select('tahun')->distinct()->pluck('tahun');
 
-    // Cek apakah ada tahun yang dipilih
-    $tahun = $request->input('tahun');
-    $pertanyaans = collect();
-    $jawaban = collect();
-    $idPerpustakaan = auth()->user()->perpustakaan->id_perpustakaan;
+        // Cek apakah ada tahun yang dipilih
+        $tahun = $request->input('tahun');
+        $pertanyaans = collect();
+        $jawaban = collect();
+        $idPerpustakaan = auth()->user()->perpustakaan->id_perpustakaan;
 
-    // Tahun sekarang dan tahun depan
-    $tahunSekarang = now()->year;
-    $tahunDepan = $tahunSekarang + 1;
+        // Tahun sekarang dan tahun depan
+        $tahunSekarang = now()->year;
+        $tahunDepan = $tahunSekarang + 1;
 
-    // Status apakah bisa mengedit
-    $editable = false;
+        // Status apakah bisa mengedit
+        $editable = false;
 
-    if ($tahun) {
-        // Ambil pertanyaan berdasarkan tahun yang dipilih dan kategori UPLM 2 sampai UPLM 7
-        $pertanyaans = Pertanyaan::where('tahun', $tahun)
-            ->whereIn('kategori', ['UPLM 2', 'UPLM 3', 'UPLM 4', 'UPLM 5', 'UPLM 6', 'UPLM 7'])
-            ->get();
+        if ($tahun) {
+            // Ambil pertanyaan berdasarkan tahun yang dipilih dan kategori UPLM 2 sampai UPLM 7
+            $pertanyaans = Pertanyaan::where('tahun', $tahun)
+                ->whereIn('kategori', ['UPLM 2', 'UPLM 3', 'UPLM 4', 'UPLM 5', 'UPLM 6', 'UPLM 7'])
+                ->get();
 
-        // Ambil jawaban yang sudah diisi oleh perpustakaan untuk tahun tersebut
-        $jawaban = Jawaban::where('tahun', $tahun)
-            ->where('id_perpustakaan', $idPerpustakaan)
-            ->pluck('jawaban', 'id_pertanyaan');
+            // Ambil jawaban yang sudah diisi oleh perpustakaan untuk tahun tersebut
+            $jawaban = Jawaban::where('tahun', $tahun)
+                ->where('id_perpustakaan', $idPerpustakaan)
+                ->pluck('jawaban', 'id_pertanyaan');
 
-        // Jika tahun yang dipilih adalah tahun sekarang atau tahun depan, set editable menjadi true
-        if ($tahun == $tahunSekarang || $tahun == $tahunDepan) {
-            $editable = true;
+            // Jika tahun yang dipilih adalah tahun sekarang atau tahun depan, set editable menjadi true
+            if ($tahun == $tahunSekarang || $tahun == $tahunDepan) {
+                $editable = true;
+            }
         }
+
+        // Kirim data ke view
+        return view('pustakawan.isikuesioner', compact('tahunList', 'pertanyaans', 'tahun', 'jawaban', 'editable'));
     }
 
-    // Kirim data ke view
-    return view('pustakawan.isikuesioner', compact('tahunList', 'pertanyaans', 'tahun', 'jawaban', 'editable'));
-}
 
+    public function submit(Request $request)
+    {
+        // Ambil tahun dari request
+        $tahun = $request->input('tahun');
+        $tahunSekarang = now()->year;
+        $tahunDepan = $tahunSekarang + 1;
 
-public function submit(Request $request)
-{
-    // Ambil tahun dari request
-    $tahun = $request->input('tahun');
-    $tahunSekarang = now()->year;
-    $tahunDepan = $tahunSekarang + 1;
+        // Cek jika tahun lebih kecil dari tahun sekarang, tolak penyimpanan
+        if ($tahun < $tahunSekarang) {
+            return redirect()->back()->with('error', 'Jawaban hanya dapat diisi untuk tahun sekarang atau tahun depan.');
+        }
 
-    // Cek jika tahun lebih kecil dari tahun sekarang, tolak penyimpanan
-    if ($tahun < $tahunSekarang) {
-        return redirect()->back()->with('error', 'Jawaban hanya dapat diisi untuk tahun sekarang atau tahun depan.');
+        // Validasi input jawaban
+        $request->validate([
+            'jawaban' => 'required|array',
+            'jawaban.*' => function ($attribute, $value, $fail) use ($request) {
+                $idPertanyaan = str_replace('jawaban.', '', $attribute);
+                $pertanyaan = Pertanyaan::find($idPertanyaan);
+        
+                if ($pertanyaan) {
+                    if ($pertanyaan->tipe_jawaban == 'number' && !is_numeric($value)) {
+                        $fail('Jawaban harus berupa angka.');
+                    }
+                    if ($pertanyaan->tipe_jawaban == 'radio' && !in_array($value, ['Ya', 'Tidak'])) {
+                        $fail('Jawaban harus berupa "Ya" atau "Tidak".');
+                    }
+                }
+            },
+            'tahun' => 'required|integer',
+        ]);
+        
+
+        // Dapatkan id_perpustakaan dari user yang login
+        $idPerpustakaan = auth()->user()->perpustakaan->id_perpustakaan;
+
+        // Loop untuk menyimpan atau memperbarui jawaban
+        foreach ($request->jawaban as $idPertanyaan => $jawabanText) {
+            Jawaban::updateOrCreate(
+                [
+                    'id_pertanyaan' => $idPertanyaan,
+                    'id_perpustakaan' => $idPerpustakaan,
+                    'tahun' => $tahun,
+                ],
+                [
+                    'jawaban' => $jawabanText,
+                    'user_id' => auth()->user()->id,
+                ]
+            );
+        }
+
+        return redirect()->route('pustakawan.jawabanTersimpan')->with('success', 'Jawaban berhasil disimpan!');
     }
-
-    // Validasi input jawaban
-    $request->validate([
-        'jawaban' => 'required|array',
-        'jawaban.*' => 'required|string|max:255',
-        'tahun' => 'required|integer',
-    ]);
-
-    // Dapatkan id_perpustakaan dari user yang login
-    $idPerpustakaan = auth()->user()->perpustakaan->id_perpustakaan;
-
-    // Loop untuk menyimpan atau memperbarui jawaban
-    foreach ($request->jawaban as $idPertanyaan => $jawabanText) {
-        Jawaban::updateOrCreate(
-            [
-                'id_pertanyaan' => $idPertanyaan,
-                'id_perpustakaan' => $idPerpustakaan,
-                'tahun' => $tahun,
-            ],
-            [
-                'jawaban' => $jawabanText,
-                'user_id' => auth()->user()->id,
-            ]
-        );
-    }
-
-    return redirect()->route('pustakawan.jawabanTersimpan')->with('success', 'Jawaban berhasil disimpan!');
-}
 
 
     public function jawabanTersimpan()
