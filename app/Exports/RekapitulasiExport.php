@@ -63,46 +63,46 @@ class RekapitulasiExport implements FromArray, WithHeadings, ShouldAutoSize
 
         $data[] = $rowJumlah;
 
+        // Ambil pertanyaan berdasarkan tahun yang dipilih
         $pertanyaans = Pertanyaan::where('tahun', $this->tahun)->get();
 
-        // Ambil rekapitulasi data
+        // Ambil rekapitulasi data berdasarkan tipe jawaban
         $rekapData = Jawaban::join('perpustakaans', 'jawabans.id_perpustakaan', '=', 'perpustakaans.id_perpustakaan')
             ->join('jenis_perpustakaans', 'perpustakaans.id_jenis', '=', 'jenis_perpustakaans.id_jenis')
+            ->join('pertanyaans', 'jawabans.id_pertanyaan', '=', 'pertanyaans.id_pertanyaan')
             ->selectRaw('
                 jenis_perpustakaans.jenis, 
                 jenis_perpustakaans.subjenis, 
                 jawabans.id_pertanyaan, 
+                pertanyaans.tipe_jawaban,
 
                 SUM(CASE 
-                    WHEN jawabans.jawaban REGEXP \'^[1-9][0-9]*$\' THEN jawabans.jawaban 
-                    ELSE 0 
+                    WHEN pertanyaans.tipe_jawaban = \'number\' THEN CAST(jawabans.jawaban AS UNSIGNED)
+                    ELSE 0
                 END) as total_angka,
 
                 COUNT(CASE 
-                    WHEN jawabans.jawaban REGEXP \'^0[0-9]+$\' THEN 1 -- Jawaban diawali dengan 0
-                    WHEN jawabans.jawaban REGEXP \'^[A-Za-z ]+$\' THEN 1 -- Hanya huruf
-                    WHEN jawabans.jawaban REGEXP \'[^0-9A-Za-z]\' THEN 1 -- Mengandung simbol
-                    WHEN jawabans.jawaban REGEXP \'[0-9]\' AND jawabans.jawaban REGEXP \'[^0-9]\' THEN 1 -- Kombinasi angka & simbol
-                    ELSE NULL 
+                    WHEN pertanyaans.tipe_jawaban IN (\'text\', \'radio\') THEN 1
+                    ELSE NULL
                 END) as total_responden
             ')
             ->whereIn('jawabans.id_pertanyaan', $pertanyaans->pluck('id_pertanyaan'))
             ->where('jawabans.tahun', $this->tahun) // Filter berdasarkan tahun
-            ->groupBy('jenis_perpustakaans.jenis', 'jenis_perpustakaans.subjenis', 'jawabans.id_pertanyaan')
+            ->groupBy('jenis_perpustakaans.jenis', 'jenis_perpustakaans.subjenis', 'jawabans.id_pertanyaan', 'pertanyaans.tipe_jawaban')
             ->get()
             ->groupBy(['id_pertanyaan', 'jenis', 'subjenis']);
 
         // Susun data jawaban ke dalam tabel
         foreach ($pertanyaans as $pertanyaan) {
             $row = [
-                'UPLM ' . $pertanyaan->kategori,
+                $pertanyaan->kategori,
                 $pertanyaan->teks_pertanyaan,
             ];
 
             foreach (JenisPerpustakaan::select('jenis', 'subjenis')->get() as $jp) {
                 $key = [$pertanyaan->id_pertanyaan, $jp->jenis, $jp->subjenis];
 
-                // Tambahkan pengecekan apakah key tersedia
+                // Ambil data rekapitulasi
                 $totalAngka = isset($rekapData[$key[0]][$key[1]][$key[2]]) 
                     ? $rekapData[$key[0]][$key[1]][$key[2]]->first()->total_angka 
                     : 0;
@@ -111,8 +111,8 @@ class RekapitulasiExport implements FromArray, WithHeadings, ShouldAutoSize
                     ? $rekapData[$key[0]][$key[1]][$key[2]]->first()->total_responden 
                     : 0;
 
-                // Jika totalAngka > 0, maka tampilkan angka. Jika tidak, tampilkan jumlah responden.
-                $row[] = ($totalAngka > 0) ? $totalAngka : $totalResponden;
+                // Jika tipe jawaban adalah 'number', tampilkan total_angka. Jika tidak, tampilkan total_responden.
+                $row[] = ($pertanyaan->tipe_jawaban === 'number') ? $totalAngka : $totalResponden;
             }
 
             $data[] = $row;

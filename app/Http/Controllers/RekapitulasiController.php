@@ -26,120 +26,108 @@ class RekapitulasiController extends Controller
         // Ambil pertanyaan berdasarkan tahun yang dipilih
         $pertanyaanByKategori = Pertanyaan::where('tahun', $tahunTerpilih)->get()->groupBy('kategori');
     
-        // Rekapitulasi jumlah jawaban
+        // Rekapitulasi jumlah jawaban berdasarkan tipe jawaban
         $rekapData = Jawaban::join('perpustakaans', 'jawabans.id_perpustakaan', '=', 'perpustakaans.id_perpustakaan')
-        ->join('jenis_perpustakaans', 'perpustakaans.id_jenis', '=', 'jenis_perpustakaans.id_jenis')
-        ->selectRaw('jenis_perpustakaans.jenis, jenis_perpustakaans.subjenis, jawabans.id_pertanyaan, 
-                     SUM(CASE 
-                         WHEN jawabans.jawaban REGEXP \'^[1-9][0-9]*$\' THEN jawabans.jawaban 
-                         ELSE 0 
-                     END) as total_angka,
-                     COUNT(CASE 
-                         WHEN jawabans.jawaban REGEXP \'^[^0-9]+$\' THEN 1  -- Hanya huruf
-                         WHEN jawabans.jawaban REGEXP \'^[0-9]+$\' AND jawabans.jawaban REGEXP \'^0\' THEN 1 -- Diawali angka 0
-                         WHEN jawabans.jawaban REGEXP \'[A-Za-z]+\' THEN 1 -- Mengandung huruf
-                         WHEN jawabans.jawaban REGEXP \'[0-9]+\' AND jawabans.jawaban REGEXP \'[^\d]\' THEN 1 -- Mengandung angka dan simbol
-                         ELSE NULL 
-                     END) as total_responden')
-        ->whereIn('jawabans.id_pertanyaan', $pertanyaanByKategori->flatten()->pluck('id_pertanyaan'))
-        ->groupBy('jenis_perpustakaans.jenis', 'jenis_perpustakaans.subjenis', 'jawabans.id_pertanyaan')
-        ->get();
+            ->join('jenis_perpustakaans', 'perpustakaans.id_jenis', '=', 'jenis_perpustakaans.id_jenis')
+            ->join('pertanyaans', 'jawabans.id_pertanyaan', '=', 'pertanyaans.id_pertanyaan')
+            ->selectRaw('jenis_perpustakaans.jenis, jenis_perpustakaans.subjenis, jawabans.id_pertanyaan, pertanyaans.tipe_jawaban,
+                         SUM(CASE 
+                             WHEN pertanyaans.tipe_jawaban = \'number\' THEN CAST(jawabans.jawaban AS UNSIGNED)
+                             ELSE 0
+                         END) as total_angka,
+                         COUNT(CASE 
+                             WHEN pertanyaans.tipe_jawaban IN (\'text\', \'radio\') THEN 1
+                             ELSE NULL
+                         END) as total_responden')
+            ->whereIn('jawabans.id_pertanyaan', $pertanyaanByKategori->flatten()->pluck('id_pertanyaan'))
+            ->groupBy('jenis_perpustakaans.jenis', 'jenis_perpustakaans.subjenis', 'jawabans.id_pertanyaan', 'pertanyaans.tipe_jawaban')
+            ->get();
     
-    
-    
-    
+        // Ambil data jumlah perpustakaan
         $perpustakaanData = \App\Models\Perpustakaan::join('jawabans', 'perpustakaans.id_perpustakaan', '=', 'jawabans.id_perpustakaan')
-        ->join('jenis_perpustakaans', 'perpustakaans.id_jenis', '=', 'jenis_perpustakaans.id_jenis')
-        ->selectRaw('jenis_perpustakaans.jenis, jenis_perpustakaans.subjenis, COUNT(DISTINCT perpustakaans.id_perpustakaan) as total_perpustakaan')
-        ->whereNotNull('perpustakaans.nama_perpustakaan') // Hanya yang memiliki alamat
-        ->where('jawabans.tahun', $tahunTerpilih) // Menggunakan kolom tahun dari tabel jawaban
-        ->groupBy('jenis_perpustakaans.jenis', 'jenis_perpustakaans.subjenis')
-        ->get();
-
-// Susun data menjadi array terstruktur
-$rekapArray = [];
-foreach ($rekapData as $data) {
-  $rekapArray[$data->jenis][$data->subjenis][$data->id_pertanyaan] = [
-      'total_angka' => $data->total_angka,
-      'total_responden' => $data->total_responden
-  ];
-}
-
-// Tambahkan data jumlah perpustakaan ke array
-$jumlahPerpustakaan = [];
-foreach ($perpustakaanData as $data) {
-  $jumlahPerpustakaan[$data->jenis][$data->subjenis] = $data->total_perpustakaan;
-}
-
-return view('admin.rekapitulasi', compact('tahunList', 'tahunTerpilih', 'jenisList', 'pertanyaanByKategori', 'rekapArray', 'jumlahPerpustakaan'));
-}
+            ->join('jenis_perpustakaans', 'perpustakaans.id_jenis', '=', 'jenis_perpustakaans.id_jenis')
+            ->selectRaw('jenis_perpustakaans.jenis, jenis_perpustakaans.subjenis, COUNT(DISTINCT perpustakaans.id_perpustakaan) as total_perpustakaan')
+            ->whereNotNull('perpustakaans.nama_perpustakaan')
+            ->where('jawabans.tahun', $tahunTerpilih)
+            ->groupBy('jenis_perpustakaans.jenis', 'jenis_perpustakaans.subjenis')
+            ->get();
     
-public function exportRekap($tahun)
-{
-    return Excel::download(new RekapitulasiExport($tahun), "Rekapitulasi_UPLM_Kota_Bandung_$tahun.xlsx");
-}  
-
-public function exportPDF($tahun)
-{
-    // Ambil data tahun dan pertanyaan
-    $tahunList = Pertanyaan::select('tahun')->distinct()->pluck('tahun');
-    $tahunTerpilih = $tahun;
-    $jenisList = JenisPerpustakaan::select('jenis', 'subjenis')->get()->groupBy('jenis');
-    $pertanyaanByKategori = Pertanyaan::where('tahun', $tahunTerpilih)->get()->groupBy('kategori');
-
-    // Ambil rekap jawaban
-    $rekapData = Jawaban::join('perpustakaans', 'jawabans.id_perpustakaan', '=', 'perpustakaans.id_perpustakaan')
-        ->join('jenis_perpustakaans', 'perpustakaans.id_jenis', '=', 'jenis_perpustakaans.id_jenis')
-        ->selectRaw('jenis_perpustakaans.jenis, jenis_perpustakaans.subjenis, jawabans.id_pertanyaan, 
-                     COALESCE(SUM(CASE 
-                         WHEN jawabans.jawaban REGEXP \'^[1-9][0-9]*$\' THEN jawabans.jawaban 
-                         ELSE 0 
-                     END), 0) as total_angka,
-                     COALESCE(COUNT(CASE 
-                         WHEN jawabans.jawaban REGEXP \'^[^0-9]+$\' THEN 1  
-                         WHEN jawabans.jawaban REGEXP \'^[0-9]+$\' AND jawabans.jawaban REGEXP \'^0\' THEN 1 
-                         WHEN jawabans.jawaban REGEXP \'[A-Za-z]+\' THEN 1 
-                         WHEN jawabans.jawaban REGEXP \'[0-9]+\' AND jawabans.jawaban REGEXP \'[^\d]\' THEN 1 
-                         ELSE NULL 
-                     END), 0) as total_responden')
-        ->whereIn('jawabans.id_pertanyaan', $pertanyaanByKategori->flatten()->pluck('id_pertanyaan'))
-        ->groupBy('jenis_perpustakaans.jenis', 'jenis_perpustakaans.subjenis', 'jawabans.id_pertanyaan')
-        ->get();
-
-    // Ambil data jumlah perpustakaan
-    $perpustakaanData = \App\Models\Perpustakaan::join('jawabans', 'perpustakaans.id_perpustakaan', '=', 'jawabans.id_perpustakaan')
-        ->join('jenis_perpustakaans', 'perpustakaans.id_jenis', '=', 'jenis_perpustakaans.id_jenis')
-        ->selectRaw('jenis_perpustakaans.jenis, jenis_perpustakaans.subjenis, COUNT(DISTINCT perpustakaans.id_perpustakaan) as total_perpustakaan')
-        ->whereNotNull('perpustakaans.nama_perpustakaan')
-        ->where('jawabans.tahun', $tahunTerpilih)
-        ->groupBy('jenis_perpustakaans.jenis', 'jenis_perpustakaans.subjenis')
-        ->get();
-
-    // Konversi data ke array untuk tampilan di Blade
-    $rekapArray = [];
-    foreach ($rekapData as $data) {
-        $rekapArray[$data->jenis][$data->subjenis][$data->id_pertanyaan] = [
-            'total_angka' => intval($data->total_angka),  // Konversi ke angka pasti
-            'total_responden' => intval($data->total_responden)
-        ];
+        // Susun data menjadi array terstruktur
+        $rekapArray = [];
+        foreach ($rekapData as $data) {
+            $rekapArray[$data->jenis][$data->subjenis][$data->id_pertanyaan] = [
+                'total_angka' => intval($data->total_angka),  // Konversi ke integer
+                'total_responden' => intval($data->total_responden)
+            ];
+        }
+    
+        // Tambahkan data jumlah perpustakaan ke array
+        $jumlahPerpustakaan = [];
+        foreach ($perpustakaanData as $data) {
+            $jumlahPerpustakaan[$data->jenis][$data->subjenis] = $data->total_perpustakaan;
+        }
+    
+        return view('admin.rekapitulasi', compact('tahunList', 'tahunTerpilih', 'jenisList', 'pertanyaanByKategori', 'rekapArray', 'jumlahPerpustakaan'));
     }
-
-    $jumlahPerpustakaan = [];
-    foreach ($perpustakaanData as $data) {
-        $jumlahPerpustakaan[$data->jenis][$data->subjenis] = intval($data->total_perpustakaan);
+    
+    public function exportRekap($tahun)
+    {
+        return Excel::download(new RekapitulasiExport($tahun), "Rekapitulasi_UPLM_Kota_Bandung_$tahun.xlsx");
+    }  
+    
+    public function exportPDF($tahun)
+    {
+        // Ambil data tahun dan pertanyaan
+        $tahunList = Pertanyaan::select('tahun')->distinct()->pluck('tahun');
+        $tahunTerpilih = $tahun;
+        $jenisList = JenisPerpustakaan::select('jenis', 'subjenis')->get()->groupBy('jenis');
+        $pertanyaanByKategori = Pertanyaan::where('tahun', $tahunTerpilih)->get()->groupBy('kategori');
+    
+        // Ambil rekap jawaban
+        $rekapData = Jawaban::join('perpustakaans', 'jawabans.id_perpustakaan', '=', 'perpustakaans.id_perpustakaan')
+            ->join('jenis_perpustakaans', 'perpustakaans.id_jenis', '=', 'jenis_perpustakaans.id_jenis')
+            ->join('pertanyaans', 'jawabans.id_pertanyaan', '=', 'pertanyaans.id_pertanyaan')
+            ->selectRaw('jenis_perpustakaans.jenis, jenis_perpustakaans.subjenis, jawabans.id_pertanyaan, pertanyaans.tipe_jawaban,
+                         COALESCE(SUM(CASE 
+                             WHEN pertanyaans.tipe_jawaban = \'number\' THEN CAST(jawabans.jawaban AS UNSIGNED)
+                             ELSE 0
+                         END), 0) as total_angka,
+                         COALESCE(COUNT(CASE 
+                             WHEN pertanyaans.tipe_jawaban IN (\'text\', \'radio\') THEN 1
+                             ELSE NULL
+                         END), 0) as total_responden')
+            ->whereIn('jawabans.id_pertanyaan', $pertanyaanByKategori->flatten()->pluck('id_pertanyaan'))
+            ->groupBy('jenis_perpustakaans.jenis', 'jenis_perpustakaans.subjenis', 'jawabans.id_pertanyaan', 'pertanyaans.tipe_jawaban')
+            ->get();
+    
+        // Ambil data jumlah perpustakaan
+        $perpustakaanData = \App\Models\Perpustakaan::join('jawabans', 'perpustakaans.id_perpustakaan', '=', 'jawabans.id_perpustakaan')
+            ->join('jenis_perpustakaans', 'perpustakaans.id_jenis', '=', 'jenis_perpustakaans.id_jenis')
+            ->selectRaw('jenis_perpustakaans.jenis, jenis_perpustakaans.subjenis, COUNT(DISTINCT perpustakaans.id_perpustakaan) as total_perpustakaan')
+            ->whereNotNull('perpustakaans.nama_perpustakaan')
+            ->where('jawabans.tahun', $tahunTerpilih)
+            ->groupBy('jenis_perpustakaans.jenis', 'jenis_perpustakaans.subjenis')
+            ->get();
+    
+        // Konversi data ke array untuk tampilan di Blade
+        $rekapArray = [];
+        foreach ($rekapData as $data) {
+            $rekapArray[$data->jenis][$data->subjenis][$data->id_pertanyaan] = [
+                'total_angka' => intval($data->total_angka),  // Konversi ke integer
+                'total_responden' => intval($data->total_responden)
+            ];
+        }
+    
+        $jumlahPerpustakaan = [];
+        foreach ($perpustakaanData as $data) {
+            $jumlahPerpustakaan[$data->jenis][$data->subjenis] = intval($data->total_perpustakaan);
+        }
+    
+        // Render tampilan PDF
+        $pdf = Pdf::loadView('admin.rekapitulasi_pdf', compact(
+            'tahunList', 'tahunTerpilih', 'jenisList', 'pertanyaanByKategori', 'rekapArray', 'jumlahPerpustakaan'
+        ))->setPaper('a4', 'landscape');
+    
+        return $pdf->download("Rekapitulasi_UPLM_Kota_Bandung_{$tahun}.pdf");
     }
-
-    // Debugging sementara jika masih error
-    // dd($rekapArray, $jumlahPerpustakaan);
-
-    // Render tampilan PDF
-    $pdf = Pdf::loadView('admin.rekapitulasi_pdf', compact(
-        'tahunList', 'tahunTerpilih', 'jenisList', 'pertanyaanByKategori', 'rekapArray', 'jumlahPerpustakaan'
-    ))->setPaper('a4', 'landscape');
-
-    return $pdf->download("Rekapitulasi_UPLM_Kota_Bandung_{$tahun}.pdf");
 }
-
-
-}
-
