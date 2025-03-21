@@ -154,12 +154,12 @@
                         </a>
                     </li>
                     <li class="nav-item dropdown ms-2">
-                        <a class="nav-link dropdown-toggle" href="{{ route('monografi.index') }}" id="profileDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="{{ route('monografi.index') }}" id="profileDropdown"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-user-circle"></i> {{ Auth::user()->username }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-user"></i> Profil Saya</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-book"></i> Monografi</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -243,7 +243,8 @@
                             </tr>
                             <tr>
                                 <th>Foto</th>
-                                <td><img src="{{ asset('storage/' . $perpustakaan->foto) }}" class="img-thumbnail img-fluid"></td>
+                                <td><img src="{{ asset('storage/' . $perpustakaan->foto) }}"
+                                        class="img-thumbnail img-fluid"></td>
                             </tr>
                         </table>
                     </div>

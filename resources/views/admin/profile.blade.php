@@ -149,7 +149,7 @@
                 @endif
 
                 <!-- Foto Profil -->
-                <div class="text-center mb-4">
+                {{-- <div class="text-center mb-4">
                     <div class="profile-photo-container">
                         @if ($user->adminProfile && $user->adminProfile->foto)
                             <img src="{{ asset('storage/' . $user->adminProfile->foto) }}" alt="Foto Profil" class="profile-photo" id="profilePhoto">
@@ -161,7 +161,7 @@
                         </div>
                         <input type="file" class="profile-photo-upload" id="foto" name="foto" accept="image/*">
                     </div>
-                </div>
+                </div> --}}
 
                 <!-- Form Profil Admin -->
                 <form action="{{ route('admin.profile.update') }}" method="POST" enctype="multipart/form-data">

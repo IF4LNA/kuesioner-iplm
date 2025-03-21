@@ -144,6 +144,7 @@
             justify-content: center;
             align-items: center;
         }
+
         .question-right {
             flex: 1;
             padding-left: 20px;
@@ -303,7 +304,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                             <li><a class="dropdown-item" href="{{ route('monografi.index') }}"><i
-                                        class="fas fa-user"></i> Profil Saya</a></li>
+                                        class="fas fa-book"></i> Monografi</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>

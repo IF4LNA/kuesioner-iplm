@@ -149,7 +149,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                             <li><a class="dropdown-item" href="{{ route('monografi.index') }}"><i
-                                        class="fas fa-user"></i> Profil Saya</a></li>
+                                        class="fas fa-book"></i> Monografi</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -184,9 +184,10 @@
                                 </a>
                             </div>
                             <div class="col-md-6">
-                                <a href="{{ route('form.data') }}" class="btn w-100 text-white" style="background-color: #2E3B55">
+                                <a href="{{ route('form.data') }}" class="btn w-100 text-white"
+                                    style="background-color: #2E3B55">
                                     <i class="fas fa-edit"></i> Isi Kuesioner
-                                </a>                                
+                                </a>
                             </div>
                         </div>
                     </div>
