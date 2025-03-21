@@ -37,11 +37,12 @@ class PertanyaanController extends Controller
             'teks_pertanyaan' => 'required|string|max:255',
             'kategori' => 'required|string|in:UPLM 1,UPLM 2,UPLM 3,UPLM 4,UPLM 5,UPLM 6,UPLM 7',
             'tahun' => 'required|integer|min:1900|max:' . date('Y'),
+            'tipe_jawaban' => 'required|string|in:text,number,radio', // Validasi untuk tipe jawaban
         ]);
-
+    
         $question = Pertanyaan::findOrFail($id);
         $question->update($request->all());
-
+    
         return redirect()->route('questions.create')->with('success', 'Pertanyaan berhasil diperbarui!');
     }
 
