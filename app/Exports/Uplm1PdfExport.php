@@ -70,7 +70,10 @@ class Uplm1PdfExport implements FromCollection, WithHeadings, WithMapping
             'NPP',
             'Jenis Perpustakaan',
             'Sub Jenis Perpustakaan',
+            'Nama Pengelola',
+            'Kontak',
             'Alamat',
+            'Email',
             'Kelurahan',
             'Kecamatan',
         ];
@@ -93,56 +96,59 @@ class Uplm1PdfExport implements FromCollection, WithHeadings, WithMapping
     }
 
     public function map($item): array
-{
-    $data = [
-        $item->id,
-        $this->tahun, // Gunakan tahun yang dipilih di filter
-        $item->nama_perpustakaan ?? '-',
-        $item->npp ?? '-',
-        $item->jenis->jenis ?? '-',
-        $item->jenis->subjenis ?? '-',
-        $item->alamat ?? '-',
-        $item->kelurahan->nama_kelurahan ?? '-',
-        $item->kelurahan->kecamatan->nama_kecamatan ?? '-',
-    ];
+    {
+        $data = [
+            $item->id,
+            $this->tahun, // Gunakan tahun yang dipilih di filter
+            $item->nama_perpustakaan ?? '-',
+            $item->npp ?? '-',
+            $item->jenis->jenis ?? '-',
+            $item->jenis->subjenis ?? '-',
+            $item->nama_pengelola,
+            $item->kontak,
+            $item->alamat ?? '-',
+            $item->user->email,
+            $item->kelurahan->nama_kelurahan ?? '-',
+            $item->kelurahan->kecamatan->nama_kecamatan ?? '-',
+        ];
 
-    // Ambil semua pertanyaan UPLM 1 untuk tahun tertentu
-    $pertanyaan = Pertanyaan::where('kategori', 'UPLM 1')
-        ->where('tahun', $this->tahun)
-        ->get();
+        // Ambil semua pertanyaan UPLM 1 untuk tahun tertentu
+        $pertanyaan = Pertanyaan::where('kategori', 'UPLM 1')
+            ->where('tahun', $this->tahun)
+            ->get();
 
-    // Loop melalui setiap pertanyaan dan cari jawaban yang sesuai
-    foreach ($pertanyaan as $pertanyaanItem) {
-        $jawaban = $item->jawaban
-            ->where('id_pertanyaan', $pertanyaanItem->id_pertanyaan)
-            ->where('pertanyaan.tahun', $this->tahun)
-            ->first();
+        // Loop melalui setiap pertanyaan dan cari jawaban yang sesuai
+        foreach ($pertanyaan as $pertanyaanItem) {
+            $jawaban = $item->jawaban
+                ->where('id_pertanyaan', $pertanyaanItem->id_pertanyaan)
+                ->where('pertanyaan.tahun', $this->tahun)
+                ->first();
 
-        // Tambahkan jawaban atau nilai default jika jawaban tidak ditemukan
-        $data[] = $jawaban ? $jawaban->jawaban : '-';
+            // Tambahkan jawaban atau nilai default jika jawaban tidak ditemukan
+            $data[] = $jawaban ? $jawaban->jawaban : '-';
+        }
+
+        return $data;
     }
 
-    return $data;
-}
+    public function downloadPdf()
+    {
+        $data = $this->collection();
+        $headings = $this->headings();
 
-public function downloadPdf()
-{
-    $data = $this->collection();
-    $headings = $this->headings();
+        // Ambil pertanyaan UPLM 1 dan filter berdasarkan tahun
+        $pertanyaan = Pertanyaan::where('kategori', 'UPLM 1')
+            ->when($this->tahun, function ($query) {
+                $query->where('tahun', $this->tahun);
+            })
+            ->get();
 
-    // Ambil pertanyaan UPLM 1 dan filter berdasarkan tahun
-    $pertanyaan = Pertanyaan::where('kategori', 'UPLM 1')
-        ->when($this->tahun, function ($query) {
-            $query->where('tahun', $this->tahun);
-        })
-        ->get();
+        // Teruskan tahun ke view PDF
+        $tahun = $this->tahun;
 
-    // Teruskan tahun ke view PDF
-    $tahun = $this->tahun;
+        $pdf = Pdf::loadView('admin.uplm1_pdf', compact('data', 'headings', 'pertanyaan', 'tahun'))
+            ->setPaper('a4', 'landscape');
 
-    $pdf = Pdf::loadView('admin.uplm1_pdf', compact('data', 'headings', 'pertanyaan', 'tahun'))
-        ->setPaper('a4', 'landscape');
-
-    return $pdf->download('uplm1-report.pdf');
-}
+        return $pdf->download('uplm1-report.pdf');
+    }
 }

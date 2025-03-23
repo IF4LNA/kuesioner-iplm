@@ -210,12 +210,20 @@
                     <div class="table-responsive">
                         <table class="table table-bordered">
                             <tr>
+                                <th>Nama Pengelola Perpustakaan</th>
+                                <td>{{ $perpustakaan->nama_pengelola }}</td>
+                            </tr>
+                            <tr>
                                 <th>Nama Perpustakaan</th>
                                 <td>{{ $perpustakaan->nama_perpustakaan }}</td>
                             </tr>
                             <tr>
                                 <th>NPP</th>
                                 <td>{{ $perpustakaan->npp }}</td>
+                            </tr>
+                            <tr>
+                                <th>Email</th>
+                                <td>{{ $perpustakaan->user->email }}</td>
                             </tr>
                             <tr>
                                 <th>Jenis</th>

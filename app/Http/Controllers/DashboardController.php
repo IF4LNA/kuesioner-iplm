@@ -12,24 +12,26 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         // Ambil tahun dari dropdown atau default ke tahun terbaru
-        $selectedYear = $request->input('tahun', Jawaban::max('tahun'));
+        $selectedYear = $request->input('tahun') ?? Jawaban::max('tahun');
 
         // Total perpustakaan terdaftar
         $totalPerpustakaan = Perpustakaan::count();
 
-        // Perpustakaan yang sudah mengisi kuesioner (mengisi semua pertanyaan)
-        $totalKuesionerSelesai = Perpustakaan::whereHas('jawaban', function ($query) use ($selectedYear) {
-            $query->where('tahun', $selectedYear);
-        })->count();
+        // Perpustakaan yang sudah mengisi kuesioner (lebih efisien)
+        $totalKuesionerSelesai = Jawaban::where('tahun', $selectedYear)
+            ->distinct('id_perpustakaan')
+            ->count('id_perpustakaan');
 
         // Progres pengisian (% perpustakaan yang sudah mengisi)
-        $progresKuesioner = ($totalPerpustakaan > 0) ? ($totalKuesionerSelesai / $totalPerpustakaan) * 100 : 0;
+        $progresKuesioner = $totalPerpustakaan > 0 
+            ? number_format(($totalKuesionerSelesai / $totalPerpustakaan) * 100, 2) 
+            : 0;
 
         // Total perpustakaan yang belum mengisi
         $totalBelumMengisi = $totalPerpustakaan - $totalKuesionerSelesai;
 
-        // Dropdown Tahun (ambil tahun dari tabel `jawabans`)
-        $tahunList = Pertanyaan::select('tahun')->distinct()->orderByDesc('tahun')->pluck('tahun');
+        // Dropdown Tahun (dari Jawaban, bukan Pertanyaan)
+        $tahunList = Jawaban::select('tahun')->distinct()->orderByDesc('tahun')->pluck('tahun');
 
         return view('admin.dashboard', compact(
             'totalPerpustakaan',
@@ -41,3 +43,4 @@ class DashboardController extends Controller
         ));
     }
 }
+

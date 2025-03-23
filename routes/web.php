@@ -35,7 +35,7 @@ Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])-
 // Proses reset password
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
-// Memproses reset password (harus dengan metode POST)
+// Memproses reset password
 Route::post('/reset-password', [AuthController::class, 'updatePassword'])->name('password.update');
 
 // Rute umum (tanpa autentikasi)
@@ -63,15 +63,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/manage-users', [AdminController::class, 'manageUsers'])->name('manage.users');
 
-    //route uplm 1-7
-    Route::get('/uplm/{id}', [UplmController::class, 'showUplm'])->name('uplm.show');
-
     //edit uplm
     Route::get('/uplm/{id}/jawaban/{jawaban}/edit', [UplmController::class, 'editJawaban'])->name('uplm.jawaban.edit');
     Route::put('/uplm/{id}/jawaban/{jawaban}', [UplmController::class, 'updateJawaban'])->name('uplm.jawaban.update');
     Route::delete('/uplm/{id}/jawaban/{jawaban}', [UplmController::class, 'deleteJawaban'])->name('uplm.jawaban.delete');
 
-    //filter
+    //filter dan route uplm 1-7
     Route::get('/uplm/{id}', [UplmController::class, 'filterUplm'])->name('uplm');
     Route::get('/uplm/{id}/filterByYear', [UplmController::class, 'filterByYear'])->name('uplm.filterByYear');
 
@@ -83,10 +80,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/create-account', [AdminController::class, 'storeAccount'])->name('admin.store-account');
 
     //profiladmin
-Route::middleware('auth')->group(function () {
-    Route::get('/admin/profile', [AdminProfileController::class, 'edit'])->name('admin.profile');
-    Route::post('/admin/profile/update', [AdminProfileController::class, 'update'])->name('admin.profile.update');
-});
+    Route::middleware('auth')->group(function () {
+        Route::get('/admin/profile', [AdminProfileController::class, 'edit'])->name('admin.profile');
+        Route::post('/admin/profile/update', [AdminProfileController::class, 'update'])->name('admin.profile.update');
+    });
 
     // route menampilkan data subjenis di form input
     Route::get('/getSubjenis/{jenis}', [AdminController::class, 'getSubjenis']);
@@ -126,11 +123,11 @@ Route::middleware('auth')->group(function () {
 
     //route aktivitas admin
     Route::get('activity-logs', [ActivityController::class, 'showActivityLogs'])->name('admin.activity-logs');
-    
+
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     //search monografi admin
-Route::get('/perpustakaans/search', [RekapPerpusController::class, 'search'])->name('perpustakaans.search');
+    Route::get('/perpustakaans/search', [RekapPerpusController::class, 'search'])->name('perpustakaans.search');
 
     //route edit pertanyaan
     Route::get('/questions/{id}/edit', [PertanyaanController::class, 'edit'])->name('questions.edit');
@@ -155,7 +152,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pustakawan/monografi/export-pdf/{tahun}', [MonografiController::class, 'exportPDF'])
         ->name('pustakawan.monografi.export.pdf')
         ->middleware('auth'); // Pastikan hanya user login yang bisa mengakses
-        Route::get('/monografi/exportPDF/{tahun}', [MonografiController::class, 'exportPDF'])->name('monografi.exportPDF');
+    Route::get('/monografi/exportPDF/{tahun}', [MonografiController::class, 'exportPDF'])->name('monografi.exportPDF');
 
     // Route untuk menyimpan data perpustakaan
     Route::post('/pustakawan/store', [PustakawanController::class, 'store'])->name('pustakawan.store');

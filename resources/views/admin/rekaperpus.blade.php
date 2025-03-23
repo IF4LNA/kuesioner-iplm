@@ -91,6 +91,7 @@
                         <table class="table table-bordered">
                             <thead class="table-dark">
                                 <tr>
+                                    <th>Nama Pengelola Perpustakaan</th>
                                     <th>Nama Perpustakaan</th>
                                     <th>NPP</th>
                                     <th>Jenis</th>
@@ -108,6 +109,7 @@
                                     <tr>
                                         @php
                                             $data = [
+                                                $perpustakaan->nama_pengelola,
                                                 $perpustakaan->nama_perpustakaan,
                                                 $perpustakaan->npp ?? '-',
                                                 $perpustakaan->jenis->jenis ?? '-',

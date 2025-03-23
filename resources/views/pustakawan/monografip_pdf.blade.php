@@ -108,6 +108,10 @@
     <!-- Informasi Perpustakaan -->
     <table class="info-table">
         <tr>
+            <td class="info-title">Nama Pengelola Perpustakaan:</td>
+            <td>{{ $perpustakaan->nama_pengelola }}</td>
+        </tr>
+        <tr>
             <td class="info-title">Nama Perpustakaan:</td>
             <td>{{ $perpustakaan->nama_perpustakaan }}</td>
         </tr>

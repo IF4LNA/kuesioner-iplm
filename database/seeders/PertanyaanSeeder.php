@@ -95,7 +95,7 @@ class PertanyaanSeeder extends Seeder
                 'teks_pertanyaan' => 'Apakah pernah mengadakan kegiatan sosialisasi (Komunikasi, Informasi dan Edukasi) dan pemanfaatan perpustakaan yang melibatkan siswa/mahasiswa/pegawai/masyarakat/dll. baik onsite maupun online (termasuk workshop, pelatihan, bimbingan teknis, bedah buku, klub membaca, dan kegiatan bersama komunitas) selama satu tahun terakhir',
                 'kategori' => 'UPLM 6',
                 'tahun' => 2025,
-                'tipe_jawaban' => 'text',
+                'tipe_jawaban' => 'radio',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],

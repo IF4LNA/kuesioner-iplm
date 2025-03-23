@@ -134,14 +134,15 @@
                         <!-- Filter Tahun -->
                         <div class="col-md-4">
                             <select name="tahun" class="form-select shadow-sm" aria-label="Pilih Tahun">
-                                <option value="">Pilih Tahun</option>
+                                <option value="" disabled selected>Pilih Tahun</option>
                                 @foreach ($years as $year)
-                                    <option value="{{ $year }}" {{ request()->tahun == $year ? 'selected' : '' }}>
+                                    <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>
                                         {{ $year }} {{ $year == $selectedYear ? '(Sedang Dipilih)' : '' }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
+                                                
                     </div>
 
                     <!-- Tombol Filter dan Reset -->
