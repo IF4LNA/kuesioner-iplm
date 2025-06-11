@@ -79,17 +79,25 @@
 
         .info-table td {
             padding: 5px;
+            vertical-align: top;
         }
 
         .info-title {
             font-weight: bold;
+            width: 20%;
+        }
+        
+        .library-photo {
+            width: 400px;
+            height: auto;
+            margin-top: 5px;
+            border: 1px solid #ddd;
         }
     </style>
 </head>
 
 <body>
 
-    <!-- Kop Surat -->
     <!-- Kop Surat -->
     <div class="kop-surat">
         <img src="{{ public_path('images/disarpus.png') }}" alt="Logo">
@@ -136,8 +144,11 @@
         @if ($perpustakaan->foto)
             <tr>
                 <td class="info-title">Foto Perpustakaan:</td>
-                <td><img src="{{ public_path('storage/' . $perpustakaan->foto) }}" alt="Foto Perpustakaan"
-                        width="100"></td>
+                <td>
+                    <img src="{{ public_path('storage/' . $perpustakaan->foto) }}" 
+                         alt="Foto Perpustakaan" 
+                         class="library-photo">
+                </td>
             </tr>
         @endif
     </table>
