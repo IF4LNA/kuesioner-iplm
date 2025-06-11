@@ -142,7 +142,7 @@
                                 @endforeach
                             </select>
                         </div>
-                                                
+
                     </div>
 
                     <!-- Tombol Filter dan Reset -->
@@ -175,16 +175,17 @@
                     </a>
 
                     <a href="{{ route('uplm.exportPdf', [
-                    'id' => $id, 
-                    'kategori' => '1', 
-                    'perPage' => request('perPage', 10), 
-                    'page' => request('page', 1), 
-                    'tahun' => request('tahun'), 
-                    'jenis' => request('jenis'), 
-                    'subjenis' => request('subjenis')]) }}"
+                        'id' => $id,
+                        'kategori' => '1',
+                        'perPage' => request('perPage', 10),
+                        'page' => request('page', 1),
+                        'tahun' => request('tahun', date('Y')), // Default tahun sekarang
+                        'jenis' => request('jenis'),
+                        'subjenis' => request('subjenis'),
+                    ]) }}"
                         class="btn btn-danger">
-                         Export PDF
-                     </a>
+                        Export PDF
+                    </a>
                 </div>
             </div>
         </div>
@@ -329,7 +330,7 @@
                                     <td>{{ $item->nama_pengelola ?? '-' }}</td>
                                     <td>{{ $item->kontak ?? '-' }}</td>
                                     <td>{{ $item->alamat ?? '-' }}</td>
-                                    <td>{{ $item->user->email }}</td> 
+                                    <td>{{ $item->user->email }}</td>
                                     <td>{{ $item->kelurahan->nama_kelurahan ?? '-' }}</td>
                                     <td>{{ $item->kelurahan->kecamatan->nama_kecamatan ?? '-' }}</td>
                                     @foreach ($pertanyaan as $pertanyaanItem)
@@ -379,7 +380,7 @@
                             @endforelse
                         </tbody>
                     </table>
-                    <!-- Pagination -->
+
                     <!-- Pagination -->
                     <div class="sticky-pagination">
                         <div class="d-flex justify-content-between align-items-center mt-4">

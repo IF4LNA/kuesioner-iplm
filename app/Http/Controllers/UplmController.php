@@ -176,38 +176,6 @@ class UplmController extends Controller
         return Excel::download(new $exports[$id]($jenis, $subjenis, $tahun, $page, $perPage), "uplm{$id}_data.xlsx");
     }
 
-    // Export PDF UPLM 1
-    // public function exportPdf($id)
-    // {
-    //     $jenis = request()->get('jenis');
-    //     $subjenis = request()->get('subjenis');
-    //     $tahun = request()->get('tahun');
-    //     $perPage = request()->get('perPage', 10); // Default 10 data per halaman
-    //     $page = request()->get('page', 1); // Default halaman pertama
-    
-    //     // Simpan log aktivitas
-    //     ActivityLog::create([
-    //         'action'      => 'Export PDF',
-    //         'description' => "Admin mengekspor data UPLM {$id} ke PDF dengan filter:\n"
-    //             . "- Jenis: {$jenis}\n"
-    //             . "- Subjenis: {$subjenis}\n"
-    //             . "- Tahun: {$tahun}\n"
-    //             . "- Per Page: {$perPage}\n"
-    //             . "- Page: {$page}",
-    //         'id_akun'     => auth()->user()->id,
-    //         'created_at'  => now(),
-    //     ]);
-    
-    //     // **Gunakan Paginasi**
-    //     $data = new UplmPdfExport($jenis, $subjenis, $tahun, $perPage, $page);
-    //     $pdf = Pdf::loadView('admin.uplm_pdf', [
-    //         'data' => $data->view()->getData()['data'],
-    //         'headings' => $data->view()->getData()['headings']
-    //     ]);
-    
-    //     return $pdf->download('uplm1-report.pdf');
-    // }
-
     public function exportUplmPdf($id, Request $request, $kategori)
     {
         $jenis = $request->get('jenis');

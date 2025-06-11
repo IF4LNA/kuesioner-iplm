@@ -19,14 +19,22 @@ class Uplm1PdfExport implements FromCollection, WithHeadings, WithMapping
     protected $perPage;
 
     public function __construct($jenis = null, $subjenis = null, $tahun = null, $page = 1, $perPage = 10)
-    {
-        $this->jenis = $jenis;
-        $this->subjenis = $subjenis;
-        $this->tahun = $tahun;
-        $this->page = $page;
-        $this->perPage = $perPage;
-    }
+{
+    $this->jenis = $jenis;
+    $this->subjenis = $subjenis;
+    $this->page = $page;
+    $this->perPage = $perPage;
+    
+    // Pastikan tahun selalu memiliki nilai
+    $this->tahun = $tahun ?? $this->getLatestYear();
+}
 
+protected function getLatestYear()
+{
+    // Pastikan mengembalikan tahun default jika query null
+    return Pertanyaan::where('kategori', 'UPLM 1')->max('tahun') ?? date('Y');
+}
+    
     public function collection()
     {
         $query = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan']);
@@ -79,8 +87,8 @@ class Uplm1PdfExport implements FromCollection, WithHeadings, WithMapping
         ];
 
         // Gunakan tahun terbaru jika tidak ada tahun yang dikirim
-        if (!$this->tahun) {
-            $this->tahun = Pertanyaan::where('kategori', 'UPLM 1')->max('tahun');
+        if (empty($this->tahun)) {
+            $this->tahun = $this->getLatestYear();
         }
 
         // Ambil pertanyaan khusus untuk tahun tertentu
