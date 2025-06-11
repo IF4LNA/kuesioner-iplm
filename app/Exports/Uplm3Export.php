@@ -26,7 +26,7 @@ class Uplm3Export implements FromCollection, WithHeadings, WithMapping
         $this->perPage = $perPage;
     }
 
-    public function collection()
+public function collection()
 {
     $query = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan']);
 
@@ -43,9 +43,9 @@ class Uplm3Export implements FromCollection, WithHeadings, WithMapping
         });
     }
 
-    // Jika tidak ada tahun dikirim, gunakan tahun terbaru
-    if (!$this->tahun) {
-        $this->tahun = Pertanyaan::where('kategori', 'UPLM 3')->max('tahun');
+    // Jika perPage null (ekspor semua data), kembalikan semua data tanpa paginasi
+    if (is_null($this->perPage)) {
+        return $query->get();
     }
 
     // Hitung total data yang tersedia
