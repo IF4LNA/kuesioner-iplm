@@ -355,51 +355,73 @@
 
         <!-- Menampilkan Pertanyaan -->
         @if ($pertanyaans->count() > 0)
-            <form action="{{ route('kuesioner.submit') }}" method="POST">
-                @csrf
-                <input type="hidden" name="tahun" value="{{ $tahun }}">
+    <form action="{{ route('kuesioner.submit') }}" method="POST">
+        @csrf
+        <input type="hidden" name="tahun" value="{{ $tahun }}">
 
-                <div class="question-container">
-                    @foreach ($pertanyaans as $pertanyaan)
-                        <div class="question-box">
-                            <div class="question-right">
-                                <h5 class="question-text">{{ $loop->iteration }}. {{ $pertanyaan->teks_pertanyaan }}
-                                </h5>
+        <div class="question-container">
+            @foreach ($pertanyaans as $pertanyaan)
+                <div class="question-box mb-4">
+                    <div class="question-right">
+                        <h5 class="question-text">{{ $loop->iteration }}. {{ $pertanyaan->teks_pertanyaan }}</h5>
 
-                                @if ($pertanyaan->tipe_jawaban == 'radio')
-                                    <label>
-                                        <input type="radio" name="jawaban[{{ $pertanyaan->id_pertanyaan }}]"
-                                            value="Ya"
-                                            {{ isset($jawaban[$pertanyaan->id_pertanyaan]) && $jawaban[$pertanyaan->id_pertanyaan] == 'Ya' ? 'checked' : '' }}
-                                            {{ !$editable ? 'disabled' : '' }}> Ya
-                                    </label>
-                                    <label>
-                                        <input type="radio" name="jawaban[{{ $pertanyaan->id_pertanyaan }}]"
-                                            value="Tidak"
-                                            {{ isset($jawaban[$pertanyaan->id_pertanyaan]) && $jawaban[$pertanyaan->id_pertanyaan] == 'Tidak' ? 'checked' : '' }}
-                                            {{ !$editable ? 'disabled' : '' }}> Tidak
-                                    </label>
-                                @elseif ($pertanyaan->tipe_jawaban == 'number')
-                                    <input type="number" name="jawaban[{{ $pertanyaan->id_pertanyaan }}]"
-                                        class="form-control" placeholder="Masukkan angka"
-                                        value="{{ $jawaban[$pertanyaan->id_pertanyaan] ?? '' }}"
+                        @if ($pertanyaan->tipe_jawaban == 'radio')
+                            <div>
+                                <label>
+                                    <input type="radio"
+                                        name="jawaban[{{ $pertanyaan->id_pertanyaan }}]"
+                                        value="Ya"
+                                        {{ old('jawaban.' . $pertanyaan->id_pertanyaan, $jawaban[$pertanyaan->id_pertanyaan] ?? '') == 'Ya' ? 'checked' : '' }}
                                         {{ !$editable ? 'disabled' : '' }}>
-                                @else
-                                    <input type="text" name="jawaban[{{ $pertanyaan->id_pertanyaan }}]"
-                                        class="form-control" placeholder="Masukkan jawaban"
-                                        value="{{ $jawaban[$pertanyaan->id_pertanyaan] ?? '' }}"
+                                    Ya
+                                </label>
+                                <label>
+                                    <input type="radio"
+                                        name="jawaban[{{ $pertanyaan->id_pertanyaan }}]"
+                                        value="Tidak"
+                                        {{ old('jawaban.' . $pertanyaan->id_pertanyaan, $jawaban[$pertanyaan->id_pertanyaan] ?? '') == 'Tidak' ? 'checked' : '' }}
                                         {{ !$editable ? 'disabled' : '' }}>
-                                @endif
+                                    Tidak
+                                </label>
+
+                                @error('jawaban.' . $pertanyaan->id_pertanyaan)
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
                             </div>
-                        </div>
-                    @endforeach
 
+                        @elseif ($pertanyaan->tipe_jawaban == 'number')
+                            <input type="number"
+                                name="jawaban[{{ $pertanyaan->id_pertanyaan }}]"
+                                class="form-control @error('jawaban.' . $pertanyaan->id_pertanyaan) is-invalid @enderror"
+                                placeholder="Masukkan angka"
+                                value="{{ old('jawaban.' . $pertanyaan->id_pertanyaan, $jawaban[$pertanyaan->id_pertanyaan] ?? '') }}"
+                                {{ !$editable ? 'disabled' : '' }}>
+
+                            @error('jawaban.' . $pertanyaan->id_pertanyaan)
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+
+                        @else
+                            <input type="text"
+                                name="jawaban[{{ $pertanyaan->id_pertanyaan }}]"
+                                class="form-control @error('jawaban.' . $pertanyaan->id_pertanyaan) is-invalid @enderror"
+                                placeholder="Masukkan jawaban"
+                                value="{{ old('jawaban.' . $pertanyaan->id_pertanyaan, $jawaban[$pertanyaan->id_pertanyaan] ?? '') }}"
+                                {{ !$editable ? 'disabled' : '' }}>
+
+                            @error('jawaban.' . $pertanyaan->id_pertanyaan)
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        @endif
+                    </div>
                 </div>
+            @endforeach
+        </div>
 
-                @if ($editable)
-                    <button type="submit" class="btn btn-primary mt-3 mb-3 w-100">Submit Jawaban</button>
-                @endif
-            </form>
+        @if($editable)
+            <button type="submit" class="btn btn-primary mt-3">Simpan Jawaban</button>
+        @endif
+    </form>
 
             @if (!$editable)
                 <p class="text-warning mt-3">Hanya tahun {{ now()->year }} yang dapat diisi atau diubah.</p>

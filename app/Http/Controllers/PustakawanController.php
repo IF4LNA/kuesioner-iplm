@@ -90,7 +90,36 @@ class PustakawanController extends Controller
             'alamat' => 'required|string|max:50',
             'npp' => 'required|string|max:50',
             'nama_pengelola' => 'nullable|string|max:70', // Ubah menjadi nullable
-            'kontak' => 'nullable|string|max:50|regex:/^[0-9+\-\s]+$/',
+            'kontak' => [
+                'nullable',
+                'string',
+                function ($attribute, $value, $fail) {
+                    if ($value === null || trim($value) === '' || trim($value) === '-') {
+                        // Jika kosong atau hanya '-' -> lolos validasi
+                        return;
+                    }
+
+                    // Validasi karakter hanya boleh angka, spasi, plus, dan minus
+                    if (!preg_match('/^[0-9+\-\s]+$/', $value)) {
+                        $fail('Nomor telepon hanya boleh berisi angka, spasi, +, dan -.');
+                        return;
+                    }
+
+                    // Hapus semua karakter selain angka
+                    $onlyNumbers = preg_replace('/[^0-9]/', '', $value);
+
+                    // Cek minimal 10 digit angka
+                    if (strlen($onlyNumbers) < 10) {
+                        $fail('Nomor telepon harus memiliki minimal 10 digit angka.');
+                    }
+
+                    // Cek apakah mengandung huruf
+                    if (preg_match('/[a-zA-Z]/', $value)) {
+                        $fail('Nomor telepon tidak boleh huruf.');
+                    }
+                },
+            ],
+
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:6144',
             'desa_kelurahan' => 'required|integer|exists:kelurahans,id',
         ];
@@ -101,6 +130,12 @@ class PustakawanController extends Controller
         } else {
             $rules['email'] = 'required|string|email|max:255';
         }
+
+        $request->validate($rules, [
+            'kontak.min' => 'Nomor telepon minimal 10 karakter.',
+            'kontak.regex' => 'Nomor telepon hanya boleh berisi angka, spasi, +, dan -.',
+            'foto.max' => 'Ukuran foto tidak boleh lebih dari 6MB.',
+        ]);
 
         $request->validate($rules);
 
@@ -223,7 +258,7 @@ class PustakawanController extends Controller
         $tahunSekarang = now()->year;
         $tahunDepan = $tahunSekarang + 1;
 
-        // Cek jika tahun lebih kecil dari tahun sekarang, tolak penyimpanan
+        // Cek jika tahun lebih kecil dari tahun sekarang
         if ($tahun < $tahunSekarang) {
             return redirect()->back()->with('error', 'Jawaban hanya dapat diisi untuk tahun sekarang atau tahun depan.');
         }
@@ -231,27 +266,16 @@ class PustakawanController extends Controller
         // Validasi input jawaban
         $request->validate([
             'jawaban' => 'required|array',
-            'jawaban.*' => function ($attribute, $value, $fail) use ($request) {
-                $idPertanyaan = str_replace('jawaban.', '', $attribute);
-                $pertanyaan = Pertanyaan::find($idPertanyaan);
-        
-                if ($pertanyaan) {
-                    if ($pertanyaan->tipe_jawaban == 'number' && !is_numeric($value)) {
-                        $fail('Jawaban harus berupa angka.');
-                    }
-                    if ($pertanyaan->tipe_jawaban == 'radio' && !in_array($value, ['Ya', 'Tidak'])) {
-                        $fail('Jawaban harus berupa "Ya" atau "Tidak".');
-                    }
-                }
-            },
+            'jawaban.*' => 'required',
             'tahun' => 'required|integer',
+        ], [
+            'jawaban.*.required' => 'Harus diisi.',
         ]);
-        
 
         // Dapatkan id_perpustakaan dari user yang login
         $idPerpustakaan = auth()->user()->perpustakaan->id_perpustakaan;
 
-        // Loop untuk menyimpan atau memperbarui jawaban
+        // Simpan jawaban
         foreach ($request->jawaban as $idPertanyaan => $jawabanText) {
             Jawaban::updateOrCreate(
                 [
@@ -268,7 +292,6 @@ class PustakawanController extends Controller
 
         return redirect()->route('pustakawan.jawabanTersimpan')->with('success', 'Jawaban berhasil disimpan!');
     }
-
 
     public function jawabanTersimpan()
     {

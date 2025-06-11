@@ -59,7 +59,8 @@
             }
         }
 
-        .input-group-text, .form-control {
+        .input-group-text,
+        .form-control {
             transition: all 0.3s ease !important;
         }
 
@@ -78,7 +79,7 @@
                 <img src="{{ asset('images/disarpus.png') }}" alt="Login Image" class="img-fluid"
                     style="width: 150px; height: auto;">
             </div>
-            
+
             <!-- Right Section -->
             <div class="col-12 col-md-6 p-4 p-md-5 form-section">
                 <h2 class="text-center fw-bold mb-4">Selamat Datang</h2>
@@ -94,11 +95,16 @@
                             <span class="input-group-text bg-transparent border-end-0">
                                 <i class="fas fa-user text-secondary"></i>
                             </span>
-                            <input type="text" id="username" name="username" 
-                                   class="form-control rounded-end border-start-0 py-2"
-                                   placeholder="Masukkan username"
-                                   value="{{ old('username') }}">
+                            <input type="text" id="username" name="username"
+                                class="form-control rounded-end border-start-0 py-2" placeholder="Masukkan username"
+                                value="{{ old('username') }}">
                         </div>
+                        @error('username')
+                            <div class="alert alert-danger mt-2 p-2 small d-flex align-items-center">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
 
                     <!-- Password Input -->
@@ -109,8 +115,7 @@
                                 <i class="fas fa-lock text-secondary"></i>
                             </span>
                             <input type="password" id="password" name="password"
-                                   class="form-control rounded-end border-start-0 py-2"
-                                   placeholder="••••••••">
+                                class="form-control rounded-end border-start-0 py-2" placeholder="••••••••">
                         </div>
                         @error('password')
                             <div class="alert alert-danger mt-2 p-2 small d-flex align-items-center">
@@ -129,8 +134,8 @@
 
                     <!-- Forgot Password -->
                     <div class="text-center">
-                        <a href="{{ route('password.request') }}" 
-                           class="forgot-password-link text-decoration-none small">
+                        <a href="{{ route('password.request') }}"
+                            class="forgot-password-link text-decoration-none small">
                             Lupa Password?
                         </a>
                     </div>
@@ -141,4 +146,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

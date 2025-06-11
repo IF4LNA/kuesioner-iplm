@@ -35,7 +35,7 @@ class AdminProfileController extends Controller
             'nama_admin' => 'required|string|max:255',
             'nip' => 'required|numeric|unique:admin_profiles,nip,' . $user->id . ',user_id',
             'alamat' => 'nullable|string',
-            'kontak' => 'nullable|string',
+            'kontak' => 'nullable|regex:/^[0-9]+$/',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'email' => 'required|email|unique:users,email,' . $user->id,
         ]);

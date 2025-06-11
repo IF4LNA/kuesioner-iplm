@@ -98,7 +98,7 @@
             @csrf
             <div class="form-box">
                 <h2>Form Data Responden</h2>
-                @if ($errors->any())
+                {{-- @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul>
                             @foreach ($errors->all() as $error)
@@ -106,7 +106,7 @@
                             @endforeach
                         </ul>
                     </div>
-                @endif
+                @endif --}}
                 <!-- Nama Perpustakaan -->
                 <div class="mb-3">
                     <label for="nama_perpustakaan" class="form-label">Nama Perpustakaan:</label>
@@ -191,7 +191,8 @@
                 <div class="mb-3">
                     <label for="nama_pengelola" class="form-label">Nama Pengelola Perpustakaan (dapat diisi lebih dari
                         satu nama)</label>
-                        <input type="text" id="nama_pengelola" name="nama_pengelola" class="form-control" value="{{ $namaPengelola }}" required>
+                    <input type="text" id="nama_pengelola" name="nama_pengelola" class="form-control"
+                        value="{{ $namaPengelola }}" required>
                 </div>
 
                 <!-- No Telepon -->
@@ -199,6 +200,10 @@
                     <label for="kontak" class="form-label">No Telepon:</label>
                     <input type="text" id="kontak" name="kontak" class="form-control"
                         value="{{ $kontakPustakawan }}" required>
+                        {{-- Munculkan pesan error untuk input foto --}}
+                    @error('kontak')
+                    <div class="text-danger mt-1">{{ $message }}</div>
+                @enderror
                 </div>
 
                 <!-- Upload Foto -->
@@ -221,6 +226,10 @@
                             <i class="fas fa-upload"></i> Pilih File
                         </label>
                     </div>
+                    {{-- Munculkan pesan error untuk input foto --}}
+                    @error('foto')
+                        <div class="text-danger mt-1">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <!-- Button Next -->
@@ -300,10 +309,30 @@
             const originalEmail = "{{ auth()->user()->email }}";
 
             emailInput.addEventListener('change', function() {
-                if (emailInput.value === originalEmail) {
-                    emailInput.removeAttribute('name'); // Hapus atribut name agar tidak dikirim
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                // Validasi format email
+                if (!emailPattern.test(emailInput.value)) {
+                    emailInput.setCustomValidity('Format email tidak valid.');
                 } else {
-                    emailInput.setAttribute('name', 'email'); // Tambahkan kembali atribut name
+                    emailInput.setCustomValidity('');
+                }
+
+                // Cek apakah email berubah dari email awal
+                if (emailInput.value === originalEmail) {
+                    emailInput.removeAttribute('name'); // Email tidak berubah, hapus name
+                } else {
+                    emailInput.setAttribute('name', 'email'); // Email berubah, tambah name
+                }
+            });
+
+            // Supaya validasi juga aktif saat sedang mengetik (optional lebih halus)
+            emailInput.addEventListener('input', function() {
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailPattern.test(emailInput.value)) {
+                    emailInput.setCustomValidity('Format email tidak valid.');
+                } else {
+                    emailInput.setCustomValidity('');
                 }
             });
         });
