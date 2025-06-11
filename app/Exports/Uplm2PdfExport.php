@@ -27,39 +27,39 @@ class Uplm2PdfExport implements FromCollection, WithHeadings, WithMapping
         $this->perPage = $perPage;
     }
 
-    public function collection()
-    {
-        $query = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan']);
+   public function collection()
+{
+    $query = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan']);
 
-        // Filter berdasarkan jenis dan subjenis
-        if ($this->jenis) {
-            $query->whereHas('jenis', function ($q) {
-                $q->where('jenis', $this->jenis);
-            });
-        }
-
-        if ($this->subjenis) {
-            $query->whereHas('jenis', function ($q) {
-                $q->where('subjenis', $this->subjenis);
-            });
-        }
-
-        // Jika tidak ada tahun dikirim, gunakan tahun terbaru
-        if (!$this->tahun) {
-            $this->tahun = Pertanyaan::where('kategori', 'UPLM 2')->max('tahun');
-        }
-
-        // Hitung total data yang tersedia
-        $totalData = $query->count();
-
-        // Jika perPage lebih besar dari total data, gunakan total data sebagai batas
-        $limit = min($this->perPage, $totalData);
-
-        // Paginasi sesuai halaman dan jumlah data yang ditampilkan
-        return $query->skip(($this->page - 1) * $this->perPage)
-            ->take($limit)
-            ->get();
+    // Filter berdasarkan jenis dan subjenis
+    if ($this->jenis) {
+        $query->whereHas('jenis', function ($q) {
+            $q->where('jenis', $this->jenis);
+        });
     }
+
+    if ($this->subjenis) {
+        $query->whereHas('jenis', function ($q) {
+            $q->where('subjenis', $this->subjenis);
+        });
+    }
+
+    // Jika perPage null (ekspor semua data), kembalikan semua data tanpa paginasi
+    if (is_null($this->perPage)) {
+        return $query->get();
+    }
+
+    // Hitung total data yang tersedia
+    $totalData = $query->count();
+
+    // Jika perPage lebih besar dari total data, gunakan total data sebagai batas
+    $limit = min($this->perPage, $totalData);
+
+    // Paginasi sesuai halaman dan jumlah data yang ditampilkan
+    return $query->skip(($this->page - 1) * $this->perPage)
+        ->take($limit)
+        ->get();
+}
 
     public function headings(): array
     {

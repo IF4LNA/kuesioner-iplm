@@ -44,8 +44,9 @@ class Uplm5PdfExport implements FromCollection, WithHeadings, WithMapping
             });
         }
 
-        if (!$this->tahun) {
-            $this->tahun = Pertanyaan::where('kategori', 'UPLM 5')->max('tahun');
+        // Jika perPage null (ekspor semua data), kembalikan semua data tanpa paginasi
+        if (is_null($this->perPage)) {
+            return $query->get();
         }
 
         // Hitung total data yang tersedia
@@ -59,7 +60,6 @@ class Uplm5PdfExport implements FromCollection, WithHeadings, WithMapping
             ->take($limit)
             ->get();
     }
-
     public function headings(): array
     {
         $headings = [

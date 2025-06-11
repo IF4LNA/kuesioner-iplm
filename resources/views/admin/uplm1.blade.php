@@ -161,240 +161,233 @@
                 </form>
 
                 <!-- Tombol Export -->
-<button type="button" class="btn btn-success shadow-sm" data-bs-toggle="modal" data-bs-target="#exportModal">
-    <i class="fas fa-file-excel"></i> Export Excel
-</button>
+                <button type="button" class="btn btn-success shadow-sm" data-bs-toggle="modal"
+                    data-bs-target="#exportModal">
+                    <i class="fas fa-file-excel"></i> Export Excel
+                </button>
 
-                    <a href="{{ route('uplm.exportPdf', [
-                        'id' => $id,
-                        'kategori' => '1',
-                        'perPage' => request('perPage', 10),
-                        'page' => request('page', 1),
-                        'tahun' => request('tahun', date('Y')), // Default tahun sekarang
-                        'jenis' => request('jenis'),
-                        'subjenis' => request('subjenis'),
-                    ]) }}"
-                        class="btn btn-danger">
-                        Export PDF
-                    </a>
-                </div>
+                <button type="button" class="btn btn-danger shadow-sm" data-bs-toggle="modal"
+                    data-bs-target="#exportPdfModal">
+                    <i class="fas fa-file-pdf"></i> Export PDF
+                </button>
             </div>
         </div>
+    </div>
 
-        <!-- Card untuk Tabel Data -->
-        <div class="card shadow-lg border-0">
-            <div class="card-header">
-                <h5 class="mb-0">Data Perpustakaan</h5>
-            </div>
-            <!-- Container untuk Show Entries dan Go to Page -->
-            <div class="d-flex justify-content-between align-items-center entries-go-to-container">
-                <!-- Show Entries -->
-                <form action="{{ route('uplm', $id) }}" method="GET" class="d-flex align-items-center gap-2">
-                    <label for="perPage" class="mb-0">Show</label>
-                    <select name="perPage" id="perPage" class="form-select form-select-sm" onchange="this.form.submit()">
-                        <option value="10" {{ request()->perPage == 10 ? 'selected' : '' }}>10</option>
-                        <option value="25" {{ request()->perPage == 25 ? 'selected' : '' }}>25</option>
-                        <option value="50" {{ request()->perPage == 50 ? 'selected' : '' }}>50</option>
-                        <option value="100" {{ request()->perPage == 100 ? 'selected' : '' }}>100</option>
-                    </select>
-                    <label for="perPage" class="mb-0">entries</label>
+    <!-- Card untuk Tabel Data -->
+    <div class="card shadow-lg border-0">
+        <div class="card-header">
+            <h5 class="mb-0">Data Perpustakaan</h5>
+        </div>
+        <!-- Container untuk Show Entries dan Go to Page -->
+        <div class="d-flex justify-content-between align-items-center entries-go-to-container">
+            <!-- Show Entries -->
+            <form action="{{ route('uplm', $id) }}" method="GET" class="d-flex align-items-center gap-2">
+                <label for="perPage" class="mb-0">Show</label>
+                <select name="perPage" id="perPage" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="10" {{ request()->perPage == 10 ? 'selected' : '' }}>10</option>
+                    <option value="25" {{ request()->perPage == 25 ? 'selected' : '' }}>25</option>
+                    <option value="50" {{ request()->perPage == 50 ? 'selected' : '' }}>50</option>
+                    <option value="100" {{ request()->perPage == 100 ? 'selected' : '' }}>100</option>
+                </select>
+                <label for="perPage" class="mb-0">entries</label>
 
-                    <!-- Sertakan parameter tahun dan lainnya sebagai input hidden -->
-                    <input type="hidden" name="tahun" value="{{ request('tahun') }}">
-                    <input type="hidden" name="jenis" value="{{ request('jenis') }}">
-                    <input type="hidden" name="subjenis" value="{{ request('subjenis') }}">
-                    <input type="hidden" name="search" value="{{ request('search') }}">
-                </form>
+                <!-- Sertakan parameter tahun dan lainnya sebagai input hidden -->
+                <input type="hidden" name="tahun" value="{{ request('tahun') }}">
+                <input type="hidden" name="jenis" value="{{ request('jenis') }}">
+                <input type="hidden" name="subjenis" value="{{ request('subjenis') }}">
+                <input type="hidden" name="search" value="{{ request('search') }}">
+            </form>
 
-                <!-- Go to Page -->
-                <form action="{{ route('uplm', $id) }}" method="GET" class="d-flex align-items-center gap-2">
-                    <label for="goToPage" class="mb-0">Go to page</label>
-                    <input type="number" name="page" id="goToPage" class="form-control form-control-sm"
-                        style="width: 80px;" min="1" max="{{ $data->lastPage() }}"
-                        value="{{ request()->page ?? 1 }}">
-                    <button type="submit" class="btn btn-primary btn-sm">Go</button>
+            <!-- Go to Page -->
+            <form action="{{ route('uplm', $id) }}" method="GET" class="d-flex align-items-center gap-2">
+                <label for="goToPage" class="mb-0">Go to page</label>
+                <input type="number" name="page" id="goToPage" class="form-control form-control-sm"
+                    style="width: 80px;" min="1" max="{{ $data->lastPage() }}"
+                    value="{{ request()->page ?? 1 }}">
+                <button type="submit" class="btn btn-primary btn-sm">Go</button>
 
-                    <!-- Sertakan parameter tahun dan lainnya sebagai input hidden -->
-                    <input type="hidden" name="tahun" value="{{ request('tahun') }}">
-                    <input type="hidden" name="jenis" value="{{ request('jenis') }}">
-                    <input type="hidden" name="subjenis" value="{{ request('subjenis') }}">
-                    <input type="hidden" name="search" value="{{ request('search') }}">
-                    <input type="hidden" name="perPage" value="{{ request('perPage') }}">
-                </form>
-            </div>
+                <!-- Sertakan parameter tahun dan lainnya sebagai input hidden -->
+                <input type="hidden" name="tahun" value="{{ request('tahun') }}">
+                <input type="hidden" name="jenis" value="{{ request('jenis') }}">
+                <input type="hidden" name="subjenis" value="{{ request('subjenis') }}">
+                <input type="hidden" name="search" value="{{ request('search') }}">
+                <input type="hidden" name="perPage" value="{{ request('perPage') }}">
+            </form>
+        </div>
 
-            <div class="card-body">
-                <form action="{{ route('uplm', $id) }}" method="GET" class="mb-3">
-                    <div class="input-group">
-                        <input type="text" name="search" class="form-control"
-                            placeholder="Cari nama perpustakaan, NPP, atau alamat..." value="{{ request()->search }}">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search"></i> Cari
-                        </button>
-                        <!-- Tombol Reset -->
-                        <a href="{{ route('uplm', [
-                            'id' => $id,
-                            'tahun' => request('tahun'), // Pertahankan parameter tahun
-                            'jenis' => request('jenis'), // Pertahankan parameter jenis
-                            'subjenis' => request('subjenis'), // Pertahankan parameter subjenis
-                            'perPage' => request('perPage'), // Pertahankan parameter show entries
-                        ]) }}"
-                            class="btn btn-outline-secondary">
-                            <i class="fas fa-sync"></i> Reset
-                        </a>
-                    </div>
+        <div class="card-body">
+            <form action="{{ route('uplm', $id) }}" method="GET" class="mb-3">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control"
+                        placeholder="Cari nama perpustakaan, NPP, atau alamat..." value="{{ request()->search }}">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Cari
+                    </button>
+                    <!-- Tombol Reset -->
+                    <a href="{{ route('uplm', [
+                        'id' => $id,
+                        'tahun' => request('tahun'), // Pertahankan parameter tahun
+                        'jenis' => request('jenis'), // Pertahankan parameter jenis
+                        'subjenis' => request('subjenis'), // Pertahankan parameter subjenis
+                        'perPage' => request('perPage'), // Pertahankan parameter show entries
+                    ]) }}"
+                        class="btn btn-outline-secondary">
+                        <i class="fas fa-sync"></i> Reset
+                    </a>
+                </div>
 
-                    <!-- Sertakan parameter tahun dan lainnya sebagai input hidden -->
-                    <input type="hidden" name="tahun" value="{{ request('tahun') }}">
-                    <input type="hidden" name="jenis" value="{{ request('jenis') }}">
-                    <input type="hidden" name="subjenis" value="{{ request('subjenis') }}">
-                    <input type="hidden" name="perPage" value="{{ request('perPage') }}">
-                </form>
-                <div class="table-responsive">
-                    <table class="table table-striped table-bordered" style="width: 150%">
-                        <thead>
+                <!-- Sertakan parameter tahun dan lainnya sebagai input hidden -->
+                <input type="hidden" name="tahun" value="{{ request('tahun') }}">
+                <input type="hidden" name="jenis" value="{{ request('jenis') }}">
+                <input type="hidden" name="subjenis" value="{{ request('subjenis') }}">
+                <input type="hidden" name="perPage" value="{{ request('perPage') }}">
+            </form>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered" style="width: 150%">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th style="width: 5%;">
+                                <a href="{{ route('uplm', [
+                                    'id' => $id,
+                                    'sortField' => 'created_at',
+                                    'sortOrder' => request('sortOrder') === 'asc' ? 'desc' : 'asc',
+                                    'tahun' => request('tahun'), // Pertahankan parameter tahun
+                                    'jenis' => request('jenis'), // Pertahankan parameter jenis
+                                    'subjenis' => request('subjenis'), // Pertahankan parameter subjenis
+                                    'search' => request('search'), // Pertahankan parameter pencarian
+                                    'perPage' => request('perPage'), // Pertahankan parameter show entries
+                                ]) }}"
+                                    style="color: black; text-decoration: none; display: flex; align-items: center;">
+                                    Tahun
+                                    <span style="margin-left: 5px;">
+                                        @if (request('sortField') === 'created_at')
+                                            <i
+                                                class="fas fa-sort-{{ request('sortOrder') === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="fas fa-sort"></i>
+                                        @endif
+                                    </span>
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ route('uplm', ['id' => $id, 'sortField' => 'nama_perpustakaan', 'sortOrder' => request('sortOrder') === 'asc' ? 'desc' : 'asc', 'search' => request()->search, 'jenis' => request()->jenis, 'subjenis' => request()->subjenis, 'tahun' => request()->tahun]) }}"
+                                    style="color: black; text-decoration: none; display: flex; align-items: center;">
+                                    Nama Perpustakaan
+                                    <span style="margin-left: 5px;">
+                                        @if (request('sortField') === 'nama_perpustakaan')
+                                            <i
+                                                class="fas fa-sort-{{ request('sortOrder') === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="fas fa-sort"></i>
+                                        @endif
+                                    </span>
+                                </a>
+                            </th>
+                            <th>NPP</th>
+                            <th>Jenis Perpustakaan</th>
+                            <th>Sub Jenis Perpustakaan</th>
+                            <th>Nama Pengelola</th>
+                            <th>Kontak</th>
+                            <th>Alamat</th>
+                            <th>Email</th>
+                            <th>Kelurahan</th>
+                            <th>Kecamatan</th>
+                            @foreach ($pertanyaan as $pertanyaanItem)
+                                <th data-bs-toggle="tooltip" title="{{ $pertanyaanItem->teks_pertanyaan }}">
+                                    {{ Str::limit($pertanyaanItem->teks_pertanyaan, 30, '...') }}
+                                </th>
+                            @endforeach
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($data as $index => $item)
                             <tr>
-                                <th>#</th>
-                                <th style="width: 5%;">
-                                    <a href="{{ route('uplm', [
-                                        'id' => $id,
-                                        'sortField' => 'created_at',
-                                        'sortOrder' => request('sortOrder') === 'asc' ? 'desc' : 'asc',
-                                        'tahun' => request('tahun'), // Pertahankan parameter tahun
-                                        'jenis' => request('jenis'), // Pertahankan parameter jenis
-                                        'subjenis' => request('subjenis'), // Pertahankan parameter subjenis
-                                        'search' => request('search'), // Pertahankan parameter pencarian
-                                        'perPage' => request('perPage'), // Pertahankan parameter show entries
-                                    ]) }}"
-                                        style="color: black; text-decoration: none; display: flex; align-items: center;">
-                                        Tahun
-                                        <span style="margin-left: 5px;">
-                                            @if (request('sortField') === 'created_at')
-                                                <i
-                                                    class="fas fa-sort-{{ request('sortOrder') === 'asc' ? 'up' : 'down' }}"></i>
-                                            @else
-                                                <i class="fas fa-sort"></i>
-                                            @endif
-                                        </span>
-                                    </a>
-                                </th>
-                                <th>
-                                    <a href="{{ route('uplm', ['id' => $id, 'sortField' => 'nama_perpustakaan', 'sortOrder' => request('sortOrder') === 'asc' ? 'desc' : 'asc', 'search' => request()->search, 'jenis' => request()->jenis, 'subjenis' => request()->subjenis, 'tahun' => request()->tahun]) }}"
-                                        style="color: black; text-decoration: none; display: flex; align-items: center;">
-                                        Nama Perpustakaan
-                                        <span style="margin-left: 5px;">
-                                            @if (request('sortField') === 'nama_perpustakaan')
-                                                <i
-                                                    class="fas fa-sort-{{ request('sortOrder') === 'asc' ? 'up' : 'down' }}"></i>
-                                            @else
-                                                <i class="fas fa-sort"></i>
-                                            @endif
-                                        </span>
-                                    </a>
-                                </th>
-                                <th>NPP</th>
-                                <th>Jenis Perpustakaan</th>
-                                <th>Sub Jenis Perpustakaan</th>
-                                <th>Nama Pengelola</th>
-                                <th>Kontak</th>
-                                <th>Alamat</th>
-                                <th>Email</th>
-                                <th>Kelurahan</th>
-                                <th>Kecamatan</th>
+                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $selectedYear ?? $item->created_at->format('Y') }}</td>
+                                <td>{{ $item->nama_perpustakaan ?? '-' }}</td>
+                                <td>{{ $item->npp ?? '-' }}</td>
+                                <td>{{ $item->jenis->jenis ?? '-' }}</td>
+                                <td>{{ $item->jenis->subjenis ?? '-' }}</td>
+                                <td>{{ $item->nama_pengelola ?? '-' }}</td>
+                                <td>{{ $item->kontak ?? '-' }}</td>
+                                <td>{{ $item->alamat ?? '-' }}</td>
+                                <td>{{ $item->user->email }}</td>
+                                <td>{{ $item->kelurahan->nama_kelurahan ?? '-' }}</td>
+                                <td>{{ $item->kelurahan->kecamatan->nama_kecamatan ?? '-' }}</td>
                                 @foreach ($pertanyaan as $pertanyaanItem)
-                                    <th data-bs-toggle="tooltip" title="{{ $pertanyaanItem->teks_pertanyaan }}">
-                                        {{ Str::limit($pertanyaanItem->teks_pertanyaan, 30, '...') }}
-                                    </th>
-                                @endforeach
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($data as $index => $item)
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $selectedYear ?? $item->created_at->format('Y') }}</td>
-                                    <td>{{ $item->nama_perpustakaan ?? '-' }}</td>
-                                    <td>{{ $item->npp ?? '-' }}</td>
-                                    <td>{{ $item->jenis->jenis ?? '-' }}</td>
-                                    <td>{{ $item->jenis->subjenis ?? '-' }}</td>
-                                    <td>{{ $item->nama_pengelola ?? '-' }}</td>
-                                    <td>{{ $item->kontak ?? '-' }}</td>
-                                    <td>{{ $item->alamat ?? '-' }}</td>
-                                    <td>{{ $item->user->email }}</td>
-                                    <td>{{ $item->kelurahan->nama_kelurahan ?? '-' }}</td>
-                                    <td>{{ $item->kelurahan->kecamatan->nama_kecamatan ?? '-' }}</td>
-                                    @foreach ($pertanyaan as $pertanyaanItem)
-                                        <td>
-                                            @php
-                                                $jawaban = $item->jawaban->firstWhere(
-                                                    'id_pertanyaan',
-                                                    $pertanyaanItem->id_pertanyaan,
-                                                );
-                                            @endphp
-                                            {{ $jawaban ? $jawaban->jawaban : '-' }}
-                                            @if ($jawaban)
-                                                <a href="{{ route('uplm.jawaban.edit', ['id' => $id, 'jawaban' => $jawaban->id_jawaban]) }}"
-                                                    class="btn btn-warning btn-sm">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <form
-                                                    action="{{ route('uplm.jawaban.delete', ['id' => $id, 'jawaban' => $jawaban->id_jawaban]) }}"
-                                                    method="POST" style="display:inline;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm"
-                                                        onclick="return confirm('Apakah Anda yakin ingin menghapus jawaban ini?')">
-                                                        <i class="fas fa-trash-alt"></i>
-                                                    </button>
-                                                </form>
-                                            @endif
-                                        </td>
-                                    @endforeach
                                     <td>
-                                        <a href="" class="btn btn-warning btn-sm">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <form action="" method="POST" style="display:inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </form>
+                                        @php
+                                            $jawaban = $item->jawaban->firstWhere(
+                                                'id_pertanyaan',
+                                                $pertanyaanItem->id_pertanyaan,
+                                            );
+                                        @endphp
+                                        {{ $jawaban ? $jawaban->jawaban : '-' }}
+                                        @if ($jawaban)
+                                            <a href="{{ route('uplm.jawaban.edit', ['id' => $id, 'jawaban' => $jawaban->id_jawaban]) }}"
+                                                class="btn btn-warning btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form
+                                                action="{{ route('uplm.jawaban.delete', ['id' => $id, 'jawaban' => $jawaban->id_jawaban]) }}"
+                                                method="POST" style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm"
+                                                    onclick="return confirm('Apakah Anda yakin ingin menghapus jawaban ini?')">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        @endif
                                     </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="11" class="text-center">Tidak ada data.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                                @endforeach
+                                <td>
+                                    <a href="" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="" method="POST" style="display:inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="11" class="text-center">Tidak ada data.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
 
-                    <!-- Pagination -->
-                    <div class="sticky-pagination">
-                        <div class="d-flex justify-content-between align-items-center mt-4">
-                            <div>
-                                Menampilkan {{ $data->firstItem() }} sampai {{ $data->lastItem() }} dari
-                                {{ $data->total() }} data
-                            </div>
-                            <div>
-                                {{ $data->appends([
-                                        'tahun' => request('tahun'),
-                                        'jenis' => request('jenis'),
-                                        'subjenis' => request('subjenis'),
-                                        'search' => request('search'),
-                                        'perPage' => request('perPage'),
-                                        'sortField' => request('sortField'),
-                                        'sortOrder' => request('sortOrder'),
-                                    ])->links() }}
-                            </div>
+                <!-- Pagination -->
+                <div class="sticky-pagination">
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <div>
+                            Menampilkan {{ $data->firstItem() }} sampai {{ $data->lastItem() }} dari
+                            {{ $data->total() }} data
+                        </div>
+                        <div>
+                            {{ $data->appends([
+                                    'tahun' => request('tahun'),
+                                    'jenis' => request('jenis'),
+                                    'subjenis' => request('subjenis'),
+                                    'search' => request('search'),
+                                    'perPage' => request('perPage'),
+                                    'sortField' => request('sortField'),
+                                    'sortOrder' => request('sortOrder'),
+                                ])->links() }}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <!-- Script untuk validasi Go to Page -->
@@ -432,51 +425,53 @@
                 '<i class="fas fa-filter"></i> Tampilkan Filter';
         });
     </script>
-       <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Tangkap elemen modal dan tombol
-    const exportModal = document.getElementById('exportModal');
-    const exportCurrentPageBtn = document.getElementById('exportCurrentPage');
-    const exportAllDataBtn = document.getElementById('exportAllData');
-    
-    // Fungsi untuk membangun URL ekspor
-    function buildExportUrl(allData = false) {
-        const baseUrl = "{{ route('uplm.exportExcel', [
-            'id' => 1,
-            'jenis' => request()->jenis,
-            'subjenis' => request()->subjenis,
-            'tahun' => request()->tahun,
-            'perPage' => request()->perPage,
-            'page' => request()->page ?? 1,
-        ]) }}";
-        
-        // Jika memilih semua data, hapus parameter pagination
-        if (allData) {
-            return baseUrl.replace(/&perPage=[^&]*/, '').replace(/&page=[^&]*/, '') + '&allData=true';
-        }
-        return baseUrl;
-    }
-    
-    // Set href untuk tombol ekspor halaman saat ini
-    exportCurrentPageBtn.href = buildExportUrl(false);
-    
-    // Set href untuk tombol ekspor semua data
-    exportAllDataBtn.href = buildExportUrl(true);
-    
-    // Tambahkan event listener untuk tombol di modal
-    exportCurrentPageBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        window.location.href = this.href;
-        bootstrap.Modal.getInstance(exportModal).hide();
-    });
-    
-    exportAllDataBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        window.location.href = this.href;
-        bootstrap.Modal.getInstance(exportModal).hide();
-    });
-});
-</script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tangkap elemen modal dan tombol PDF
+            const exportPdfModal = document.getElementById('exportPdfModal');
+            const exportPdfCurrentPageBtn = document.getElementById('exportPdfCurrentPage');
+            const exportPdfAllDataBtn = document.getElementById('exportPdfAllData');
+
+            // Fungsi untuk membangun URL ekspor PDF
+            function buildPdfExportUrl(allData = false) {
+                const baseUrl =
+                    "{{ route('uplm.exportPdf', [
+                        'id' => 1,
+                        'kategori' => '1',
+                        'jenis' => request()->jenis,
+                        'subjenis' => request()->subjenis,
+                        'tahun' => request()->tahun,
+                        'perPage' => request()->perPage,
+                        'page' => request()->page ?? 1,
+                    ]) }}";
+
+                // Jika memilih semua data, hapus parameter pagination
+                if (allData) {
+                    return baseUrl.replace(/&perPage=[^&]*/, '').replace(/&page=[^&]*/, '') + '&allData=true';
+                }
+                return baseUrl;
+            }
+
+            // Set href untuk tombol ekspor PDF halaman saat ini
+            exportPdfCurrentPageBtn.href = buildPdfExportUrl(false);
+
+            // Set href untuk tombol ekspor PDF semua data
+            exportPdfAllDataBtn.href = buildPdfExportUrl(true);
+
+            // Tambahkan event listener untuk tombol di modal PDF
+            exportPdfCurrentPageBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = this.href;
+                bootstrap.Modal.getInstance(exportPdfModal).hide();
+            });
+
+            exportPdfAllDataBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = this.href;
+                bootstrap.Modal.getInstance(exportPdfModal).hide();
+            });
+        });
+    </script>
 @endsection
 <!-- Modal untuk pilihan ekspor -->
 <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
@@ -491,6 +486,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="d-flex gap-2">
                     <a id="exportCurrentPage" href="#" class="btn btn-primary">Data Halaman Ini</a>
                     <a id="exportAllData" href="#" class="btn btn-success">Semua Data</a>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal untuk pilihan ekspor PDF -->
+<div class="modal fade" id="exportPdfModal" tabindex="-1" aria-labelledby="exportPdfModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportPdfModalLabel">Pilih Jenis Ekspor PDF</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Anda ingin mengekspor:</p>
+                <div class="d-flex gap-2">
+                    <a id="exportPdfCurrentPage" href="#" class="btn btn-primary">Data Halaman Ini</a>
+                    <a id="exportPdfAllData" href="#" class="btn btn-success">Semua Data</a>
                 </div>
             </div>
             <div class="modal-footer">

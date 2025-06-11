@@ -44,8 +44,9 @@ class Uplm4PdfExport implements FromCollection, WithHeadings, WithMapping
             });
         }
 
-        if (!$this->tahun) {
-            $this->tahun = Pertanyaan::where('kategori', 'UPLM 4')->max('tahun');
+        // Jika perPage null (ekspor semua data), kembalikan semua data tanpa paginasi
+        if (is_null($this->perPage)) {
+            return $query->get();
         }
 
         // Hitung total data yang tersedia
