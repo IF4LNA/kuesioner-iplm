@@ -16,6 +16,7 @@ class Uplm3Export implements FromCollection, WithHeadings, WithMapping
     protected $tahun;
     protected $page;
     protected $perPage;
+    protected $currentTahun;
 
     public function __construct($jenis = null, $subjenis = null, $tahun = null, $page = 1, $perPage = 10)
     {
@@ -24,9 +25,12 @@ class Uplm3Export implements FromCollection, WithHeadings, WithMapping
         $this->tahun = $tahun;
         $this->page = $page;
         $this->perPage = $perPage;
+        
+        // Set tahun default di constructor
+        $this->currentTahun = $tahun ?: Pertanyaan::where('kategori', 'UPLM 3')->max('tahun');
     }
 
-public function collection()
+    public function collection()
 {
     $query = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan']);
 
@@ -60,71 +64,61 @@ public function collection()
         ->get();
 }
 
-public function headings(): array
-{
-    $headings = [
-        'No',
-        'Tahun',
-        'Nama Perpustakaan',
-        'NPP',
-        'Jenis Perpustakaan',
-        'Sub Jenis Perpustakaan',
-        'Alamat',
-        'Kelurahan',
-        'Kecamatan',
-    ];
+    public function headings(): array
+    {
+        $headings = [
+            'No',
+            'Tahun',
+            'Nama Perpustakaan',
+            'NPP',
+            'Jenis Perpustakaan',
+            'Sub Jenis Perpustakaan',
+            'Alamat',
+            'Kelurahan',
+            'Kecamatan',
+        ];
 
-    // Gunakan tahun terbaru jika tidak ada tahun yang dikirim
-    if (!$this->tahun) {
-        $this->tahun = Pertanyaan::where('kategori', 'UPLM 3')->max('tahun');
+        // Ambil pertanyaan khusus untuk tahun tertentu
+        $pertanyaan = Pertanyaan::where('kategori', 'UPLM 3')
+            ->where('tahun', $this->currentTahun)
+            ->get();
+
+        foreach ($pertanyaan as $pertanyaanItem) {
+            $headings[] = $pertanyaanItem->teks_pertanyaan;
+        }
+
+        return $headings;
     }
 
-    // Ambil pertanyaan khusus untuk tahun tertentu
-    $pertanyaan = Pertanyaan::where('kategori', 'UPLM 3')
-        ->where('tahun', $this->tahun)
-        ->get();
+    public function map($item): array
+    {
+        static $rowNumber = 1; // Variabel static untuk nomor urut
+        
+        $data = [
+            $rowNumber++, // Nomor urut yang increment
+            $this->currentTahun, // Menggunakan tahun yang sudah ditentukan
+            $item->nama_perpustakaan ?? '-',
+            $item->npp ?? '-',
+            $item->jenis->jenis ?? '-',
+            $item->jenis->subjenis ?? '-',
+            $item->alamat ?? '-',
+            $item->kelurahan->nama_kelurahan ?? '-',
+            $item->kelurahan->kecamatan->nama_kecamatan ?? '-',
+        ];
 
-    foreach ($pertanyaan as $pertanyaanItem) {
-        $headings[] = $pertanyaanItem->teks_pertanyaan;
+        // Ambil jawaban hanya untuk pertanyaan di tahun tertentu
+        $pertanyaan = Pertanyaan::where('kategori', 'UPLM 3')
+            ->where('tahun', $this->currentTahun)
+            ->get();
+
+        foreach ($pertanyaan as $pertanyaanItem) {
+            $jawaban = $item->jawaban
+                ->where('id_pertanyaan', $pertanyaanItem->id_pertanyaan)
+                ->first();
+
+            $data[] = $jawaban ? $jawaban->jawaban : '-';
+        }
+
+        return $data;
     }
-
-    return $headings;
-}
-
-public function map($item): array
-{   
-    $data = [
-        $item->id,
-        $this->tahun, // Menggunakan tahun yang dipilih di filter
-        $item->nama_perpustakaan ?? '-',
-        $item->npp ?? '-',
-        $item->jenis->jenis ?? '-',
-        $item->jenis->subjenis ?? '-',
-        $item->alamat ?? '-',
-        $item->kelurahan->nama_kelurahan ?? '-',
-        $item->kelurahan->kecamatan->nama_kecamatan ?? '-',
-    ];
-
-    // Gunakan tahun terbaru jika tidak ada tahun yang dikirim
-    if (!$this->tahun) {
-        $this->tahun = Pertanyaan::where('kategori', 'UPLM 3')->max('tahun');
-    }
-
-    // Ambil jawaban hanya untuk pertanyaan di tahun tertentu
-    $pertanyaan = Pertanyaan::where('kategori', 'UPLM 3')
-        ->where('tahun', $this->tahun)
-        ->get();
-
-    foreach ($pertanyaan as $pertanyaanItem) {
-        $jawaban = $item->jawaban
-            ->where('id_pertanyaan', $pertanyaanItem->id_pertanyaan)
-            ->where('pertanyaan.tahun', $this->tahun) // Pastikan hanya tahun yang sesuai
-            ->first();
-
-        $data[] = $jawaban ? $jawaban->jawaban : '-';
-    }
-
-    return $data;
-}
-
 }

@@ -434,7 +434,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fungsi untuk membangun URL ekspor
     function buildExportUrl(allData = false) {
         const baseUrl = "{{ route('uplm.exportExcel', [
-            'id' => 2,
+            'id' => 7,
             'jenis' => request()->jenis,
             'subjenis' => request()->subjenis,
             'tahun' => request()->tahun,

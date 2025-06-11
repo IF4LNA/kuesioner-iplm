@@ -17,6 +17,8 @@ class Uplm1Export implements FromCollection, WithHeadings, WithMapping
     protected $page;
     protected $perPage;
 
+    protected $currentTahun;
+
     public function __construct($jenis = null, $subjenis = null, $tahun = null, $page = 1, $perPage = 10)
     {
         $this->jenis = $jenis;
@@ -24,6 +26,8 @@ class Uplm1Export implements FromCollection, WithHeadings, WithMapping
         $this->tahun = $tahun;
         $this->page = $page;
         $this->perPage = $perPage;
+        // Set tahun default di constructor
+        $this->currentTahun = $tahun ?: Pertanyaan::where('kategori', 'UPLM 1')->max('tahun');
     }
 
    public function collection()
@@ -97,9 +101,10 @@ class Uplm1Export implements FromCollection, WithHeadings, WithMapping
 
     public function map($item): array
     {
+        static $rowNumber = 1; // Variabel static untuk nomor urut
         $data = [
-            $item->id,
-            $this->tahun, // Gunakan tahun yang dipilih di filter
+            $rowNumber++, // Nomor urut yang increment
+            $this->currentTahun, // Menggunakan tahun yang sudah ditentukan
             $item->nama_perpustakaan ?? '-',
             $item->npp ?? '-',
             $item->jenis->jenis ?? '-',
