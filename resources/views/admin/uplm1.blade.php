@@ -425,6 +425,54 @@
                 '<i class="fas fa-filter"></i> Tampilkan Filter';
         });
     </script>
+
+    {{-- export excel --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tangkap elemen modal dan tombol
+            const exportModal = document.getElementById('exportModal');
+            const exportCurrentPageBtn = document.getElementById('exportCurrentPage');
+            const exportAllDataBtn = document.getElementById('exportAllData');
+
+            // Fungsi untuk membangun URL ekspor
+            function buildExportUrl(allData = false) {
+                const baseUrl =
+                    "{{ route('uplm.exportExcel', [
+                        'id' => 1,
+                        'jenis' => request()->jenis,
+                        'subjenis' => request()->subjenis,
+                        'tahun' => request()->tahun,
+                        'perPage' => request()->perPage,
+                        'page' => request()->page ?? 1,
+                    ]) }}";
+
+                // Jika memilih semua data, hapus parameter pagination
+                if (allData) {
+                    return baseUrl.replace(/&perPage=[^&]*/, '').replace(/&page=[^&]*/, '') + '&allData=true';
+                }
+                return baseUrl;
+            }
+
+            // Set href untuk tombol ekspor halaman saat ini
+            exportCurrentPageBtn.href = buildExportUrl(false);
+
+            // Set href untuk tombol ekspor semua data
+            exportAllDataBtn.href = buildExportUrl(true);
+
+            // Tambahkan event listener untuk tombol di modal
+            exportCurrentPageBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = this.href;
+                bootstrap.Modal.getInstance(exportModal).hide();
+            });
+
+            exportAllDataBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = this.href;
+                bootstrap.Modal.getInstance(exportModal).hide();
+            });
+        });
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Tangkap elemen modal dan tombol PDF

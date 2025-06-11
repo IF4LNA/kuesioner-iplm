@@ -357,7 +357,7 @@
                         @endforelse
                     </tbody>
                 </table>
-                <!-- Pagination -->
+           
                 <!-- Pagination -->
                 <div class="sticky-pagination">
                     <div class="d-flex justify-content-between align-items-center mt-4">
@@ -418,6 +418,8 @@
                 '<i class="fas fa-filter"></i> Tampilkan Filter';
         });
     </script>
+    
+    {{-- export excel --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Tangkap elemen modal dan tombol

@@ -164,18 +164,11 @@
                     data-bs-target="#exportModal">
                     <i class="fas fa-file-excel"></i> Export Excel
                 </button>
-                <a href="{{ route('uplm.exportPdf', [
-                    'id' => 3,
-                    'kategori' => '3',
-                    'perPage' => request('perPage', 10),
-                    'page' => request('page', 1),
-                    'tahun' => request('tahun'),
-                    'jenis' => request('jenis'),
-                    'subjenis' => request('subjenis'),
-                ]) }}"
-                    class="btn btn-danger">
-                    Export PDF
-                </a>
+
+                <button type="button" class="btn btn-danger shadow-sm" data-bs-toggle="modal"
+                    data-bs-target="#exportPdfModal">
+                    <i class="fas fa-file-pdf"></i> Export PDF
+                </button>
             </div>
         </div>
     </div>
@@ -363,7 +356,7 @@
                         @endforelse
                     </tbody>
                 </table>
-                <!-- Pagination -->
+        
                 <!-- Pagination -->
                 <div class="sticky-pagination">
                     <div class="d-flex justify-content-between align-items-center mt-4">
@@ -424,6 +417,8 @@
                 '<i class="fas fa-filter"></i> Tampilkan Filter';
         });
     </script>
+
+    {{-- export excel --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Tangkap elemen modal dan tombol
@@ -470,6 +465,53 @@
             });
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tangkap elemen modal dan tombol PDF
+            const exportPdfModal = document.getElementById('exportPdfModal');
+            const exportPdfCurrentPageBtn = document.getElementById('exportPdfCurrentPage');
+            const exportPdfAllDataBtn = document.getElementById('exportPdfAllData');
+
+            // Fungsi untuk membangun URL ekspor PDF
+            function buildPdfExportUrl(allData = false) {
+                const baseUrl =
+                    "{{ route('uplm.exportPdf', [
+                        'id' => 3,
+                        'kategori' => '3',
+                        'jenis' => request()->jenis,
+                        'subjenis' => request()->subjenis,
+                        'tahun' => request()->tahun,
+                        'perPage' => request()->perPage,
+                        'page' => request()->page ?? 1,
+                    ]) }}";
+
+                // Jika memilih semua data, hapus parameter pagination
+                if (allData) {
+                    return baseUrl.replace(/&perPage=[^&]*/, '').replace(/&page=[^&]*/, '') + '&allData=true';
+                }
+                return baseUrl;
+            }
+
+            // Set href untuk tombol ekspor PDF halaman saat ini
+            exportPdfCurrentPageBtn.href = buildPdfExportUrl(false);
+
+            // Set href untuk tombol ekspor PDF semua data
+            exportPdfAllDataBtn.href = buildPdfExportUrl(true);
+
+            // Tambahkan event listener untuk tombol di modal PDF
+            exportPdfCurrentPageBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = this.href;
+                bootstrap.Modal.getInstance(exportPdfModal).hide();
+            });
+
+            exportPdfAllDataBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = this.href;
+                bootstrap.Modal.getInstance(exportPdfModal).hide();
+            });
+        });
+    </script>
 @endsection
 <!-- Modal untuk pilihan ekspor -->
 <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
@@ -493,95 +535,25 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Tangkap elemen modal dan tombol PDF
-        const exportPdfModal = document.getElementById('exportPdfModal');
-        const exportPdfCurrentPageBtn = document.getElementById('exportPdfCurrentPage');
-        const exportPdfAllDataBtn = document.getElementById('exportPdfAllData');
-
-        // Fungsi untuk membangun URL ekspor PDF
-        function buildPdfExportUrl(allData = false) {
-            const baseUrl =
-                "{{ route('uplm.exportPdf', [
-                    'id' => 3,
-                    'kategori' => '3',
-                    'jenis' => request()->jenis,
-                    'subjenis' => request()->subjenis,
-                    'tahun' => request()->tahun,
-                    'perPage' => request()->perPage,
-                    'page' => request()->page ?? 1,
-                ]) }}";
-
-            // Jika memilih semua data, hapus parameter pagination
-            if (allData) {
-                return baseUrl.replace(/&perPage=[^&]*/, '').replace(/&page=[^&]*/, '') + '&allData=true';
-            }
-            return baseUrl;
-        }
-
-        // Set href untuk tombol ekspor PDF halaman saat ini
-        exportPdfCurrentPageBtn.href = buildPdfExportUrl(false);
-
-        // Set href untuk tombol ekspor PDF semua data
-        exportPdfAllDataBtn.href = buildPdfExportUrl(true);
-
-        // Tambahkan event listener untuk tombol di modal PDF
-        exportPdfCurrentPageBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            window.location.href = this.href;
-            bootstrap.Modal.getInstance(exportPdfModal).hide();
-        });
-
-        exportPdfAllDataBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            window.location.href = this.href;
-            bootstrap.Modal.getInstance(exportPdfModal).hide();
-        });
-    });
-</script>
-@endsection
-<!-- Modal untuk pilihan ekspor -->
-<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
-<div class="modal-dialog">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="exportModalLabel">Pilih Jenis Ekspor</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <p>Anda ingin mengekspor:</p>
-            <div class="d-flex gap-2">
-                <a id="exportCurrentPage" href="#" class="btn btn-primary">Data Halaman Ini</a>
-                <a id="exportAllData" href="#" class="btn btn-success">Semua Data</a>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-        </div>
-    </div>
-</div>
-</div>
-
 <!-- Modal untuk pilihan ekspor PDF -->
 <div class="modal fade" id="exportPdfModal" tabindex="-1" aria-labelledby="exportPdfModalLabel"
-aria-hidden="true">
-<div class="modal-dialog">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="exportPdfModalLabel">Pilih Jenis Ekspor PDF</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <p>Anda ingin mengekspor:</p>
-            <div class="d-flex gap-2">
-                <a id="exportPdfCurrentPage" href="#" class="btn btn-primary">Data Halaman Ini</a>
-                <a id="exportPdfAllData" href="#" class="btn btn-success">Semua Data</a>
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportPdfModalLabel">Pilih Jenis Ekspor PDF</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Anda ingin mengekspor:</p>
+                <div class="d-flex gap-2">
+                    <a id="exportPdfCurrentPage" href="#" class="btn btn-primary">Data Halaman Ini</a>
+                    <a id="exportPdfAllData" href="#" class="btn btn-success">Semua Data</a>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
             </div>
         </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-        </div>
     </div>
-</div>
 </div>
