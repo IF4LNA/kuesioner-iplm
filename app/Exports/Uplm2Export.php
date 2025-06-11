@@ -16,6 +16,7 @@ class Uplm2Export implements FromCollection, WithHeadings, WithMapping
     protected $tahun;
     protected $page;
     protected $perPage;
+    protected $currentTahun;
 
     public function __construct($jenis = null, $subjenis = null, $tahun = null, $page = 1, $perPage = 10)
     {
@@ -24,6 +25,9 @@ class Uplm2Export implements FromCollection, WithHeadings, WithMapping
         $this->tahun = $tahun;
         $this->page = $page;
         $this->perPage = $perPage;
+        
+        // Set tahun default di constructor
+        $this->currentTahun = $tahun ?: Pertanyaan::where('kategori', 'UPLM 2')->max('tahun');
     }
 
     public function collection()
@@ -41,11 +45,6 @@ class Uplm2Export implements FromCollection, WithHeadings, WithMapping
             $query->whereHas('jenis', function ($q) {
                 $q->where('subjenis', $this->subjenis);
             });
-        }
-
-        // Jika tidak ada tahun dikirim, gunakan tahun terbaru
-        if (!$this->tahun) {
-            $this->tahun = Pertanyaan::where('kategori', 'UPLM 2')->max('tahun');
         }
 
         // Hitung total data yang tersedia
@@ -74,14 +73,9 @@ class Uplm2Export implements FromCollection, WithHeadings, WithMapping
             'Kecamatan',
         ];
 
-        // Gunakan tahun terbaru jika tidak ada tahun yang dikirim
-        if (!$this->tahun) {
-            $this->tahun = Pertanyaan::where('kategori', 'UPLM 2')->max('tahun');
-        }
-
         // Ambil pertanyaan khusus untuk tahun tertentu
         $pertanyaan = Pertanyaan::where('kategori', 'UPLM 2')
-            ->where('tahun', $this->tahun)
+            ->where('tahun', $this->currentTahun)
             ->get();
 
         foreach ($pertanyaan as $pertanyaanItem) {
@@ -93,9 +87,11 @@ class Uplm2Export implements FromCollection, WithHeadings, WithMapping
 
     public function map($item): array
     {
+        static $rowNumber = 1; // Variabel static untuk nomor urut
+        
         $data = [
-            $item->id,
-            $this->tahun, // Menggunakan tahun yang dipilih di filter
+            $rowNumber++, // Nomor urut yang increment
+            $this->currentTahun, // Menggunakan tahun yang sudah ditentukan
             $item->nama_perpustakaan ?? '-',
             $item->npp ?? '-',
             $item->jenis->jenis ?? '-',
@@ -105,20 +101,14 @@ class Uplm2Export implements FromCollection, WithHeadings, WithMapping
             $item->kelurahan->kecamatan->nama_kecamatan ?? '-',
         ];
 
-        // Gunakan tahun terbaru jika tidak ada tahun yang dikirim
-        if (!$this->tahun) {
-            $this->tahun = Pertanyaan::where('kategori', 'UPLM 2')->max('tahun');
-        }
-
         // Ambil jawaban hanya untuk pertanyaan di tahun tertentu
         $pertanyaan = Pertanyaan::where('kategori', 'UPLM 2')
-            ->where('tahun', $this->tahun)
+            ->where('tahun', $this->currentTahun)
             ->get();
 
         foreach ($pertanyaan as $pertanyaanItem) {
             $jawaban = $item->jawaban
                 ->where('id_pertanyaan', $pertanyaanItem->id_pertanyaan)
-                ->where('pertanyaan.tahun', $this->tahun) // Pastikan hanya tahun yang sesuai
                 ->first();
 
             $data[] = $jawaban ? $jawaban->jawaban : '-';
