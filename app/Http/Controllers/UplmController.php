@@ -136,47 +136,48 @@ class UplmController extends Controller
     }
 
     public function exportExcel($id)
-    {
-        $jenis = request()->get('jenis');
-        $subjenis = request()->get('subjenis');
-        $tahun = request()->get('tahun');
-        $perPage = request()->get('perPage'); // ambil langsung, bisa null
-        $page = request()->get('page', 1);
-        $allData = request()->get('allData', false);
-    
-        ActivityLog::create([
-            'action'      => 'Export Excel',
-            'description' => "Admin mengekspor data UPLM {$id} ke Excel dengan filter:\n"
-                . "- Jenis: {$jenis}\n"
-                . "- Subjenis: {$subjenis}\n"
-                . "- Tahun: {$tahun}\n"
-                . ($allData ? "- Semua data" : "- Per Page: {$perPage}\n- Page: {$page}"),
-            'id_akun'     => auth()->user()->id,
-            'created_at'  => now(),
-        ]);
-    
-        $exports = [
-            1 => Uplm1Export::class,
-            2 => Uplm2Export::class,
-            3 => Uplm3Export::class,
-            4 => Uplm4Export::class,
-            5 => Uplm5Export::class,
-            6 => Uplm6Export::class,
-            7 => Uplm7Export::class,
-        ];
-    
-        if (!isset($exports[$id])) {
-            return abort(404, 'Export not found');
-        }
-    
-        if ($allData) {
-            $perPage = null;
-            $page = 1;
-        }
-    
-        $exportClass = $exports[$id];
-        return Excel::download(new $exportClass($jenis, $subjenis, $tahun, $page, $perPage), "uplm{$id}_data.xlsx");
+{
+    $jenis = request()->get('jenis');
+    $subjenis = request()->get('subjenis');
+    $tahun = request()->get('tahun');
+    $perPage = request()->get('perPage'); // ambil langsung, bisa null
+    $page = request()->get('page', 1);
+    $allData = request()->get('allData', false);
+
+    ActivityLog::create([
+        'action'      => 'Export Excel',
+        'description' => "Admin mengekspor data UPLM {$id} ke Excel dengan filter:\n"
+            . "- Jenis: {$jenis}\n"
+            . "- Subjenis: {$subjenis}\n"
+            . "- Tahun: {$tahun}\n"
+            . ($allData ? "- Semua data" : "- Per Page: {$perPage}\n- Page: {$page}"),
+        'id_akun'     => auth()->user()->id,
+        'created_at'  => now(),
+    ]);
+
+    $exports = [
+        1 => Uplm1Export::class,
+        2 => Uplm2Export::class,
+        3 => Uplm3Export::class,
+        4 => Uplm4Export::class,
+        5 => Uplm5Export::class,
+        6 => Uplm6Export::class,
+        7 => Uplm7Export::class,
+    ];
+
+    if (!isset($exports[$id])) {
+        return abort(404, 'Export not found');
     }
+
+    if ($allData) {
+        $perPage = null;
+        $page = 1;
+    }
+
+    $exportClass = $exports[$id];
+    return Excel::download(new $exportClass($jenis, $subjenis, $tahun, $page, $perPage), "uplm{$id}_data.xlsx");
+}
+
     
 
     public function exportUplmPdf($id, Request $request, $kategori)

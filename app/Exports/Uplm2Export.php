@@ -7,7 +7,6 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use App\Models\Perpustakaan;
 use App\Models\Pertanyaan;
-use App\Models\Jawaban;
 
 class Uplm2Export implements FromCollection, WithHeadings, WithMapping
 {
@@ -25,43 +24,35 @@ class Uplm2Export implements FromCollection, WithHeadings, WithMapping
         $this->tahun = $tahun;
         $this->page = $page;
         $this->perPage = $perPage;
-        
-        // Set tahun default di constructor
         $this->currentTahun = $tahun ?: Pertanyaan::where('kategori', 'UPLM 2')->max('tahun');
     }
 
-   public function collection()
-{
-    $query = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan']);
+    public function collection()
+    {
+        $query = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jenis', 'jawaban.pertanyaan']);
 
-    // Filter berdasarkan jenis dan subjenis
-    if ($this->jenis || $this->subjenis) {
-        $query->whereHas('jenis', function ($q) {
-            if ($this->jenis) {
-                $q->where('jenis', $this->jenis);
-            }
-            if ($this->subjenis) {
-                $q->where('subjenis', $this->subjenis);
-            }
-        });
-    }    
+        // Gabungkan filter jenis & subjenis
+        if ($this->jenis || $this->subjenis) {
+            $query->whereHas('jenis', function ($q) {
+                if ($this->jenis) {
+                    $q->where('jenis', $this->jenis);
+                }
+                if ($this->subjenis) {
+                    $q->where('subjenis', $this->subjenis);
+                }
+            });
+        }
 
-    // Jika perPage null (ekspor semua data), kembalikan semua data tanpa paginasi
-    if (is_null($this->perPage)) {
-        return $query->get();
+        // Pagination: jika allData maka perPage null
+        if (is_null($this->perPage)) {
+            return $query->get();
+        }
+
+        return $query
+            ->skip(($this->page - 1) * $this->perPage)
+            ->take($this->perPage)
+            ->get();
     }
-
-    // Hitung total data yang tersedia
-    $totalData = $query->count();
-
-    // Jika perPage lebih besar dari total data, gunakan total data sebagai batas
-    $limit = min($this->perPage, $totalData);
-
-    // Paginasi sesuai halaman dan jumlah data yang ditampilkan
-    return $query->skip(($this->page - 1) * $this->perPage)
-        ->take($limit)
-        ->get();
-}
 
     public function headings(): array
     {
@@ -77,13 +68,12 @@ class Uplm2Export implements FromCollection, WithHeadings, WithMapping
             'Kecamatan',
         ];
 
-        // Ambil pertanyaan khusus untuk tahun tertentu
         $pertanyaan = Pertanyaan::where('kategori', 'UPLM 2')
             ->where('tahun', $this->currentTahun)
             ->get();
 
-        foreach ($pertanyaan as $pertanyaanItem) {
-            $headings[] = $pertanyaanItem->teks_pertanyaan;
+        foreach ($pertanyaan as $item) {
+            $headings[] = $item->teks_pertanyaan;
         }
 
         return $headings;
@@ -91,11 +81,11 @@ class Uplm2Export implements FromCollection, WithHeadings, WithMapping
 
     public function map($item): array
     {
-        static $rowNumber = 1; // Variabel static untuk nomor urut
-        
+        static $rowNumber = 1;
+
         $data = [
-            $rowNumber++, // Nomor urut yang increment
-            $this->currentTahun, // Menggunakan tahun yang sudah ditentukan
+            $rowNumber++,
+            $this->currentTahun,
             $item->nama_perpustakaan ?? '-',
             $item->npp ?? '-',
             $item->jenis->jenis ?? '-',
@@ -105,17 +95,16 @@ class Uplm2Export implements FromCollection, WithHeadings, WithMapping
             $item->kelurahan->kecamatan->nama_kecamatan ?? '-',
         ];
 
-        // Ambil jawaban hanya untuk pertanyaan di tahun tertentu
         $pertanyaan = Pertanyaan::where('kategori', 'UPLM 2')
             ->where('tahun', $this->currentTahun)
             ->get();
 
-        foreach ($pertanyaan as $pertanyaanItem) {
-            $jawaban = $item->jawaban
-                ->where('id_pertanyaan', $pertanyaanItem->id_pertanyaan)
+        foreach ($pertanyaan as $q) {
+            $jawab = $item->jawaban
+                ->where('id_pertanyaan', $q->id_pertanyaan)
                 ->first();
 
-            $data[] = $jawaban ? $jawaban->jawaban : '-';
+            $data[] = $jawab ? $jawab->jawaban : '-';
         }
 
         return $data;
