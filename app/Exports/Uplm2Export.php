@@ -35,17 +35,16 @@ class Uplm2Export implements FromCollection, WithHeadings, WithMapping
     $query = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan']);
 
     // Filter berdasarkan jenis dan subjenis
-    if ($this->jenis) {
+    if ($this->jenis || $this->subjenis) {
         $query->whereHas('jenis', function ($q) {
-            $q->where('jenis', $this->jenis);
+            if ($this->jenis) {
+                $q->where('jenis', $this->jenis);
+            }
+            if ($this->subjenis) {
+                $q->where('subjenis', $this->subjenis);
+            }
         });
-    }
-
-    if ($this->subjenis) {
-        $query->whereHas('jenis', function ($q) {
-            $q->where('subjenis', $this->subjenis);
-        });
-    }
+    }    
 
     // Jika perPage null (ekspor semua data), kembalikan semua data tanpa paginasi
     if (is_null($this->perPage)) {

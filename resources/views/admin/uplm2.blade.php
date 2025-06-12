@@ -159,7 +159,7 @@
                     </div>
                 </form>
 
-                <!-- Tombol Export -->
+                <!-- Tombol Export Excel -->
                 <button type="button" class="btn btn-success shadow-sm" data-bs-toggle="modal"
                     data-bs-target="#exportModal">
                     <i class="fas fa-file-excel"></i> Export Excel
@@ -357,7 +357,7 @@
                         @endforelse
                     </tbody>
                 </table>
-           
+
                 <!-- Pagination -->
                 <div class="sticky-pagination">
                     <div class="d-flex justify-content-between align-items-center mt-4">
@@ -418,51 +418,39 @@
                 '<i class="fas fa-filter"></i> Tampilkan Filter';
         });
     </script>
-    
+
     {{-- export excel --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Tangkap elemen modal dan tombol
-            const exportModal = document.getElementById('exportModal');
-            const exportCurrentPageBtn = document.getElementById('exportCurrentPage');
-            const exportAllDataBtn = document.getElementById('exportAllData');
+        document.addEventListener('DOMContentLoaded', () => {
+            const curBtn = document.getElementById('exportExcelCurrent');
+            const allBtn = document.getElementById('exportExcelAll');
 
-            // Fungsi untuk membangun URL ekspor
-            function buildExportUrl(allData = false) {
-                const baseUrl =
-                    "{{ route('uplm.exportExcel', [
-                        'id' => 2,
-                        'jenis' => request()->jenis,
-                        'subjenis' => request()->subjenis,
-                        'tahun' => request()->tahun,
-                        'perPage' => request()->perPage,
-                        'page' => request()->page ?? 1,
-                    ]) }}";
-
-                // Jika memilih semua data, hapus parameter pagination
-                if (allData) {
-                    return baseUrl.replace(/&perPage=[^&]*/, '').replace(/&page=[^&]*/, '') + '&allData=true';
+            function buildUrl(all = false) {
+                let url = "{{ route('uplm.exportExcel', ['id' => 2]) }}";
+                const params = new URLSearchParams({
+                    jenis: "{{ request()->jenis }}",
+                    subjenis: "{{ request()->subjenis }}",
+                    tahun: "{{ request()->tahun }}",
+                    perPage: "{{ request()->perPage }}",
+                    page: "{{ request()->page ?? 1 }}",
+                });
+                if (all) {
+                    params.delete('perPage');
+                    params.delete('page');
+                    params.append('allData', 'true');
                 }
-                return baseUrl;
+                return url + '?' + params.toString();
             }
 
-            // Set href untuk tombol ekspor halaman saat ini
-            exportCurrentPageBtn.href = buildExportUrl(false);
+            curBtn.href = buildUrl(false);
+            allBtn.href = buildUrl(true);
 
-            // Set href untuk tombol ekspor semua data
-            exportAllDataBtn.href = buildExportUrl(true);
-
-            // Tambahkan event listener untuk tombol di modal
-            exportCurrentPageBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                window.location.href = this.href;
-                bootstrap.Modal.getInstance(exportModal).hide();
-            });
-
-            exportAllDataBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                window.location.href = this.href;
-                bootstrap.Modal.getInstance(exportModal).hide();
+            [curBtn, allBtn].forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    window.location.href = btn.href;
+                    bootstrap.Modal.getInstance(document.getElementById('exportModal')).hide();
+                });
             });
         });
     </script>
