@@ -35,18 +35,17 @@ class Uplm3Export implements FromCollection, WithHeadings, WithMapping
     $query = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan']);
 
     // Filter berdasarkan jenis dan subjenis
-    if ($this->jenis) {
-        $query->whereHas('jenis', function ($q) {
-            $q->where('jenis', $this->jenis);
-        });
-    }
-
-    if ($this->subjenis) {
-        $query->whereHas('jenis', function ($q) {
-            $q->where('subjenis', $this->subjenis);
-        });
-    }
-
+           // Gabungkan filter jenis & subjenis
+        if ($this->jenis || $this->subjenis) {
+            $query->whereHas('jenis', function ($q) {
+                if ($this->jenis) {
+                    $q->where('jenis', $this->jenis);
+                }
+                if ($this->subjenis) {
+                    $q->where('subjenis', $this->subjenis);
+                }
+            });
+        }
     // Jika perPage null (ekspor semua data), kembalikan semua data tanpa paginasi
     if (is_null($this->perPage)) {
         return $query->get();
