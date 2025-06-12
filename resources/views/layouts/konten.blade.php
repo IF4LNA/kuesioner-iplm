@@ -1,87 +1,142 @@
-@extends('layouts.index') 
+    @extends('layouts.index') 
 
-@section('konten')
-<div class="row px-4 py-4"> <!-- Menambahkan padding di sekitar konten -->
-    <!-- Bagian Teks di Kiri (Tentang) -->
-    <div class="col-md-6">
-        <h1 class="judul-konten mb-3">Dinas Arsip dan Perpustakaan Kota Bandung</h1>
-        <p class="paragraf mb-4">
-            Bergabunglah dalam upaya peningkatan literasi masyarakat untuk masa depan Kota Bandung yang lebih cerdas dan berkelanjutan.
-        </p>
+    @section('konten')
+    <div class="row px-4 py-4"> <!-- Menambahkan padding di sekitar konten -->
+        <!-- Bagian Teks di Kiri (Tentang) -->
+        <div class="col-md-6">
+            <h1 class="judul-konten mb-3">Dinas Arsip dan Perpustakaan Kota Bandung</h1>
+            <p class="paragraf mb-4">
+                Bergabunglah dalam upaya peningkatan literasi masyarakat untuk masa depan Kota Bandung yang lebih cerdas dan berkelanjutan.
+            </p>
 
-        <div class="d-grid gap-2">
-            <form action="{{ route('login') }}" method="GET">
-                <button class="btn btn-primary btn-size">Login</button>
-            </form>
+            <div class="d-grid gap-2">
+                <form action="{{ route('login') }}" method="GET">
+                    <button class="btn btn-primary btn-size">Login</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Bagian Gambar di Kanan -->
+        <div class="col-md-6 position-relative">
+            <!-- Gambar di belakang -->
+            <img src="{{ asset('images/peta.png') }}" 
+                class="img-fluid img-back" 
+                alt="gambar latar" 
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; opacity: 0.5;">
+        
+            <!-- Gambar utama -->
+            <img src="{{ asset('images/img1_home.png') }}" 
+        class="img-fluid img-front" 
+        alt="gambar utama" 
+        style="position: relative; z-index: 2; width: 500px; height: auto;">
+
         </div>
     </div>
-    
-    <!-- Bagian Gambar di Kanan -->
-    <div class="col-md-6 position-relative">
-        <!-- Gambar di belakang -->
-        <img src="{{ asset('images/peta.png') }}" 
-             class="img-fluid img-back" 
-             alt="gambar latar" 
-             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; opacity: 0.5;">
-    
-        <!-- Gambar utama -->
-        <img src="{{ asset('images/img1.png') }}" 
-     class="img-fluid img-front" 
-     alt="gambar utama" 
-     style="position: relative; z-index: 2; width: 500px; height: auto;">
 
+    <hr class="my-5"> <!-- Pembatas antara bagian Tentang dan Bantuan -->
+
+    <!-- Tentang Section -->
+<div class="container-fluid bg-light py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-5 mb-4 mb-md-0">
+                <img src="{{ asset('images/literasi.jpg') }}" class="img-fluid rounded shadow-sm" alt="Literasi Masyarakat">
+            </div>
+            <div class="col-md-7">
+                <h2 class="fw-bold text-primary mb-3">Tentang Indeks Pembangunan Literasi Masyarakat (IPLM)</h2>
+                <p class="text-secondary">
+                    IPLM digunakan untuk menilai perkembangan literasi di Kota Bandung. Survei ini mengumpulkan data tentang akses, kualitas, dan sebaran literasi dari literasi dasar hingga digital.
+                </p>
+                <p class="text-secondary">
+                    Informasi ini membantu perumusan kebijakan literasi yang lebih efektif dan tepat sasaran.
+                </p>
+            </div>
+        </div>
+
+        <!-- Metodologi -->
+        <div class="row mt-5">
+            <div class="col-lg-10 mx-auto">
+                <div class="card border-0 shadow-sm p-4">
+                    <div class="card-body">
+                        <h3 class="card-title fw-semibold text-dark mb-3">
+                            <i class="bi bi-bar-chart-fill text-primary me-2"></i> Metodologi
+                        </h3>
+                        <p class="text-secondary">
+                            Survei dilakukan melalui wawancara, kuesioner online, dan pengamatan langsung. Responden dipilih acak dari berbagai lapisan masyarakat Kota Bandung.
+                        </p>
+                        <p class="text-secondary">
+                            Data dianalisis untuk merumuskan kebijakan yang mendukung peningkatan akses, pelatihan digital, dan kesadaran literasi.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-<hr class="my-5"> <!-- Pembatas antara bagian Tentang dan Bantuan -->
+<hr class="my-5">
 
-<!-- Bagian Tentang -->
-<div class="row px-4 py-4"> <!-- Menambahkan padding pada bagian ini -->
-    <div class="col-md-12">
-        <h2 class="mb-4">Tentang Indeks Pembangunan Literasi Masyarakat (IPLM)</h2>
-        <p class="mb-3">
-            Indeks Pembangunan Literasi Masyarakat (IPLM) merupakan alat ukur yang digunakan untuk menilai perkembangan literasi di Kota Bandung. Survei ini bertujuan untuk mengumpulkan data yang mendalam tentang akses, kualitas, dan sebaran literasi masyarakat di berbagai aspek, mulai dari literasi dasar hingga literasi digital.
-        </p>
-        <p class="mb-3">
-            Melalui data ini, kami berupaya merancang kebijakan yang lebih efektif dalam meningkatkan kualitas literasi di Kota Bandung. Dengan informasi yang terkumpul, kami dapat mengidentifikasi tantangan dan peluang yang ada, serta menciptakan program-program yang relevan dan tepat sasaran.
-        </p>
-        <h3 class="mb-3">Metodologi</h3>
-        <p class="mb-3">
-            Untuk mendapatkan data yang valid dan dapat diandalkan, kami menggunakan metodologi survei yang melibatkan berbagai metode pengumpulan data, termasuk wawancara, kuesioner online, dan pengamatan langsung. Responden dipilih secara acak dari berbagai lapisan masyarakat di Kota Bandung, mencakup semua kelompok usia dan latar belakang sosial ekonomi.
-        </p>
-        <p>
-            Data yang dikumpulkan akan dianalisis secara menyeluruh untuk memberikan gambaran yang jelas mengenai tingkat literasi di berbagai aspek. Hasil analisis ini akan digunakan untuk merumuskan kebijakan yang mendukung peningkatan literasi, dengan fokus pada peningkatan akses terhadap sumber daya pendidikan, pelatihan keterampilan digital, dan peningkatan kesadaran masyarakat akan pentingnya literasi.
-        </p>
+<!-- Bantuan Section -->
+<div class="container-fluid bg-light py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+
+                <h2 class="fw-bold text-center mb-4">
+                    <i class="bi bi-question-circle-fill text-primary me-2"></i> Bantuan
+                </h2>
+
+                <!-- Panduan Pengisian -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title text-primary mb-3">
+                            <i class="bi bi-journal-check me-2"></i> Panduan Pengisian
+                        </h4>
+                        <p class="text-secondary">
+                            Ikuti panduan langkah demi langkah. Pilih kategori pertanyaan yang sesuai, isi data dengan akurat, dan baca instruksi sebelum lanjut.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title text-primary mb-3">
+                            <i class="bi bi-info-circle-fill me-2"></i> FAQ (Pertanyaan yang Sering Diajukan)
+                        </h4>
+                        <ul class="list-unstyled text-secondary">
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle text-success me-2"></i>
+                                <strong>Bagaimana cara mengisi kuesioner?</strong> Ikuti panduan yang tersedia.
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle text-success me-2"></i>
+                                <strong>Tidak bisa mengakses kuesioner?</strong> Pastikan koneksi stabil dan perangkat mendukung.
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle text-success me-2"></i>
+                                <strong>Mengisi data yang salah?</strong> Periksa dan edit kembali sebelum dikirim.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Dukungan Teknis -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h4 class="card-title text-primary mb-3">
+                            <i class="bi bi-tools me-2"></i> Dukungan Teknis
+                        </h4>
+                        <p class="text-secondary">
+                            Jika mengalami kendala teknis seperti login atau pengisian, hubungi tim kami melalui formulir kontak atau nomor yang tersedia.
+                        </p>
+                        <button class="btn btn-primary">Hubungi Tim Dukungan</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
 </div>
 
-<hr class="my-5"> <!-- Pembatas antara bagian Tentang dan Bantuan -->
-
-<!-- Bagian Bantuan -->
-<div class="row px-4 py-4"> <!-- Menambahkan padding pada bagian ini -->
-    <div class="col-md-12">
-        <h2 class="mb-4">Bantuan</h2>
-
-        <!-- Panduan Pengisian -->
-        <h3 class="mb-3">Panduan Pengisian</h3>
-        <p class="mb-3">
-            Untuk memastikan bahwa Anda mengisi kuesioner dengan benar, kami menyediakan panduan langkah demi langkah. Anda dapat memulai dengan memilih kategori pertanyaan yang relevan dengan situasi Anda, dan memastikan semua data yang dimasukkan akurat. Pastikan Anda membaca setiap instruksi dengan teliti sebelum melanjutkan ke bagian berikutnya.
-        </p>
-
-        <!-- FAQ -->
-        <h3 class="mb-3">FAQ (Pertanyaan yang Sering Diajukan)</h3>
-        <ul>
-            <li><strong>Bagaimana cara mengisi kuesioner?</strong> Anda dapat mengikuti langkah-langkah panduan yang telah disediakan untuk mengisi kuesioner dengan mudah.</li>
-            <li><strong>Apa yang harus saya lakukan jika saya tidak bisa mengakses kuesioner?</strong> Pastikan Anda memiliki koneksi internet yang stabil dan menggunakan perangkat yang mendukung pengisian kuesioner online.</li>
-            <li><strong>Apa yang terjadi jika saya mengisi data yang salah?</strong> Anda dapat mengedit data yang telah Anda masukkan sebelum mengirimkan kuesioner, pastikan untuk memeriksa kembali semua informasi yang Anda isi.</li>
-        </ul>
-
-        <!-- Dukungan Teknis -->
-        <h3 class="mb-3">Dukungan Teknis</h3>
-        <p class="mb-4">
-            Apabila Anda mengalami kendala teknis, seperti masalah dalam login atau pengisian kuesioner, silakan hubungi tim dukungan kami melalui formulir kontak atau nomor yang tertera pada halaman ini. Kami siap membantu Anda mengatasi masalah teknis secepat mungkin.
-        </p>
-        <button class="btn btn-primary">Hubungi Tim Dukungan</button>
-    </div>
-</div>
 @endsection
