@@ -417,49 +417,39 @@
                 '<i class="fas fa-filter"></i> Tampilkan Filter';
         });
     </script>
+
+    {{-- export excel --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Tangkap elemen modal dan tombol
-            const exportModal = document.getElementById('exportModal');
-            const exportCurrentPageBtn = document.getElementById('exportCurrentPage');
-            const exportAllDataBtn = document.getElementById('exportAllData');
+        document.addEventListener('DOMContentLoaded', () => {
+            const curBtn = document.getElementById('exportExcelCurrent');
+            const allBtn = document.getElementById('exportExcelAll');
 
-            // Fungsi untuk membangun URL ekspor
-            function buildExportUrl(allData = false) {
-                const baseUrl =
-                    "{{ route('uplm.exportExcel', [
-                        'id' => 7,
-                        'jenis' => request()->jenis,
-                        'subjenis' => request()->subjenis,
-                        'tahun' => request()->tahun,
-                        'perPage' => request()->perPage,
-                        'page' => request()->page ?? 1,
-                    ]) }}";
-
-                // Jika memilih semua data, hapus parameter pagination
-                if (allData) {
-                    return baseUrl.replace(/&perPage=[^&]*/, '').replace(/&page=[^&]*/, '') + '&allData=true';
+            function buildUrl(all = false) {
+                let url = "{{ route('uplm.exportExcel', ['id' => 7]) }}";
+                const params = new URLSearchParams({
+                    jenis: "{{ request()->jenis }}",
+                    subjenis: "{{ request()->subjenis }}",
+                    tahun: "{{ request()->tahun }}",
+                    perPage: "{{ request()->perPage }}",
+                    page: "{{ request()->page ?? 1 }}",
+                });
+                if (all) {
+                    params.delete('perPage');
+                    params.delete('page');
+                    params.append('allData', 'true');
                 }
-                return baseUrl;
+                return url + '?' + params.toString();
             }
 
-            // Set href untuk tombol ekspor halaman saat ini
-            exportCurrentPageBtn.href = buildExportUrl(false);
+            curBtn.href = buildUrl(false);
+            allBtn.href = buildUrl(true);
 
-            // Set href untuk tombol ekspor semua data
-            exportAllDataBtn.href = buildExportUrl(true);
-
-            // Tambahkan event listener untuk tombol di modal
-            exportCurrentPageBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                window.location.href = this.href;
-                bootstrap.Modal.getInstance(exportModal).hide();
-            });
-
-            exportAllDataBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                window.location.href = this.href;
-                bootstrap.Modal.getInstance(exportModal).hide();
+            [curBtn, allBtn].forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    window.location.href = btn.href;
+                    bootstrap.Modal.getInstance(document.getElementById('exportModal')).hide();
+                });
             });
         });
     </script>
@@ -513,18 +503,18 @@
     </script>
 @endsection
 <!-- Modal untuk pilihan ekspor -->
-<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+<div class="modal fade" id="exportModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exportModalLabel">Pilih Jenis Ekspor</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">Pilih Ekspor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <p>Anda ingin mengekspor:</p>
                 <div class="d-flex gap-2">
-                    <a id="exportCurrentPage" href="#" class="btn btn-primary">Data Halaman Ini</a>
-                    <a id="exportAllData" href="#" class="btn btn-success">Semua Data</a>
+                    <a id="exportExcelCurrent" class="btn btn-primary">Halaman Ini</a>
+                    <a id="exportExcelAll" class="btn btn-success">Semua Data</a>
                 </div>
             </div>
             <div class="modal-footer">

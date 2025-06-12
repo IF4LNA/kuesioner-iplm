@@ -46,16 +46,15 @@ class Uplm1Export implements FromCollection, WithHeadings, WithMapping
             'jawaban.pertanyaan'
         ]);
 
-        // Filter berdasarkan jenis dan subjenis
-        if ($this->jenis) {
+        // Gabungkan filter jenis & subjenis
+        if ($this->jenis || $this->subjenis) {
             $query->whereHas('jenis', function ($q) {
-                $q->where('jenis', $this->jenis);
-            });
-        }
-
-        if ($this->subjenis) {
-            $query->whereHas('jenis', function ($q) {
-                $q->where('subjenis', $this->subjenis);
+                if ($this->jenis) {
+                    $q->where('jenis', $this->jenis);
+                }
+                if ($this->subjenis) {
+                    $q->where('subjenis', $this->subjenis);
+                }
             });
         }
 
