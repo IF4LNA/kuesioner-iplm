@@ -110,7 +110,7 @@
     <div class="garis"></div>
 
     <div class="header">
-        <h2>Monografi Perpustakaan</h2>
+        <h2>Profil Perpustakaan</h2>
         <p>Tahun: {{ $selectedTahun }}</p>
     </div>
 

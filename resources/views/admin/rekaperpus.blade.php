@@ -139,7 +139,7 @@
             <!-- Card untuk Tabel Monografi -->
             <div class="card shadow-lg mb-4 border-0">
                 <div class="card-header bg-white ">
-                    <h5 class="card-title mb-0">Monografi Perpustakaan</h5>
+                    <h5 class="card-title mb-0">Profil Perpustakaan</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
