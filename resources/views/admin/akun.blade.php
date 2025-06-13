@@ -10,10 +10,13 @@
                 @endif
                 <form action="{{ route('admin.store-account') }}" method="POST">
                     @csrf
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <input type="text" name="username" id="username" class="form-control" required>
-                    </div>
+<div class="mb-3">
+    <label for="username" class="form-label">Username</label>
+    <input type="text" name="username" id="username" class="form-control @error('username') is-invalid @enderror" required>
+    @error('username')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
                         <input type="password" name="password" id="password" class="form-control" required>

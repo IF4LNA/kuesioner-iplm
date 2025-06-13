@@ -53,7 +53,7 @@ class AdminController extends Controller
     {
         // Validasi input
         $rules = [
-            'username'           => 'required|string|max:255',
+            'username'           => 'required|string|max:255|unique:users,username',
             'password'           => 'required|string|min:8',
             'role'               => 'required',
             'nama_perpustakaan'  => 'required_if:role,pustakawan',
@@ -102,6 +102,13 @@ class AdminController extends Controller
             if (!$jenisData) {
                 return redirect()->back()->withErrors(['message' => 'Jenis perpustakaan tidak ditemukan.']);
             }
+
+                // Cek apakah username sudah digunakan
+    if (User::where('username', $request->username)->exists()) {
+        return redirect()->back()
+            ->withInput()
+            ->withErrors(['username' => 'Username sudah digunakan. Silakan pilih username lain.']);
+    }
     
             // Simpan data ke tabel perpustakaans
             Perpustakaan::create([
