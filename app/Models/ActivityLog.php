@@ -10,7 +10,7 @@ class ActivityLog extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     // Tentukan kolom yang dapat diisi
     protected $fillable = [
