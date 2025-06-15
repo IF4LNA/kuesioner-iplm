@@ -145,7 +145,7 @@
                     <li class="nav-item">
                         <a class="nav-link {{ request()->is('monografi*') ? 'active' : '' }}"
                             href="{{ route('monografi.index') }}">
-                            <i class="fas fa-book"></i> Monografi
+                            <i class="fas fa-book"></i> Profil
                         </a>
                     </li>
                     <li class="nav-item">
@@ -159,7 +159,7 @@
                             <i class="fas fa-user-circle"></i> {{ Auth::user()->username }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-book"></i> Monografi</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-book"></i> Profil</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -182,7 +182,7 @@
             <!-- Card untuk Judul dan Dropdown Tahun -->
             <div class="card shadow-lg mb-4 border-0">
                 <div class="card-body">
-                    <h2>Data Monografi Perpustakaan</h2>
+                    <h2>Data UPLM Perpustakaan</h2>
                     <form method="GET" action="{{ route('monografi.index') }}">
                         <div class="mb-3">
                             <label for="tahun" class="form-label">Pilih Tahun:</label>
@@ -262,7 +262,7 @@
             <!-- Card untuk Pertanyaan & Jawaban -->
             <div class="card shadow-lg mb-4 border-0">
                 <div class="card-header bg-dark text-white">
-                    Jawaban Monografi Tahun {{ $tahunTerpilih }}
+                    Jawaban UPLM Tahun {{ $tahunTerpilih }}
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">

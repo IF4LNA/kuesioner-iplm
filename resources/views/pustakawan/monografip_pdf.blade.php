@@ -108,7 +108,7 @@
     <div class="garis"></div>
 
     <div class="header">
-        <h2>Monografi Perpustakaan</h2>
+        <h2>Profil Perpustakaan</h2>
         <p>Tahun: {{ $tahun }}</p>
     </div>
 
@@ -156,7 +156,7 @@
     </table>
 
     <!-- Data Monografi -->
-    <h3>Data Monografi</h3>
+    <h3>Data UPLM</h3>
     <table class="table">
         <thead>
             <tr>

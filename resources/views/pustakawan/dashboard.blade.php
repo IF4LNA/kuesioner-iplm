@@ -134,7 +134,7 @@
                     <li class="nav-item">
                         <a class="nav-link {{ request()->is('monografi*') ? 'active' : '' }}"
                             href="{{ route('monografi.index') }}">
-                            <i class="fas fa-book"></i> Monografi
+                            <i class="fas fa-book"></i> Profil
                         </a>
                     </li>
                     <li class="nav-item">
