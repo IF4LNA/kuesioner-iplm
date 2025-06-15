@@ -17,13 +17,18 @@ class Uplm1PdfExport implements FromCollection, WithHeadings, WithMapping
     protected $tahun;
     protected $page;
     protected $perPage;
+    protected $sortField;
+    protected $sortOrder;
 
-    public function __construct($jenis = null, $subjenis = null, $tahun = null, $page = 1, $perPage = 10)
+
+    public function __construct($jenis = null, $subjenis = null, $tahun = null, $page = 1, $perPage = 10, $sortField = 'created_at', $sortOrder = 'asc')
 {
     $this->jenis = $jenis;
     $this->subjenis = $subjenis;
     $this->page = $page;
     $this->perPage = $perPage;
+    $this->sortField = $sortField;
+    $this->sortOrder = $sortOrder;
     
     // Pastikan tahun selalu memiliki nilai
     $this->tahun = $tahun ?? $this->getLatestYear();
@@ -37,7 +42,7 @@ protected function getLatestYear()
     
     public function collection()
 {
-    $query = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan']);
+    $query = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan'])->orderBy($this->sortField, $this->sortOrder);
 
     // Filter berdasarkan jenis dan subjenis
     if ($this->jenis) {

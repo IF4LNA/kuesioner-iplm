@@ -179,40 +179,54 @@ class UplmController extends Controller
     }
 
     public function exportUplmPdf($id, Request $request, $kategori)
-    {
-        $jenis = $request->get('jenis');
-        $subjenis = $request->get('subjenis');
-        $tahun = $request->get('tahun');
-        $perPage = $request->get('perPage', 10);
-        $page = $request->get('page', 1);
-        $allData = $request->get('allData', false);
+{
+        $params = [
+            'jenis' => $request->get('jenis'),
+            'subjenis' => $request->get('subjenis'),
+            'tahun' => $request->get('tahun'),
+            'page' => $request->get('page', 1),
+            'perPage' => $request->get('perPage', 10),
+            'sortField' => $request->get('sortField', 'created_at'),
+            'sortOrder' => $request->get('sortOrder', 'asc')
+        ];
 
-        // Simpan log aktivitas
+        // Catat semua parameter yang aktif di log
+        $activeFilters = array_filter($params, function($value) {
+            return !is_null($value) && $value !== '';
+        });
+
+        $filterDescription = "Filter aktif:\n";
+        foreach ($activeFilters as $key => $value) {
+            if ($key !== 'page' && $key !== 'perPage') {
+                $filterDescription .= "- {$key}: {$value}\n";
+            }
+        }
+
         ActivityLog::create([
-            'action'      => 'Export PDF',
-            'description' => "Admin mengekspor data UPLM {$id} ke PDF dengan filter:\n"
-                . "- Jenis: {$jenis}\n"
-                . "- Subjenis: {$subjenis}\n"
-                . "- Tahun: {$tahun}\n"
-                . ($allData ? "- Semua data" : "- Per Page: {$perPage}\n- Page: {$page}"),
-            'id_akun'     => auth()->user()->id,
-            'created_at'  => now(),
+            'action' => 'Export PDF',
+            'description' => "Admin mengekspor data UPLM {$id} ke PDF dengan:\n" . $filterDescription .
+                            ($request->get('allData') ? "- Semua data" : "- Per Page: {$params['perPage']}\n- Page: {$params['page']}"),
+            'id_akun' => auth()->user()->id,
+            'created_at' => now(),
         ]);
 
-        // Jika allData true, set perPage ke null untuk mengambil semua data
-        if ($allData) {
-            $perPage = null;
-            $page = 1;
-        }
-
-        // Menentukan kelas export berdasarkan kategori
         $exportClass = 'App\\Exports\\Uplm' . $kategori . 'PdfExport';
-
+        
         if (!class_exists($exportClass)) {
-            return response()->json(['error' => 'Kategori tidak valid'], 404);
+            return back()->with('error', 'Kategori tidak valid');
         }
 
-        $export = new $exportClass($jenis, $subjenis, $tahun, $page, $perPage);
+        $export = new $exportClass(
+            $params['jenis'],
+            $params['subjenis'],
+            $params['tahun'],
+            $request->get('allData') ? 1 : $params['page'],
+            $request->get('allData') ? null : $params['perPage'],
+            $params['sortField'],
+            $params['sortOrder']
+        );
+
         return $export->downloadPdf();
-    }
+
+}
 }

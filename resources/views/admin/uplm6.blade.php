@@ -454,53 +454,37 @@
             });
         });
     </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Tangkap elemen modal dan tombol PDF
-            const exportPdfModal = document.getElementById('exportPdfModal');
-            const exportPdfCurrentPageBtn = document.getElementById('exportPdfCurrentPage');
-            const exportPdfAllDataBtn = document.getElementById('exportPdfAllData');
-
-            // Fungsi untuk membangun URL ekspor PDF
-            function buildPdfExportUrl(allData = false) {
-                const baseUrl =
-                    "{{ route('uplm.exportPdf', [
-                        'id' => 6,
-                        'kategori' => '6',
-                        'jenis' => request()->jenis,
-                        'subjenis' => request()->subjenis,
-                        'tahun' => request()->tahun,
-                        'perPage' => request()->perPage,
-                        'page' => request()->page ?? 1,
-                    ]) }}";
-
-                // Jika memilih semua data, hapus parameter pagination
-                if (allData) {
-                    return baseUrl.replace(/&perPage=[^&]*/, '').replace(/&page=[^&]*/, '') + '&allData=true';
-                }
-                return baseUrl;
-            }
-
-            // Set href untuk tombol ekspor PDF halaman saat ini
-            exportPdfCurrentPageBtn.href = buildPdfExportUrl(false);
-
-            // Set href untuk tombol ekspor PDF semua data
-            exportPdfAllDataBtn.href = buildPdfExportUrl(true);
-
-            // Tambahkan event listener untuk tombol di modal PDF
-            exportPdfCurrentPageBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                window.location.href = this.href;
-                bootstrap.Modal.getInstance(exportPdfModal).hide();
-            });
-
-            exportPdfAllDataBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                window.location.href = this.href;
-                bootstrap.Modal.getInstance(exportPdfModal).hide();
-            });
+  <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const buildExportUrl = (allData = false) => {
+        const baseUrl = "{{ route('uplm.exportPdf', ['id' => 6, 'kategori' => '6']) }}";
+        const params = new URLSearchParams({
+            jenis: "{{ request('jenis') }}",
+            subjenis: "{{ request('subjenis') }}",
+            tahun: "{{ request('tahun') }}",
+            sortField: "{{ request('sortField', 'created_at') }}",
+            sortOrder: "{{ request('sortOrder', 'asc') }}",
+            perPage: "{{ request('perPage', 10) }}",
+            page: "{{ request('page', 1) }}",
+            allData: allData ? '1' : '0'
         });
-    </script>
+        return `${baseUrl}?${params.toString()}`;
+    };
+
+    document.getElementById('exportPdfCurrentPage').href = buildExportUrl(false);
+    document.getElementById('exportPdfAllData').href = buildExportUrl(true);
+
+    // Handle klik tombol
+    const handleExportClick = (e, allData) => {
+        e.preventDefault();
+        window.location.href = buildExportUrl(allData);
+        bootstrap.Modal.getInstance(document.getElementById('exportPdfModal')).hide();
+    };
+
+    document.getElementById('exportPdfCurrentPage').addEventListener('click', (e) => handleExportClick(e, false));
+    document.getElementById('exportPdfAllData').addEventListener('click', (e) => handleExportClick(e, true));
+});
+</script>
 @endsection
 <!-- Modal untuk pilihan ekspor -->
 <div class="modal fade" id="exportModal" tabindex="-1">
