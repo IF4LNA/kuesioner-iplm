@@ -270,20 +270,28 @@
                                     </span>
                                 </a>
                             </th>
-                            <th>
-                                <a href="{{ route('uplm', ['id' => $id, 'sortField' => 'nama_perpustakaan', 'sortOrder' => request('sortOrder') === 'asc' ? 'desc' : 'asc', 'search' => request()->search, 'jenis' => request()->jenis, 'subjenis' => request()->subjenis, 'tahun' => request()->tahun]) }}"
-                                    style="color: black; text-decoration: none; display: flex; align-items: center;">
-                                    Nama Perpustakaan
-                                    <span style="margin-left: 5px;">
-                                        @if (request('sortField') === 'nama_perpustakaan')
-                                            <i
-                                                class="fas fa-sort-{{ request('sortOrder') === 'asc' ? 'up' : 'down' }}"></i>
-                                        @else
-                                            <i class="fas fa-sort"></i>
-                                        @endif
-                                    </span>
-                                </a>
-                            </th>
+                           <th>
+    <a href="{{ route('uplm', [
+        'id' => $id,
+        'sortField' => 'nama_perpustakaan',
+        'sortOrder' => request('sortOrder') === 'asc' ? 'desc' : 'asc',
+        'tahun' => request('tahun'),
+        'jenis' => request('jenis'),
+        'subjenis' => request('subjenis'),
+        'search' => request('search'),
+        'perPage' => request('perPage', 10) // Tambahkan ini untuk mempertahankan perPage
+    ]) }}" 
+       style="color: black; text-decoration: none; display: flex; align-items: center;">
+        Nama Perpustakaan
+        <span style="margin-left: 5px;">
+            @if (request('sortField') === 'nama_perpustakaan')
+                <i class="fas fa-sort-{{ request('sortOrder') === 'asc' ? 'up' : 'down' }}"></i>
+            @else
+                <i class="fas fa-sort"></i>
+            @endif
+        </span>
+    </a>
+</th>
                             <th>NPP</th>
                             <th>Jenis Perpustakaan</th>
                             <th>Sub Jenis Perpustakaan</th>
