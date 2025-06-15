@@ -428,7 +428,7 @@
     </script>
     
     {{-- export excel --}}
-    <script>
+     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const curBtn = document.getElementById('exportExcelCurrent');
             const allBtn = document.getElementById('exportExcelAll');
@@ -441,6 +441,8 @@
                     tahun: "{{ request()->tahun }}",
                     perPage: "{{ request()->perPage }}",
                     page: "{{ request()->page ?? 1 }}",
+                                sortField: "{{ request('sortField', 'created_at') }}",
+            sortOrder: "{{ request('sortOrder', 'asc') }}",
                 });
                 if (all) {
                     params.delete('perPage');

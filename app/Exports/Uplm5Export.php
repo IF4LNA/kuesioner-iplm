@@ -8,6 +8,7 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 use App\Models\Perpustakaan;
 use App\Models\Pertanyaan;
 use App\Models\Jawaban;
+use Illuminate\Support\Facades\Log;
 
 class Uplm5Export implements FromCollection, WithHeadings, WithMapping
 {
@@ -17,52 +18,76 @@ class Uplm5Export implements FromCollection, WithHeadings, WithMapping
     protected $page;
     protected $perPage;
     protected $currentTahun;
+    protected $sortField;
+    protected $sortOrder;
 
-    public function __construct($jenis = null, $subjenis = null, $tahun = null, $page = 1, $perPage = 10)
-    {
+    public function __construct(
+        $jenis = null, 
+        $subjenis = null, 
+        $tahun = null, 
+        $page = 1, 
+        $perPage = 10,
+        $sortField = 'nama_perpustakaan',
+        $sortOrder = 'asc'
+    ) {
         $this->jenis = $jenis;
         $this->subjenis = $subjenis;
-        $this->tahun = $tahun;
         $this->page = $page;
         $this->perPage = $perPage;
+        $this->sortField = $sortField;
+        $this->sortOrder = $sortOrder;
+        $this->currentTahun = $tahun ?: Pertanyaan::where('kategori', 'UPLM 5')->max('tahun') ?? date('Y');
         
-        // Set tahun default di constructor
-        $this->currentTahun = $tahun ?: Pertanyaan::where('kategori', 'UPLM 5')->max('tahun');
+        Log::info('Export UPLM5 initialized with parameters:', [
+            'tahun' => $this->currentTahun,
+            'sortField' => $this->sortField,
+            'sortOrder' => $this->sortOrder
+        ]);
     }
 
     public function collection()
-{
-    $query = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jawaban.pertanyaan']);
+    {
+        $query = Perpustakaan::with([
+            'user', 
+            'kelurahan.kecamatan', 
+            'jenis', 
+            'jawaban' => function($query) {
+                $query->whereHas('pertanyaan', function($q) {
+                    $q->where('kategori', 'UPLM 5')
+                      ->where('tahun', $this->currentTahun);
+                });
+            },
+            'jawaban.pertanyaan'
+        ]);
 
-    // Filter berdasarkan jenis dan subjenis
-    if ($this->jenis) {
-        $query->whereHas('jenis', function ($q) {
-            $q->where('jenis', $this->jenis);
-        });
+        // Apply jenis/subjenis filters
+        if ($this->jenis || $this->subjenis) {
+            $query->whereHas('jenis', function ($q) {
+                if ($this->jenis) {
+                    $q->where('jenis', $this->jenis);
+                }
+                if ($this->subjenis) {
+                    $q->where('subjenis', $this->subjenis);
+                }
+            });
+        }
+
+        // Validate and apply sorting
+        $validSortFields = ['nama_perpustakaan', 'npp', 'created_at'];
+        $sortField = in_array($this->sortField, $validSortFields) ? $this->sortField : 'nama_perpustakaan';
+        $sortOrder = $this->sortOrder === 'desc' ? 'desc' : 'asc';
+
+        // For all data export
+        if (is_null($this->perPage)) {
+            return $query->orderBy($sortField, $sortOrder)->get();
+        }
+
+        // Paginated export
+        return $query->orderBy($sortField, $sortOrder)
+            ->skip(($this->page - 1) * $this->perPage)
+            ->take($this->perPage)
+            ->get();
     }
-
-    if ($this->subjenis) {
-        $query->whereHas('jenis', function ($q) {
-            $q->where('subjenis', $this->subjenis);
-        });
-    }
-
-    // Jika perPage null (ekspor semua data), kembalikan semua data tanpa paginasi
-    if (is_null($this->perPage)) {
-        return $query->get();
-    }
-
-    // Hitung total data yang tersedia
-    $totalData = $query->count();
-
-    // Jika perPage lebih besar dari total data, gunakan total data sebagai batas
-    $limit = min($this->perPage, $totalData);
-
-    // Paginasi sesuai halaman dan jumlah data yang ditampilkan
-    return $query->skip(($this->page - 1) * $this->perPage)
-        ->take($limit)
-        ->get();
-}
 
     public function headings(): array
     {
@@ -78,13 +103,13 @@ class Uplm5Export implements FromCollection, WithHeadings, WithMapping
             'Kecamatan',
         ];
 
-        // Ambil pertanyaan khusus untuk tahun tertentu
         $pertanyaan = Pertanyaan::where('kategori', 'UPLM 5')
             ->where('tahun', $this->currentTahun)
+            ->orderBy('id_pertanyaan')
             ->get();
 
-        foreach ($pertanyaan as $pertanyaanItem) {
-            $headings[] = $pertanyaanItem->teks_pertanyaan;
+        foreach ($pertanyaan as $item) {
+            $headings[] = $item->teks_pertanyaan;
         }
 
         return $headings;
@@ -92,11 +117,11 @@ class Uplm5Export implements FromCollection, WithHeadings, WithMapping
 
     public function map($item): array
     {
-        static $rowNumber = 1; // Variabel static untuk nomor urut
-        
+        static $rowNumber = 1;
+
         $data = [
-            $rowNumber++, // Nomor urut yang increment
-            $this->currentTahun, // Menggunakan tahun yang sudah ditentukan
+            $rowNumber++,
+            $this->currentTahun,
             $item->nama_perpustakaan ?? '-',
             $item->npp ?? '-',
             $item->jenis->jenis ?? '-',
@@ -106,17 +131,17 @@ class Uplm5Export implements FromCollection, WithHeadings, WithMapping
             $item->kelurahan->kecamatan->nama_kecamatan ?? '-',
         ];
 
-        // Ambil jawaban hanya untuk pertanyaan di tahun tertentu
         $pertanyaan = Pertanyaan::where('kategori', 'UPLM 5')
             ->where('tahun', $this->currentTahun)
+            ->orderBy('id_pertanyaan')
             ->get();
 
-        foreach ($pertanyaan as $pertanyaanItem) {
-            $jawaban = $item->jawaban
-                ->where('id_pertanyaan', $pertanyaanItem->id_pertanyaan)
+        foreach ($pertanyaan as $q) {
+            $jawab = $item->jawaban
+                ->where('id_pertanyaan', $q->id_pertanyaan)
                 ->first();
 
-            $data[] = $jawaban ? $jawaban->jawaban : '-';
+            $data[] = $jawab ? $jawab->jawaban : '-';
         }
 
         return $data;

@@ -7,6 +7,8 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use App\Models\Perpustakaan;
 use App\Models\Pertanyaan;
+use App\Models\Jawaban;
+use Illuminate\Support\Facades\Log;
 
 class Uplm2Export implements FromCollection, WithHeadings, WithMapping
 {
@@ -16,22 +18,49 @@ class Uplm2Export implements FromCollection, WithHeadings, WithMapping
     protected $page;
     protected $perPage;
     protected $currentTahun;
+    protected $sortField;
+    protected $sortOrder;
 
-    public function __construct($jenis = null, $subjenis = null, $tahun = null, $page = 1, $perPage = 10)
-    {
+    public function __construct(
+        $jenis = null, 
+        $subjenis = null, 
+        $tahun = null, 
+        $page = 1, 
+        $perPage = 10,
+        $sortField = 'nama_perpustakaan',
+        $sortOrder = 'asc'
+    ) {
         $this->jenis = $jenis;
         $this->subjenis = $subjenis;
-        $this->tahun = $tahun;
         $this->page = $page;
         $this->perPage = $perPage;
-        $this->currentTahun = $tahun ?: Pertanyaan::where('kategori', 'UPLM 2')->max('tahun');
+        $this->sortField = $sortField;
+        $this->sortOrder = $sortOrder;
+        $this->currentTahun = $tahun ?: Pertanyaan::where('kategori', 'UPLM 2')->max('tahun') ?? date('Y');
+        
+        Log::info('Export UPLM2 initialized with parameters:', [
+            'tahun' => $this->currentTahun,
+            'sortField' => $this->sortField,
+            'sortOrder' => $this->sortOrder
+        ]);
     }
 
     public function collection()
     {
-        $query = Perpustakaan::with(['user', 'kelurahan.kecamatan', 'jenis', 'jawaban.pertanyaan']);
+        $query = Perpustakaan::with([
+            'user', 
+            'kelurahan.kecamatan', 
+            'jenis', 
+            'jawaban' => function($query) {
+                $query->whereHas('pertanyaan', function($q) {
+                    $q->where('kategori', 'UPLM 2')
+                      ->where('tahun', $this->currentTahun);
+                });
+            },
+            'jawaban.pertanyaan'
+        ]);
 
-        // Gabungkan filter jenis & subjenis
+        // Apply jenis/subjenis filters
         if ($this->jenis || $this->subjenis) {
             $query->whereHas('jenis', function ($q) {
                 if ($this->jenis) {
@@ -43,12 +72,18 @@ class Uplm2Export implements FromCollection, WithHeadings, WithMapping
             });
         }
 
-        // Pagination: jika allData maka perPage null
+        // Validate and apply sorting
+        $validSortFields = ['nama_perpustakaan', 'npp', 'created_at'];
+        $sortField = in_array($this->sortField, $validSortFields) ? $this->sortField : 'nama_perpustakaan';
+        $sortOrder = $this->sortOrder === 'desc' ? 'desc' : 'asc';
+
+        // For all data export
         if (is_null($this->perPage)) {
-            return $query->get();
+            return $query->orderBy($sortField, $sortOrder)->get();
         }
 
-        return $query
+        // Paginated export
+        return $query->orderBy($sortField, $sortOrder)
             ->skip(($this->page - 1) * $this->perPage)
             ->take($this->perPage)
             ->get();
@@ -70,6 +105,7 @@ class Uplm2Export implements FromCollection, WithHeadings, WithMapping
 
         $pertanyaan = Pertanyaan::where('kategori', 'UPLM 2')
             ->where('tahun', $this->currentTahun)
+            ->orderBy('id_pertanyaan')
             ->get();
 
         foreach ($pertanyaan as $item) {
@@ -97,6 +133,7 @@ class Uplm2Export implements FromCollection, WithHeadings, WithMapping
 
         $pertanyaan = Pertanyaan::where('kategori', 'UPLM 2')
             ->where('tahun', $this->currentTahun)
+            ->orderBy('id_pertanyaan')
             ->get();
 
         foreach ($pertanyaan as $q) {

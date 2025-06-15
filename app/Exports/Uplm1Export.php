@@ -17,18 +17,33 @@ class Uplm1Export implements FromCollection, WithHeadings, WithMapping
     protected $tahun;
     protected $page;
     protected $perPage;
+    protected $sortField;
+    protected $sortOrder;
 
-    public function __construct($jenis = null, $subjenis = null, $tahun = null, $page = 1, $perPage = 10)
-    {
+    public function __construct(
+        $jenis = null, 
+        $subjenis = null, 
+        $tahun = null, 
+        $page = 1, 
+        $perPage = 10,
+        $sortField = 'nama_perpustakaan',
+        $sortOrder = 'asc'
+    ) {
         $this->jenis = $jenis;
         $this->subjenis = $subjenis;
         $this->page = $page;
         $this->perPage = $perPage;
+        $this->sortField = $sortField;
+        $this->sortOrder = $sortOrder;
         
         // Set tahun dengan prioritas: parameter > tahun terbaru dari database > tahun sekarang
         $this->tahun = $tahun ?? Pertanyaan::where('kategori', 'UPLM 1')->max('tahun') ?? date('Y');
         
-        Log::info('Export UPLM1 initialized with tahun: ' . $this->tahun);
+        Log::info('Export UPLM1 initialized with parameters:', [
+            'tahun' => $this->tahun,
+            'sortField' => $this->sortField,
+            'sortOrder' => $this->sortOrder
+        ]);
     }
 
     public function collection()
@@ -58,13 +73,18 @@ class Uplm1Export implements FromCollection, WithHeadings, WithMapping
             });
         }
 
+        // Validasi sort field dan order
+        $validSortFields = ['nama_perpustakaan', 'npp', 'created_at'];
+        $sortField = in_array($this->sortField, $validSortFields) ? $this->sortField : 'nama_perpustakaan';
+        $sortOrder = $this->sortOrder === 'desc' ? 'desc' : 'asc';
+
         // Untuk ekspor semua data
         if (is_null($this->perPage)) {
-            return $query->orderBy('nama_perpustakaan')->get();
+            return $query->orderBy($sortField, $sortOrder)->get();
         }
 
         // Paginasi untuk preview
-        return $query->orderBy('nama_perpustakaan')
+        return $query->orderBy($sortField, $sortOrder)
             ->skip(($this->page - 1) * $this->perPage)
             ->take($this->perPage)
             ->get();
@@ -106,7 +126,7 @@ class Uplm1Export implements FromCollection, WithHeadings, WithMapping
 
         $data = [
             $rowNumber++,
-            $this->tahun, // Gunakan tahun yang sudah ditentukan
+            $this->tahun,
             $item->nama_perpustakaan ?? '-',
             $item->npp ?? '-',
             $item->jenis->jenis ?? '-',

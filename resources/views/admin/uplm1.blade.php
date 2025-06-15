@@ -448,6 +448,8 @@
                     tahun: "{{ request()->tahun }}",
                     perPage: "{{ request()->perPage }}",
                     page: "{{ request()->page ?? 1 }}",
+                                sortField: "{{ request('sortField', 'created_at') }}",
+            sortOrder: "{{ request('sortOrder', 'asc') }}",
                 });
                 if (all) {
                     params.delete('perPage');
