@@ -202,7 +202,8 @@
             <form action="{{ route('uplm', $id) }}" method="GET" class="d-flex align-items-center gap-2">
                 <label for="goToPage" class="mb-0">Go to page</label>
                 <input type="number" name="page" id="goToPage" class="form-control form-control-sm"
-                    style="width: 80px;" min="1" max="{{ $data->lastPage() }}" value="{{ request()->page ?? 1 }}">
+                    style="width: 80px;" min="1" max="{{ $data->lastPage() }}"
+                    value="{{ request()->page ?? 1 }}">
                 <button type="submit" class="btn btn-primary btn-sm">Go</button>
 
                 <!-- Sertakan parameter tahun dan lainnya sebagai input hidden -->
@@ -270,27 +271,28 @@
                                 </a>
                             </th>
                             <th>
-    <a href="{{ route('uplm', [
-        'id' => $id,
-        'sortField' => 'nama_perpustakaan',
-        'sortOrder' => request('sortOrder') === 'asc' ? 'desc' : 'asc',
-        'tahun' => request('tahun'),
-        'jenis' => request('jenis'),
-        'subjenis' => request('subjenis'),
-        'search' => request('search'),
-        'perPage' => request('perPage', 10) // Tambahkan ini untuk mempertahankan perPage
-    ]) }}" 
-       style="color: black; text-decoration: none; display: flex; align-items: center;">
-        Nama Perpustakaan
-        <span style="margin-left: 5px;">
-            @if (request('sortField') === 'nama_perpustakaan')
-                <i class="fas fa-sort-{{ request('sortOrder') === 'asc' ? 'up' : 'down' }}"></i>
-            @else
-                <i class="fas fa-sort"></i>
-            @endif
-        </span>
-    </a>
-</th>
+                                <a href="{{ route('uplm', [
+                                    'id' => $id,
+                                    'sortField' => 'nama_perpustakaan',
+                                    'sortOrder' => request('sortOrder') === 'asc' ? 'desc' : 'asc',
+                                    'tahun' => request('tahun'),
+                                    'jenis' => request('jenis'),
+                                    'subjenis' => request('subjenis'),
+                                    'search' => request('search'),
+                                    'perPage' => request('perPage', 10), // Tambahkan ini untuk mempertahankan perPage
+                                ]) }}"
+                                    style="color: black; text-decoration: none; display: flex; align-items: center;">
+                                    Nama Perpustakaan
+                                    <span style="margin-left: 5px;">
+                                        @if (request('sortField') === 'nama_perpustakaan')
+                                            <i
+                                                class="fas fa-sort-{{ request('sortOrder') === 'asc' ? 'up' : 'down' }}"></i>
+                                        @else
+                                            <i class="fas fa-sort"></i>
+                                        @endif
+                                    </span>
+                                </a>
+                            </th>
                             <th>NPP</th>
                             <th>Jenis Perpustakaan</th>
                             <th>Sub Jenis Perpustakaan</th>
@@ -302,7 +304,6 @@
                                     {{ Str::limit($pertanyaanItem->teks_pertanyaan, 30, '...') }}
                                 </th>
                             @endforeach
-                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -344,18 +345,6 @@
                                         @endif
                                     </td>
                                 @endforeach
-                                <td>
-                                    <a href="" class="btn btn-warning btn-sm">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <form action="" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </form>
-                                </td>
                             </tr>
                         @empty
                             <tr>
@@ -364,7 +353,7 @@
                         @endforelse
                     </tbody>
                 </table>
-            
+
                 <!-- Pagination -->
                 <div class="sticky-pagination">
                     <div class="d-flex justify-content-between align-items-center mt-4">
@@ -427,7 +416,7 @@
     </script>
 
     {{-- export excel --}}
-     <script>
+    <script>
         document.addEventListener('DOMContentLoaded', () => {
             const curBtn = document.getElementById('exportExcelCurrent');
             const allBtn = document.getElementById('exportExcelAll');
@@ -440,8 +429,8 @@
                     tahun: "{{ request()->tahun }}",
                     perPage: "{{ request()->perPage }}",
                     page: "{{ request()->page ?? 1 }}",
-                                sortField: "{{ request('sortField', 'created_at') }}",
-            sortOrder: "{{ request('sortOrder', 'asc') }}",
+                    sortField: "{{ request('sortField', 'created_at') }}",
+                    sortOrder: "{{ request('sortOrder', 'asc') }}",
                 });
                 if (all) {
                     params.delete('perPage');
@@ -464,37 +453,39 @@
         });
     </script>
 
- <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const buildExportUrl = (allData = false) => {
-        const baseUrl = "{{ route('uplm.exportPdf', ['id' => 7, 'kategori' => '7']) }}";
-        const params = new URLSearchParams({
-            jenis: "{{ request('jenis') }}",
-            subjenis: "{{ request('subjenis') }}",
-            tahun: "{{ request('tahun') }}",
-            sortField: "{{ request('sortField', 'created_at') }}",
-            sortOrder: "{{ request('sortOrder', 'asc') }}",
-            perPage: "{{ request('perPage', 10) }}",
-            page: "{{ request('page', 1) }}",
-            allData: allData ? '1' : '0'
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const buildExportUrl = (allData = false) => {
+                const baseUrl = "{{ route('uplm.exportPdf', ['id' => 7, 'kategori' => '7']) }}";
+                const params = new URLSearchParams({
+                    jenis: "{{ request('jenis') }}",
+                    subjenis: "{{ request('subjenis') }}",
+                    tahun: "{{ request('tahun') }}",
+                    sortField: "{{ request('sortField', 'created_at') }}",
+                    sortOrder: "{{ request('sortOrder', 'asc') }}",
+                    perPage: "{{ request('perPage', 10) }}",
+                    page: "{{ request('page', 1) }}",
+                    allData: allData ? '1' : '0'
+                });
+                return `${baseUrl}?${params.toString()}`;
+            };
+
+            document.getElementById('exportPdfCurrentPage').href = buildExportUrl(false);
+            document.getElementById('exportPdfAllData').href = buildExportUrl(true);
+
+            // Handle klik tombol
+            const handleExportClick = (e, allData) => {
+                e.preventDefault();
+                window.location.href = buildExportUrl(allData);
+                bootstrap.Modal.getInstance(document.getElementById('exportPdfModal')).hide();
+            };
+
+            document.getElementById('exportPdfCurrentPage').addEventListener('click', (e) => handleExportClick(e,
+                false));
+            document.getElementById('exportPdfAllData').addEventListener('click', (e) => handleExportClick(e,
+            true));
         });
-        return `${baseUrl}?${params.toString()}`;
-    };
-
-    document.getElementById('exportPdfCurrentPage').href = buildExportUrl(false);
-    document.getElementById('exportPdfAllData').href = buildExportUrl(true);
-
-    // Handle klik tombol
-    const handleExportClick = (e, allData) => {
-        e.preventDefault();
-        window.location.href = buildExportUrl(allData);
-        bootstrap.Modal.getInstance(document.getElementById('exportPdfModal')).hide();
-    };
-
-    document.getElementById('exportPdfCurrentPage').addEventListener('click', (e) => handleExportClick(e, false));
-    document.getElementById('exportPdfAllData').addEventListener('click', (e) => handleExportClick(e, true));
-});
-</script>
+    </script>
 @endsection
 <!-- Modal untuk pilihan ekspor -->
 <div class="modal fade" id="exportModal" tabindex="-1">
